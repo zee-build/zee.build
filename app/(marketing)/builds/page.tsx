@@ -218,7 +218,7 @@ export default function BuildsPage() {
                <div className="w-2 h-2 rounded-full bg-primary" />
                <span className="text-primary uppercase tracking-[0.4em] font-bold">Lab_System_Log</span>
              </div>
-             <span className="opacity-40">{new Date().toLocaleTimeString()} (AST)</span>
+             <span className="opacity-40 tabular-nums">SYSTEM_TIME: ACTIVE</span>
           </div>
           <div className="grid md:grid-cols-2 gap-12">
              <div className="space-y-1 opacity-80">

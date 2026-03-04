@@ -7,12 +7,13 @@ import { Badge } from "@/components/ui/badge"
 
 export function WaitlistForm() {
   const [email, setEmail] = useState("")
-  const [childAge, setChildAge] = useState("")
-  const [honeypot, setHoneypot] = useState("")
+  const [childAgeMonths, setChildAgeMonths] = useState("")
+  const [location, setLocation] = useState("UAE")
+  const [company, setCompany] = useState("") // honeypot
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
   const [error, setError] = useState("")
-  const [startTime] = useState(Date.now())
+  const [startedAt] = useState(Date.now())
 
   const validateEmail = (email: string) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
@@ -21,20 +22,6 @@ export function WaitlistForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError("")
-
-    // Bot protection: honeypot check
-    if (honeypot) {
-      console.log('[Security] Honeypot triggered')
-      return
-    }
-
-    // Bot protection: time-to-submit check (must take at least 2 seconds)
-    const timeElapsed = Date.now() - startTime
-    if (timeElapsed < 2000) {
-      console.log('[Security] Form submitted too quickly')
-      setError("Please take your time filling out the form.")
-      return
-    }
 
     // Validation
     if (!email) {
@@ -58,26 +45,30 @@ export function WaitlistForm() {
         },
         body: JSON.stringify({
           email,
-          childAge: childAge || null,
-          product: 'nutrinest',
-          timestamp: new Date().toISOString(),
+          childAgeMonths: childAgeMonths ? parseInt(childAgeMonths) : undefined,
+          location,
+          startedAt,
+          company, // honeypot
         }),
       })
 
+      const data = await response.json()
+
       if (!response.ok) {
-        throw new Error('Submission failed')
+        throw new Error(data.error || 'Submission failed')
       }
 
       // Success
       setIsSuccess(true)
-      console.log('[Analytics] submit_waitlist_success', { email, childAge })
+      console.log('[Analytics] submit_waitlist_success', { email, childAgeMonths, location })
       
       // Reset form
       setEmail("")
-      setChildAge("")
+      setChildAgeMonths("")
+      setLocation("UAE")
     } catch (err) {
       console.error('[Waitlist] Submission error:', err)
-      setError("Something went wrong. Please try again.")
+      setError(err instanceof Error ? err.message : "Something went wrong. Please try again.")
     } finally {
       setIsSubmitting(false)
     }
@@ -154,29 +145,46 @@ export function WaitlistForm() {
 
               {/* Child Age Field */}
               <div>
-                <label htmlFor="childAge" className="block text-sm font-medium mb-2">
-                  Child Age (Optional)
+                <label htmlFor="childAgeMonths" className="block text-sm font-medium mb-2">
+                  Child Age in Months (Optional)
                 </label>
                 <select
-                  id="childAge"
-                  value={childAge}
-                  onChange={(e) => setChildAge(e.target.value)}
+                  id="childAgeMonths"
+                  value={childAgeMonths}
+                  onChange={(e) => setChildAgeMonths(e.target.value)}
                   className="w-full h-12 px-4 rounded-xl bg-white/5 border border-white/10 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
                 >
-                  <option value="">Select age range</option>
-                  <option value="6-12">6-12 months</option>
-                  <option value="12-18">12-18 months</option>
-                  <option value="18-24">18-24 months</option>
-                  <option value="24-36">24-36 months</option>
+                  <option value="">Select age</option>
+                  {Array.from({ length: 31 }, (_, i) => i + 6).map((age) => (
+                    <option key={age} value={age}>
+                      {age} months
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Location Field */}
+              <div>
+                <label htmlFor="location" className="block text-sm font-medium mb-2">
+                  Location
+                </label>
+                <select
+                  id="location"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  className="w-full h-12 px-4 rounded-xl bg-white/5 border border-white/10 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                >
+                  <option value="UAE">UAE</option>
+                  <option value="Other">Other</option>
                 </select>
               </div>
 
               {/* Honeypot (hidden) */}
               <input
                 type="text"
-                name="website"
-                value={honeypot}
-                onChange={(e) => setHoneypot(e.target.value)}
+                name="company"
+                value={company}
+                onChange={(e) => setCompany(e.target.value)}
                 style={{ display: 'none' }}
                 tabIndex={-1}
                 autoComplete="off"

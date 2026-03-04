@@ -7,34 +7,34 @@ import Image from "next/image"
 
 const screens = [
   { 
-    name: "Main Interface", 
-    description: "Complete app overview",
+    name: "Intelligent Home Feed", 
+    description: "Personalized meal recommendations based on developmental stages and nutritional needs.",
     image: "/builds/nutrinest/screen.png"
   },
   { 
-    name: "Feature Showcase", 
-    description: "Key functionality highlights",
+    name: "AI Pantry Search", 
+    description: "Scan your kitchen and get instant, budget-friendly meal ideas with what you already have.",
     image: "/builds/nutrinest/screen1.png"
   },
   { 
-    name: "User Experience", 
-    description: "Seamless navigation flow",
+    name: "Child Nutrition Profile", 
+    description: "Track growth benchmarks, texture expansion, and specific nutritional focus areas.",
     image: "/builds/nutrinest/screen2.png"
   },
   { 
-    name: "Complete Interface Overview", 
-    description: "A comprehensive look at all NutriNest screens and features",
+    name: "The NutriNest Ecosystem", 
+    description: "A complete orchestration layer for toddler nutrition, from discovery to grocery planning.",
     image: "/builds/nutrinest/collage.png"
   },
 ]
 
 const features = [
-  { name: "Home Feed", description: "Netflix-style meal discovery" },
-  { name: "Recipe Detail", description: "Nutritional breakdown & instructions" },
-  { name: "Pantry Mode", description: "Cook with what you have" },
-  { name: "Weekly Planner", description: "Automated meal scheduling" },
-  { name: "Child Profile", description: "Age-specific recommendations" },
-  { name: "Subscription", description: "Flexible pricing plans" },
+  { name: "Smart Discovery", description: "Netflix-style feed for toddler meal ideas" },
+  { name: "Precision Nutrition", description: "Age-appropriate developmental benchmarks" },
+  { name: "Pantry Mode", description: "Zero-waste cooking based on your inventory" },
+  { name: "Weekly Planning", description: "Automated meal schedules & grocery lists" },
+  { name: "Allergy Protocols", description: "Hard-coded restriction filters for safety" },
+  { name: "Budget Logic", description: "Minimized overhead with smart ingredient reuse" },
 ]
 
 export function ScreensGallery() {
@@ -79,41 +79,9 @@ export function ScreensGallery() {
           </p>
         </div>
 
-        {/* Hero Collage Image */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          whileHover={{ scale: 1.01 }}
-          transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          className="relative aspect-video rounded-3xl overflow-hidden border border-white/10 bg-white/[0.02] cursor-pointer group mb-12"
-          onClick={() => openModal(3)}
-        >
-          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent z-10" />
-          <div className="absolute top-4 right-4 z-20 p-3 rounded-full bg-black/50 backdrop-blur-sm border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity">
-            <ZoomIn className="w-5 h-5" />
-          </div>
-          
-          <Image
-            src="/builds/nutrinest/collage.png"
-            alt="NutriNest Complete Interface Overview"
-            fill
-            className="object-cover"
-            sizes="(max-width: 1200px) 100vw, 1200px"
-            priority
-          />
-
-          <div className="absolute bottom-0 left-0 right-0 p-6 z-20 bg-gradient-to-t from-black/60 to-transparent">
-            <h3 className="text-xl font-bold mb-2">Complete Interface Overview</h3>
-            <p className="text-sm text-muted-foreground">
-              A comprehensive look at all NutriNest screens and features
-            </p>
-          </div>
-        </motion.div>
-
         {/* Image Grid */}
         <div className="grid md:grid-cols-3 gap-6 mb-8">
-          {screens.map((screen, i) => (
+          {screens.slice(0, 3).map((screen, i) => (
             <motion.div
               key={screen.name}
               initial={{ opacity: 0, y: 20 }}
@@ -168,26 +136,6 @@ export function ScreensGallery() {
             </motion.div>
           ))}
         </div>
-
-        {/* Coming Soon Callout */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="p-6 rounded-xl border border-primary/20 bg-primary/5 backdrop-blur-sm"
-        >
-          <div className="flex items-start gap-4">
-            <div className="p-2 rounded-lg bg-primary/10">
-              <ZoomIn className="w-5 h-5 text-primary" />
-            </div>
-            <div>
-              <h4 className="text-sm font-bold mb-1">Coming Soon: Grocery List Screen</h4>
-              <p className="text-sm text-muted-foreground">
-                Auto-generated shopping lists with UAE supermarket integration and budget tracking.
-              </p>
-            </div>
-          </div>
-        </motion.div>
       </motion.div>
 
       {/* Zoom Modal with Navigation */}
