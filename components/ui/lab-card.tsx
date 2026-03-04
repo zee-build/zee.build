@@ -3,6 +3,7 @@
 import React from "react"
 import { motion } from "framer-motion"
 import { cn } from "@/lib/utils"
+import Link from "next/link"
 
 interface LabCardProps {
   children: React.ReactNode
@@ -21,9 +22,7 @@ export const LabCard = ({
   metadata = [],
   href,
 }: LabCardProps) => {
-  const CardWrapper = href ? "a" : "div"
-
-  return (
+  const content = (
     <motion.div
       whileHover={{ y: -5 }}
       transition={{ type: "spring", stiffness: 400, damping: 30 }}
@@ -79,4 +78,10 @@ export const LabCard = ({
       <div className="absolute bottom-[-10px] right-[-10px] w-5 h-5 bg-primary/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
     </motion.div>
   )
+
+  if (href) {
+    return <Link href={href}>{content}</Link>
+  }
+
+  return content
 }
