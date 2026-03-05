@@ -339,7 +339,7 @@
 ## 📞 Contact & Support
 
 ### Project Creator
-- **Name:** Ziyan Bin Anoos Hilal
+- **Name:** Ziyan Bin Anoos
 - **LinkedIn:** https://www.linkedin.com/in/ziyanbinanoos/
 - **Instagram:** @zee.build
 - **Email:** contact@zee.build

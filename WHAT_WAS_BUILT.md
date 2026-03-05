@@ -167,7 +167,7 @@
 │                                             │
 │              About                          │
 │                                             │
-│  I'm Ziyan Bin Anoos Hilal, a full-stack   │
+│  I'm Ziyan Bin Anoos, a full-stack   │
 │  engineer who builds systems that ship.     │
 │                                             │
 ├─────────────────────────────────────────────┤

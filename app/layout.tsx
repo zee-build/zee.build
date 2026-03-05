@@ -11,7 +11,7 @@ const jetbrains = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" }
 
 export const metadata: Metadata = {
   title: "zee.build - Systems That Ship",
-  description: "Automation. SaaS. Experiments. Built in public by Ziyan Bin Anoos Hilal.",
+  description: "Automation. SaaS. Experiments. Built in public by Ziyan Bin Anoos.",
 };
 
 export default function RootLayout({

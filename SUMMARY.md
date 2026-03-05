@@ -447,7 +447,7 @@ Then customize, deploy, and start validating.
 ---
 
 **Project:** zee.build + NutriNest  
-**Created for:** Ziyan Bin Anoos Hilal  
+**Created for:** Ziyan Bin Anoos  
 **LinkedIn:** https://www.linkedin.com/in/ziyanbinanoos/  
 **Tech Stack:** Next.js 15, TypeScript, Tailwind CSS, shadcn/ui  
 **Status:** ✅ Ready for deployment  

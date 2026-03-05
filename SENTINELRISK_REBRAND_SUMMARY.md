@@ -111,7 +111,7 @@ grep -r "CRAC" --exclude-dir=node_modules
 ## Current Build Catalog
 
 ### Active Projects
-1. **NutriNest** - AI Developmental Nutrition (PHASE_01 - ACTIVE)
+1. NutriNest - AI Developmental Nutrition (PHASE_01 - ACTIVE)
 2. **SentinelRisk** - Corporate Risk Intelligence (PHASE_01 - PROTOTYPE)
 
 ### Concept Projects

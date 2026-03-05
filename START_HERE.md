@@ -296,6 +296,6 @@ Good luck with zee.build and NutriNest! 🚀
 
 ---
 
-**Created by:** Ziyan Bin Anoos Hilal  
+**Created by:** Ziyan Bin Anoos  
 **LinkedIn:** https://www.linkedin.com/in/ziyanbinanoos/  
 **Built with:** Next.js, TypeScript, Tailwind, shadcn/ui

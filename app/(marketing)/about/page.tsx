@@ -88,7 +88,7 @@ export default function AboutPage() {
                 <div className="flex gap-6 items-start">
                   <Target size={32} className="text-primary opacity-40 shrink-0 mt-1" />
                   <p className="text-lg leading-relaxed text-muted-foreground/90">
-                    Currently validating **NutriNest**, an AI-powered toddler nutrition planner. 
+                    Currently validating NutriNest, an AI-powered toddler nutrition planner. 
                     It's designed to synthesize balanced developmental needs into streamlined meal discovery.
                   </p>
                 </div>

@@ -29,7 +29,8 @@ export function Footer() {
             <h4 className="text-[10px] font-mono uppercase tracking-[0.3em] text-muted-foreground mb-6">Connectivity</h4>
             <div className="flex flex-col gap-4 text-sm">
               <Link href="https://linkedin.com/in/ziyanbinanoos" className="hover:text-primary transition-colors">LinkedIn</Link>
-              <Link href="https://github.com" className="hover:text-primary transition-colors">GitHub</Link>
+              <Link href="https://github.com/zee-build" className="hover:text-primary transition-colors">GitHub</Link>
+              <Link href="http://instagram.com/zee.build" className="hover:text-primary transition-colors">Instagram</Link>
               <Link href="mailto:contact@zee.build" className="hover:text-primary transition-colors">Email</Link>
             </div>
           </div>
@@ -37,7 +38,7 @@ export function Footer() {
         
         <div className="pt-12 border-t border-border flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center gap-4 text-[10px] font-mono text-muted-foreground/60 uppercase tracking-widest">
-            <span>© {currentYear} Ziyan Bin Anoos Hilal</span>
+            <span>© {currentYear} Ziyan Bin Anoos</span>
             <div className="w-1 h-1 rounded-full bg-border" />
             <span>Operational System OK</span>
           </div>
