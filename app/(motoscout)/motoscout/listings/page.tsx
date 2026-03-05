@@ -55,10 +55,16 @@ export default function ListingsPage() {
       if (filters.recency) params.append('recency', filters.recency);
 
       const res = await fetch(`/api/motoscout/listings?${params}`);
+      if (!res.ok) {
+        // Demo mode - show empty state
+        setListings([]);
+        return;
+      }
       const data = await res.json();
       setListings(data.listings || []);
     } catch (error) {
       console.error('Failed to fetch listings:', error);
+      setListings([]);
     } finally {
       setLoading(false);
     }

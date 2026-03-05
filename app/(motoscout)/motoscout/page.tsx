@@ -6,10 +6,18 @@ import { Card } from '@/components/ui/card';
 import { Search, Eye, Zap, Bell, TrendingUp, Shield } from 'lucide-react';
 
 export default async function MotoScoutDashboard() {
-  const { allowed, user } = await checkMotoScoutAccess();
-
-  if (!allowed) {
-    redirect('/motoscout/login');
+  // For demo purposes, allow access without auth if env vars not set
+  const isDemoMode = !process.env.NEXT_PUBLIC_SUPABASE_URL;
+  
+  let user = null;
+  if (!isDemoMode) {
+    const { allowed, user: authUser } = await checkMotoScoutAccess();
+    if (!allowed) {
+      redirect('/motoscout/login');
+    }
+    user = authUser;
+  } else {
+    user = { email: 'demo@motoscout.local' };
   }
 
   return (

@@ -37,10 +37,16 @@ export default function FacebookWatchlistPage() {
   const fetchWatchlist = async () => {
     try {
       const res = await fetch('/api/motoscout/facebook');
+      if (!res.ok) {
+        // Demo mode - show empty state
+        setWatchlist([]);
+        return;
+      }
       const data = await res.json();
       setWatchlist(data.watchlist || []);
     } catch (error) {
       console.error('Failed to fetch watchlist:', error);
+      setWatchlist([]);
     } finally {
       setLoading(false);
     }
