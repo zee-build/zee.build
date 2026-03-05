@@ -416,7 +416,7 @@ Row Level Security:
 ```
 app/(marketing)/builds/
 ├── nutrinest/
-├── crac-risk/          # Add new build
+├── sentinelrisk/      # Fintech risk intelligence
 ├── automation-tools/   # Add new build
 └── experiments/        # Add new build
 ```
@@ -426,7 +426,7 @@ app/(marketing)/builds/
 app/
 ├── (marketing)/        # zee.build
 ├── (nutrinest)/       # nutrinest.zee.build
-├── (crac)/            # crac.zee.build
+├── (sentinelrisk)/    # sentinelrisk.zee.build
 └── (tools)/           # tools.zee.build
 ```
 
