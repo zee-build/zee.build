@@ -1,10 +1,10 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, ExternalLink, Activity, Terminal, Zap, Layers } from "lucide-react";
+import { ArrowRight, ExternalLink, Activity, Terminal, Zap } from "lucide-react";
 import { HalideLanding } from "@/components/ui/halide-topo-hero";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
 import { LabCard } from "@/components/ui/lab-card";
-import { MagneticButton } from "@/components/ui/magnetic-button";
 import { GooeyText } from "@/components/ui/gooey-text-morphing";
 
 export default function HomePage() {
@@ -119,8 +119,15 @@ export default function HomePage() {
                   <Badge variant="secondary" className="bg-white/5 border-white/5">OPENAI</Badge>
                 </div>
               </div>
-              <div className="relative aspect-video rounded-2xl overflow-hidden border border-white/5 bg-white/[0.02] flex items-center justify-center group">
-                <Layers size={80} className="text-primary/20 group-hover:scale-110 transition-transform duration-500" />
+              <div className="relative aspect-video rounded-2xl overflow-hidden border border-white/5 bg-white/[0.02] group">
+                <Image
+                  src="/builds/nutrinest/collage.png"
+                  alt="NutriNest App Screens"
+                  fill
+                  className="object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  priority
+                />
                 <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 to-transparent" />
               </div>
             </div>
