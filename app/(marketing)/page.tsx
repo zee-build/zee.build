@@ -34,23 +34,19 @@ export default function HomePage() {
               Built in public for the modern web—where code meets precision design.
             </p>
             <div className="flex flex-wrap gap-4">
-              <MagneticButton>
-                <Link 
-                  href="/builds" 
-                  className="inline-flex h-14 items-center justify-center rounded-full bg-primary px-8 text-sm font-bold text-primary-foreground transition-transform hover:scale-105"
-                >
-                  Enter the Lab <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </MagneticButton>
-              <MagneticButton>
-                <Link 
-                  href="https://www.linkedin.com/in/ziyanbinanoos/"
-                  target="_blank"
-                  className="inline-flex h-14 items-center justify-center rounded-full border border-white/10 px-8 text-sm font-bold bg-white/5 backdrop-blur-sm transition-transform hover:scale-105"
-                >
-                  LinkedIn
-                </Link>
-              </MagneticButton>
+              <Link 
+                href="/builds" 
+                className="inline-flex h-14 items-center justify-center rounded-full bg-primary px-8 text-sm font-bold text-primary-foreground transition-transform hover:scale-105"
+              >
+                Enter the Lab <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+              <Link 
+                href="https://www.linkedin.com/in/ziyanbinanoos/"
+                target="_blank"
+                className="inline-flex h-14 items-center justify-center rounded-full border border-white/10 px-8 text-sm font-bold bg-white/5 backdrop-blur-sm transition-transform hover:scale-105"
+              >
+                LinkedIn
+              </Link>
             </div>
           </div>
 
