@@ -9,32 +9,22 @@ const screens = [
   { 
     name: "Risk Dashboard", 
     description: "Real-time overview of portfolio risk metrics and threat indicators.",
-    image: "/builds/sentinelrisk/dashboard.png"
+    image: "/builds/sentinelrisk/screen.png"
   },
   { 
-    name: "Risk Assessment Form", 
-    description: "Comprehensive risk evaluation with AI-assisted analysis.",
-    image: "/builds/sentinelrisk/assessment.png"
+    name: "Risk Assessment Interface", 
+    description: "Comprehensive risk evaluation with AI-assisted analysis and scoring.",
+    image: "/builds/sentinelrisk/screen1.png"
   },
   { 
     name: "Portfolio Risk Monitor", 
-    description: "Track risk exposure across your entire corporate portfolio.",
-    image: "/builds/sentinelrisk/portfolio.png"
+    description: "Track risk exposure across your entire corporate portfolio in real-time.",
+    image: "/builds/sentinelrisk/screen2.png"
   },
   { 
-    name: "Risk Breakdown Analysis", 
-    description: "Detailed breakdown of risk factors and compliance metrics.",
-    image: "/builds/sentinelrisk/breakdown.png"
-  },
-  { 
-    name: "Alert Center", 
-    description: "Real-time notifications for critical risk events and threshold breaches.",
-    image: "/builds/sentinelrisk/alerts.png"
-  },
-  { 
-    name: "Subscription Management", 
-    description: "Flexible pricing tiers for teams of all sizes.",
-    image: "/builds/sentinelrisk/subscription.png"
+    name: "The SentinelRisk Platform", 
+    description: "Complete risk intelligence ecosystem for modern financial institutions.",
+    image: "/builds/sentinelrisk/collage.png"
   },
 ]
 
@@ -91,7 +81,7 @@ export function ScreensGallery() {
 
         {/* Image Grid */}
         <div className="grid md:grid-cols-3 gap-6 mb-8">
-          {screens.slice(0, 6).map((screen, i) => (
+          {screens.slice(0, 3).map((screen, i) => (
             <motion.div
               key={screen.name}
               initial={{ opacity: 0, y: 20 }}
@@ -99,7 +89,7 @@ export function ScreensGallery() {
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
               whileHover={{ scale: 1.02 }}
-              className="relative aspect-[16/10] rounded-2xl overflow-hidden border border-border bg-card/40 cursor-pointer group"
+              className="relative aspect-[9/16] rounded-2xl overflow-hidden border border-border bg-card/40 cursor-pointer group"
               onClick={() => openModal(i)}
             >
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent z-10" />
@@ -107,9 +97,13 @@ export function ScreensGallery() {
                 <ZoomIn className="w-5 h-5" />
               </div>
               
-              <div className="absolute inset-0 flex items-center justify-center bg-card/60">
-                <span className="text-sm text-muted-foreground font-mono">Preview Coming Soon</span>
-              </div>
+              <Image
+                src={screen.image}
+                alt={screen.name}
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 33vw"
+              />
 
               <div className="absolute bottom-0 left-0 right-0 p-4 z-20">
                 <h4 className="text-sm font-bold mb-1">{screen.name}</h4>
@@ -117,6 +111,15 @@ export function ScreensGallery() {
               </div>
             </motion.div>
           ))}
+        </div>
+
+        {/* Prototype UI Label */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-card/60 border border-border">
+            <span className="text-xs font-mono uppercase tracking-widest text-muted-foreground">
+              Prototype UI — Validating demand before backend
+            </span>
+          </div>
         </div>
 
         {/* Feature Captions */}
@@ -196,12 +199,16 @@ export function ScreensGallery() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="relative max-w-4xl w-full aspect-[16/10] rounded-2xl overflow-hidden border border-border bg-card/60"
+              className="relative max-w-4xl w-full aspect-[9/16] rounded-2xl overflow-hidden border border-border"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-muted-foreground font-mono">Preview Coming Soon</span>
-              </div>
+              <Image
+                src={screens[currentImageIndex].image}
+                alt={screens[currentImageIndex].name}
+                fill
+                className="object-contain"
+                sizes="(max-width: 1024px) 100vw, 1024px"
+              />
               
               <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 to-transparent">
                 <h3 className="text-xl font-bold mb-1">{screens[currentImageIndex].name}</h3>

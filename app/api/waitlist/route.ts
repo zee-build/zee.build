@@ -93,38 +93,64 @@ function validateEmail(email: string): boolean {
 
 export async function POST(request: NextRequest) {
   try {
-    // Check environment variables
-    const formId = process.env.GOOGLE_FORM_ID
-    const emailEntry = process.env.GOOGLE_FORM_EMAIL_ENTRY
-    const ageEntry = process.env.GOOGLE_FORM_AGE_ENTRY
-    const locationEntry = process.env.GOOGLE_FORM_LOCATION_ENTRY
+    // Parse request body first to determine product
+    const body: WaitlistPayload = await request.json()
+    const { email, childAgeMonths, location, product, startedAt, company } = body
+
+    // Determine which form to use based on product
+    let formId: string | undefined
+    let emailEntry: string | undefined
+    let ageEntry: string | undefined
+    let locationEntry: string | undefined
+
+    if (product === 'sentinelrisk') {
+      // SentinelRisk form (separate form)
+      formId = process.env.SENTINELRISK_FORM_ID
+      emailEntry = process.env.SENTINELRISK_EMAIL_ENTRY
+      // SentinelRisk doesn't use age/location fields
+    } else {
+      // NutriNest form (default/legacy)
+      formId = process.env.GOOGLE_FORM_ID
+      emailEntry = process.env.GOOGLE_FORM_EMAIL_ENTRY
+      ageEntry = process.env.GOOGLE_FORM_AGE_ENTRY
+      locationEntry = process.env.GOOGLE_FORM_LOCATION_ENTRY
+    }
 
     // Debug logging (never log actual values, only existence)
     console.log('[Waitlist API] Environment variables check:', {
+      product,
       hasFormId: !!formId,
       hasEmailEntry: !!emailEntry,
       hasAgeEntry: !!ageEntry,
       hasLocationEntry: !!locationEntry
     })
 
-    if (!formId || !emailEntry || !ageEntry || !locationEntry) {
-      console.error('[Waitlist API] Missing environment variables')
+    if (!formId || !emailEntry) {
+      console.error('[Waitlist API] Missing environment variables for product:', product)
       return NextResponse.json(
         { 
           error: 'Server configuration error. Please contact support.',
-          details: 'Missing GOOGLE_FORM_* environment variables'
+          details: `Missing form configuration for ${product || 'default'}`
         },
         { status: 500 }
       )
     }
 
-    // Parse request body
-    const body: WaitlistPayload = await request.json()
-    const { email, childAgeMonths, location, product, startedAt, company } = body
+    // For NutriNest, age and location entries are required
+    if (product !== 'sentinelrisk' && (!ageEntry || !locationEntry)) {
+      console.error('[Waitlist API] Missing NutriNest-specific environment variables')
+      return NextResponse.json(
+        { 
+          error: 'Server configuration error. Please contact support.',
+          details: 'Missing GOOGLE_FORM_AGE_ENTRY or GOOGLE_FORM_LOCATION_ENTRY'
+        },
+        { status: 500 }
+      )
+    }
 
     // 1. HONEYPOT CHECK
     if (company) {
-      console.log('Honeypot triggered:', { email, company })
+      console.log('Honeypot triggered:', { email, company, product })
       // Return success to not alert bot
       return NextResponse.json({ success: true })
     }
@@ -171,12 +197,15 @@ export async function POST(request: NextRequest) {
     const formData = new URLSearchParams()
     formData.append(`entry.${emailEntry}`, email)
     
-    if (childAgeMonths) {
-      formData.append(`entry.${ageEntry}`, childAgeMonths.toString())
-    }
-    
-    if (location) {
-      formData.append(`entry.${locationEntry}`, location)
+    // Only add age and location for NutriNest
+    if (product !== 'sentinelrisk') {
+      if (childAgeMonths && ageEntry) {
+        formData.append(`entry.${ageEntry}`, childAgeMonths.toString())
+      }
+      
+      if (location && locationEntry) {
+        formData.append(`entry.${locationEntry}`, location)
+      }
     }
 
     const googleFormUrl = `https://docs.google.com/forms/d/e/${formId}/formResponse`

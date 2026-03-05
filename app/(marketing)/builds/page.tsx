@@ -144,6 +144,18 @@ export default function BuildsPage() {
               href="/builds/sentinelrisk"
               className="p-10 lg:p-12 h-full group/card"
             >
+              {/* App Preview Image */}
+              <div className="relative aspect-video rounded-xl overflow-hidden border border-border bg-card/40 mb-8 group-hover/card:border-primary/20 transition-colors">
+                <Image
+                  src="/builds/sentinelrisk/collage.png"
+                  alt="SentinelRisk App Screens"
+                  fill
+                  className="object-cover opacity-80 group-hover/card:opacity-100 transition-opacity"
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent" />
+              </div>
+
               <div className="flex justify-between items-start mb-8">
                  <BarChart3 className="text-lab-magenta opacity-40 group-hover/card:opacity-100 group-hover/card:scale-110 transition-all duration-500" size={48} />
                  <div className="p-2 rounded-lg bg-card/60 border border-border group-hover/card:border-lab-magenta/40 transition-colors">
