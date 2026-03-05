@@ -98,8 +98,16 @@ export async function POST(request: NextRequest) {
     const ageEntry = process.env.GOOGLE_FORM_AGE_ENTRY
     const locationEntry = process.env.GOOGLE_FORM_LOCATION_ENTRY
 
+    // Debug logging (never log actual values, only existence)
+    console.log('[Waitlist API] Environment variables check:', {
+      hasFormId: !!formId,
+      hasEmailEntry: !!emailEntry,
+      hasAgeEntry: !!ageEntry,
+      hasLocationEntry: !!locationEntry
+    })
+
     if (!formId || !emailEntry || !ageEntry || !locationEntry) {
-      console.error('Missing Google Form environment variables')
+      console.error('[Waitlist API] Missing environment variables')
       return NextResponse.json(
         { 
           error: 'Server configuration error. Please contact support.',
@@ -172,11 +180,11 @@ export async function POST(request: NextRequest) {
 
     const googleFormUrl = `https://docs.google.com/forms/d/e/${formId}/formResponse`
 
-    console.log('Submitting to Google Form:', { 
-      url: googleFormUrl, 
-      email, 
-      childAgeMonths, 
-      location 
+    console.log('[Waitlist API] Submitting to Google Forms:', { 
+      url: googleFormUrl.substring(0, 50) + '...', // Only log partial URL
+      hasEmail: !!email,
+      hasAge: !!childAgeMonths,
+      hasLocation: !!location
     })
 
     const response = await fetch(googleFormUrl, {
@@ -188,12 +196,10 @@ export async function POST(request: NextRequest) {
       redirect: 'manual', // Don't follow redirects
     })
 
-    // Google Forms typically returns 303 redirect on success or 200
-    // Status 401 means the form might have restrictions
-    console.log('Google Form response:', { 
+    // Log response status
+    console.log('[Waitlist API] Google Forms response:', { 
       status: response.status,
-      statusText: response.statusText,
-      headers: Object.fromEntries(response.headers.entries())
+      statusText: response.statusText
     })
 
     // Even if Google returns an error, we'll consider it successful

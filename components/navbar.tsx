@@ -1,5 +1,8 @@
+"use client"
+
 import Link from "next/link";
 import { Terminal } from "lucide-react";
+import { ThemeToggle } from "./theme-toggle";
 
 export function Navbar() {
   return (
@@ -13,27 +16,32 @@ export function Navbar() {
             <span className="text-base font-bold tracking-tighter">zee.build</span>
           </Link>
           
-          <div className="flex items-center gap-1 md:gap-4 bg-white/5 rounded-full p-1 border border-white/5">
-            <Link
-              href="/builds"
-              className="px-4 py-1.5 rounded-full text-[10px] font-mono uppercase tracking-[0.2em] text-muted-foreground hover:text-foreground hover:bg-white/5 transition-all"
-            >
-              Builds
-            </Link>
-            <Link
-              href="/about"
-              className="px-4 py-1.5 rounded-full text-[10px] font-mono uppercase tracking-[0.2em] text-muted-foreground hover:text-foreground hover:bg-white/5 transition-all"
-            >
-              About
-            </Link>
-            <div className="w-px h-3 bg-white/10 mx-1 hidden md:block" />
-            <div className="hidden md:flex items-center gap-3 px-4 text-[9px] font-mono group/status cursor-crosshair">
-              <div className="relative">
-                <div className="w-1.5 h-1.5 rounded-full bg-lab-cyan animate-pulse" />
-                <div className="absolute inset-0 w-1.5 h-1.5 rounded-full bg-lab-cyan animate-ping opacity-40" />
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1 md:gap-4 bg-white/5 rounded-full p-1 border border-white/5">
+              <Link
+                href="/builds"
+                className="px-4 py-1.5 rounded-full text-[10px] font-mono uppercase tracking-[0.2em] text-muted-foreground hover:text-foreground hover:bg-white/5 transition-all"
+              >
+                Builds
+              </Link>
+              <Link
+                href="/about"
+                className="px-4 py-1.5 rounded-full text-[10px] font-mono uppercase tracking-[0.2em] text-muted-foreground hover:text-foreground hover:bg-white/5 transition-all"
+              >
+                About
+              </Link>
+              <div className="w-px h-3 bg-white/10 mx-1 hidden md:block" />
+              <div className="hidden md:flex items-center gap-3 px-4 text-[9px] font-mono group/status cursor-crosshair">
+                <div className="relative">
+                  <div className="w-1.5 h-1.5 rounded-full bg-lab-cyan animate-pulse" />
+                  <div className="absolute inset-0 w-1.5 h-1.5 rounded-full bg-lab-cyan animate-ping opacity-40" />
+                </div>
+                <span className="text-muted-foreground/60 group-hover/status:text-lab-cyan transition-colors tracking-[0.2em]">LAB_SYNC: OK</span>
               </div>
-              <span className="text-muted-foreground/60 group-hover/status:text-lab-cyan transition-colors tracking-[0.2em]">LAB_SYNC: OK</span>
             </div>
+            
+            {/* Theme Toggle - Separated for visibility */}
+            <ThemeToggle />
           </div>
         </div>
       </div>

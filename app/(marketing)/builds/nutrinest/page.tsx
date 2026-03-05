@@ -9,7 +9,6 @@ import { ScreensGallery } from "./components/screens-gallery"
 import { HowItWorks } from "./components/how-it-works"
 import { Pricing } from "./components/pricing"
 import { WaitlistForm } from "./components/waitlist-form"
-import { ThemeSwitcher } from "./components/theme-switcher"
 import Link from "next/link"
 
 export default function NutriNestPage() {
@@ -27,8 +26,6 @@ export default function NutriNestPage() {
 
   return (
     <div className="min-h-screen relative">
-      <ThemeSwitcher />
-      
       <div className="flex flex-col gap-24 pb-32">
         <Hero />
         

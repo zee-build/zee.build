@@ -1,11 +1,10 @@
 "use client"
 
-import Link from "next/link";
+import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, Box, Shield, Zap, FlaskConical, Command, Database, Cpu, Globe, Activity, Terminal as TerminalIcon, Braces, Layers, Binary, Radio } from "lucide-react";
+import { Box, Shield, Zap, FlaskConical, Command, Database, Cpu, Globe, Activity, Terminal as TerminalIcon, Braces, Layers, Binary, Radio } from "lucide-react";
 import { ModernAnimatedHero } from "@/components/ui/modern-animated-hero-section";
 import { LabCard } from "@/components/ui/lab-card";
-import { MagneticButton } from "@/components/ui/magnetic-button";
 import { motion, Variants } from "framer-motion";
 
 const container: Variants = {
@@ -104,6 +103,18 @@ export default function BuildsPage() {
               href="/builds/nutrinest"
               className="p-10 lg:p-12 h-full group/card"
             >
+              {/* App Preview Image */}
+              <div className="relative aspect-video rounded-xl overflow-hidden border border-white/10 bg-white/[0.02] mb-8 group-hover/card:border-primary/20 transition-colors">
+                <Image
+                  src="/builds/nutrinest/collage.png"
+                  alt="NutriNest App Screens"
+                  fill
+                  className="object-cover opacity-80 group-hover/card:opacity-100 transition-opacity"
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+              </div>
+
               <div className="flex justify-between items-start mb-8">
                 <Box className="text-lab-cyan opacity-40 group-hover/card:opacity-100 group-hover/card:scale-110 transition-all duration-500" size={48} />
                 <div className="p-2 rounded-lg bg-white/5 border border-white/10 group-hover/card:border-primary/40 transition-colors">
