@@ -51,7 +51,7 @@ export default function BuildsPage() {
         {/* Technical HUD Dashboard */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-6xl mx-auto mb-20 relative">
           {[
-            { label: "Active_Nodes", value: "04", icon: Database, color: "text-lab-cyan" },
+            { label: "Active_Nodes", value: "05", icon: Database, color: "text-lab-cyan" },
             { label: "Compiler_Status", value: "STRICT", icon: Cpu, color: "text-lab-magenta" },
             { label: "Lab_Version", value: "BETA.08", icon: Command, color: "text-white" },
             { label: "Global_Link", value: "ONLINE", icon: Globe, color: "text-lab-amber" },
@@ -197,6 +197,35 @@ export default function BuildsPage() {
               <div className="flex flex-wrap gap-2 pt-4 border-t border-border">
                  {["CLI", "DevOps", "Docker", "Go"].map(tag => (
                    <Badge key={tag} variant="outline" className="border-border bg-card/60 uppercase text-[10px] tracking-widest font-mono py-1 px-3">
+                      {tag}
+                   </Badge>
+                ))}
+              </div>
+            </LabCard>
+          </motion.div>
+
+          {/* MotoScout - Active */}
+          <motion.div variants={item}>
+            <LabCard 
+              title="MotoScout"
+              subtitle="Find bikes fast. Alerts + Deal feed."
+              metadata={["PHASE_01", "ACTIVE"]}
+              href="/motoscout"
+              className="p-10 lg:p-12 h-full group/card"
+            >
+              <div className="flex justify-between items-start mb-8">
+                <Zap className="text-lab-amber opacity-40 group-hover/card:opacity-100 group-hover/card:scale-110 transition-all duration-500" size={48} />
+                <div className="p-2 rounded-lg bg-card/60 border border-border group-hover/card:border-lab-amber/40 transition-colors">
+                   <TrendingUp className="text-lab-amber/40 group-hover/card:text-lab-amber transition-colors" size={16} />
+                </div>
+              </div>
+              <p className="text-xl text-muted-foreground/90 mb-10 leading-relaxed font-light">
+                Motorcycle listing aggregator with Telegram alerts. Monitors Dubizzle and Facebook Marketplace 
+                for new bikes matching saved searches.
+              </p>
+              <div className="flex flex-wrap gap-2 pt-4 border-t border-border">
+                 {["NextJS", "Supabase", "Telegram", "Scraping"].map(tag => (
+                   <Badge key={tag} variant="outline" className="border-border bg-card/60 uppercase text-[10px] tracking-widest font-mono py-1 px-3 text-muted-foreground group-hover/card:text-foreground transition-colors">
                       {tag}
                    </Badge>
                 ))}

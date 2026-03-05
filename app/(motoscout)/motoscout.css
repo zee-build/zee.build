@@ -1,0 +1,109 @@
+/* MotoScout Isolated Theme - Rider Cockpit */
+
+[data-theme="motoscout"],
+[data-motoscout="true"] .motoscout-root {
+  /* Cockpit Dark Theme */
+  --background: 10 10 15;
+  --foreground: 240 240 245;
+  
+  --card: 15 15 20;
+  --card-foreground: 240 240 245;
+  
+  --popover: 15 15 20;
+  --popover-foreground: 240 240 245;
+  
+  --primary: 255 165 0; /* Orange - Speed/Alert */
+  --primary-foreground: 10 10 15;
+  
+  --secondary: 30 30 40;
+  --secondary-foreground: 240 240 245;
+  
+  --muted: 25 25 35;
+  --muted-foreground: 160 160 170;
+  
+  --accent: 255 69 0; /* Red-Orange - Danger/Hot */
+  --accent-foreground: 240 240 245;
+  
+  --destructive: 220 38 38;
+  --destructive-foreground: 240 240 245;
+  
+  --border: 40 40 50;
+  --input: 40 40 50;
+  --ring: 255 165 0;
+  
+  --radius: 0.75rem;
+  
+  /* MotoScout specific colors */
+  --motoscout-speed: 255 165 0; /* Orange */
+  --motoscout-alert: 255 69 0; /* Red-Orange */
+  --motoscout-gauge: 0 255 127; /* Spring Green */
+  --motoscout-warning: 255 215 0; /* Gold */
+}
+
+.motoscout-root {
+  background: rgb(var(--background));
+  color: rgb(var(--foreground));
+  min-height: 100vh;
+}
+
+/* Cockpit-style elements */
+.motoscout-gauge {
+  color: rgb(var(--motoscout-gauge));
+}
+
+.motoscout-alert {
+  color: rgb(var(--motoscout-alert));
+}
+
+.motoscout-speed {
+  color: rgb(var(--motoscout-speed));
+}
+
+.motoscout-warning {
+  color: rgb(var(--motoscout-warning));
+}
+
+/* Cockpit HUD effects */
+.motoscout-hud {
+  border: 1px solid rgb(var(--border));
+  background: rgba(var(--card), 0.6);
+  backdrop-filter: blur(10px);
+}
+
+.motoscout-panel {
+  border: 1px solid rgb(var(--border));
+  background: rgb(var(--card));
+  border-radius: var(--radius);
+}
+
+/* Scanline effect for authentic cockpit feel */
+.motoscout-scanline {
+  position: relative;
+  overflow: hidden;
+}
+
+.motoscout-scanline::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 50%,
+    rgba(255, 255, 255, 0.02) 50%
+  );
+  background-size: 100% 4px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Glow effects for active elements */
+.motoscout-glow {
+  box-shadow: 0 0 20px rgba(var(--motoscout-speed), 0.3);
+}
+
+.motoscout-glow-alert {
+  box-shadow: 0 0 20px rgba(var(--motoscout-alert), 0.4);
+}
