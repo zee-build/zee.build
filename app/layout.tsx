@@ -4,6 +4,8 @@ import "./globals.css";
 import { MotionProvider } from "@/components/ui/motion-wrapper";
 import { InteractiveGrid } from "@/components/ui/interactive-grid";
 
+import { ThemeProvider } from "@/components/theme-provider";
+
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const jetbrains = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" });
 
@@ -18,12 +20,28 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
-      <body className={`${inter.variable} ${jetbrains.variable} font-sans antialiased bg-black text-foreground selection:bg-primary/30`}>
-        <MotionProvider>
-          <InteractiveGrid />
-          {children}
-        </MotionProvider>
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  const theme = localStorage.getItem('zee-build-theme') || 'dark';
+                  document.documentElement.setAttribute('data-theme', theme);
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
+      </head>
+      <body className={`${inter.variable} ${jetbrains.variable} font-sans antialiased selection:bg-primary/30`}>
+        <ThemeProvider>
+          <MotionProvider>
+            <InteractiveGrid />
+            {children}
+          </MotionProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

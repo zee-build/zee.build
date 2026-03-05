@@ -35,7 +35,7 @@ export default function NutriNestPage() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="max-w-3xl mx-auto text-center p-8 rounded-2xl border border-white/5 bg-white/[0.02] backdrop-blur-sm"
+            className="max-w-3xl mx-auto text-center p-8 rounded-2xl border border-border bg-card/40 backdrop-blur-sm"
           >
             <div className="flex items-center justify-center gap-2 mb-4">
               <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
@@ -49,13 +49,13 @@ export default function NutriNestPage() {
               Join the waitlist and help shape the product.
             </p>
             <div className="flex flex-wrap justify-center gap-3">
-              <Badge variant="outline" className="border-white/10 bg-white/[0.02]">
+              <Badge variant="outline" className="border-border bg-card/20">
                 <Heart className="w-3 h-3 mr-1" /> Parent-Tested
               </Badge>
-              <Badge variant="outline" className="border-white/10 bg-white/[0.02]">
+              <Badge variant="outline" className="border-border bg-card/20">
                 <Shield className="w-3 h-3 mr-1" /> Allergy-Safe
               </Badge>
-              <Badge variant="outline" className="border-white/10 bg-white/[0.02]">
+              <Badge variant="outline" className="border-border bg-card/20">
                 <Zap className="w-3 h-3 mr-1" /> UAE-First
               </Badge>
             </div>

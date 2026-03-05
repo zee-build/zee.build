@@ -23,8 +23,8 @@ export const InteractiveGrid = () => {
       className="fixed inset-0 z-[-1] pointer-events-none opacity-40"
       style={{
         backgroundImage: `
-          linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-          linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px)
+          linear-gradient(to right, rgba(var(--grid-color), var(--grid-opacity)) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(var(--grid-color), var(--grid-opacity)) 1px, transparent 1px)
         `,
         backgroundSize: "40px 40px",
         maskImage: `radial-gradient(400px circle at var(--x, 50%) var(--y, 50%), black, transparent)`,

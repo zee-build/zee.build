@@ -27,14 +27,14 @@ export const LabCard = ({
       whileHover={{ y: -5 }}
       transition={{ type: "spring", stiffness: 400, damping: 30 }}
       className={cn(
-        "group relative flex flex-col p-6 rounded-xl border border-white/5 bg-white/[0.02] backdrop-blur-sm overflow-hidden",
+        "group relative flex flex-col p-6 rounded-xl border border-border bg-card/40 backdrop-blur-sm overflow-hidden",
         href && "cursor-pointer",
         className
       )}
     >
       {/* Decorative scanline effect */}
-      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-      <div className="absolute inset-0 z-0 bg-gradient-to-b from-primary/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      <div className="absolute inset-0 z-0 bg-gradient-to-b from-primary/[0.01] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
       {/* Internal metadata HUD */}
       <div className="flex justify-between items-start mb-6">
@@ -66,11 +66,11 @@ export const LabCard = ({
       </div>
 
       {href && (
-        <div className="mt-6 pt-4 border-t border-white/5 flex items-center justify-between group-hover:border-primary/20 transition-colors">
+        <div className="mt-6 pt-4 border-t border-border flex items-center justify-between group-hover:border-primary/20 transition-colors">
           <span className="text-xs font-mono uppercase tracking-widest group-hover:text-primary">
             Initialize Access
           </span>
-          <div className="w-8 h-px bg-white/20 group-hover:bg-primary transition-colors" />
+          <div className="w-8 h-px bg-border group-hover:bg-primary transition-colors" />
         </div>
       )}
 

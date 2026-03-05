@@ -33,11 +33,11 @@ export function HowItWorks() {
         {/* Section Header */}
         <div className="text-center mb-16">
           <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="w-10 h-[1px] bg-primary/40" />
+            <div className="w-10 h-[1px] bg-primary/20" />
             <span className="text-[10px] font-mono uppercase tracking-[0.4em] text-primary font-bold">
               System_Flow
             </span>
-            <div className="w-10 h-[1px] bg-primary/40" />
+            <div className="w-10 h-[1px] bg-primary/20" />
           </div>
           <h2 className="text-3xl md:text-5xl font-bold tracking-tight mb-4">
             How It Works
@@ -63,7 +63,7 @@ export function HowItWorks() {
                 <div className="hidden md:block absolute top-16 left-[calc(50%+2rem)] w-[calc(100%-4rem)] h-[2px] bg-gradient-to-r from-primary/40 to-transparent" />
               )}
 
-              <div className="relative p-8 rounded-2xl border border-white/5 bg-white/[0.02] backdrop-blur-sm hover:border-primary/20 transition-all duration-300 h-full">
+              <div className="relative p-8 rounded-2xl border border-border bg-card/40 backdrop-blur-sm hover:border-primary/20 transition-all duration-300 h-full">
                 {/* Step Number */}
                 <div className="absolute -top-4 -left-4 w-10 h-10 rounded-full bg-primary flex items-center justify-center font-bold text-primary-foreground shadow-lg shadow-primary/20">
                   {i + 1}

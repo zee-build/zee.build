@@ -27,11 +27,11 @@ export function Pricing() {
         {/* Section Header */}
         <div className="text-center mb-12">
           <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="w-10 h-[1px] bg-primary/40" />
+            <div className="w-10 h-[1px] bg-primary/20" />
             <span className="text-[10px] font-mono uppercase tracking-[0.4em] text-primary font-bold">
               Pricing_Model
             </span>
-            <div className="w-10 h-[1px] bg-primary/40" />
+            <div className="w-10 h-[1px] bg-primary/20" />
           </div>
           <h2 className="text-3xl md:text-5xl font-bold tracking-tight mb-4">
             Simple, Transparent Pricing
@@ -47,11 +47,11 @@ export function Pricing() {
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          className="relative p-8 md:p-12 rounded-3xl border-2 border-primary/20 bg-gradient-to-b from-primary/5 to-transparent backdrop-blur-sm overflow-hidden"
+          className="relative p-8 md:p-12 rounded-3xl border-2 border-primary/20 bg-card/40 backdrop-blur-sm overflow-hidden"
         >
           {/* Decorative elements */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl -z-10" />
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -z-10" />
+          <div className="absolute top-0 right-0 w-64 h-64 bg-primary/[var(--glow-opacity)] rounded-full blur-3xl -z-10" />
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-primary/[calc(var(--glow-opacity)/2)] rounded-full blur-3xl -z-10" />
 
           {/* Badge */}
           <div className="flex justify-center mb-6">
@@ -73,7 +73,7 @@ export function Pricing() {
           </div>
 
           {/* Not Live Yet Notice */}
-          <div className="mb-8 p-4 rounded-xl bg-white/5 border border-white/10 text-center">
+          <div className="mb-8 p-4 rounded-xl bg-card/60 border border-border text-center">
             <p className="text-sm font-mono uppercase tracking-widest text-primary mb-1">
               Not Live Yet
             </p>

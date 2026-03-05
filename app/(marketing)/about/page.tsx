@@ -98,24 +98,24 @@ export default function AboutPage() {
 
           {/* Technical Metadata Sidebar */}
           <aside className="lg:col-span-4 flex flex-col gap-6">
-            <div className="p-6 rounded-2xl border border-white/5 bg-white/[0.01] backdrop-blur-md">
+            <div className="p-6 rounded-2xl border border-border bg-card/20 backdrop-blur-md">
               <h3 className="text-xs font-mono uppercase tracking-[0.3em] text-muted-foreground mb-8">System_Metadata</h3>
               <div className="space-y-6">
-                <div className="flex justify-between items-center border-b border-white/5 pb-4">
+                <div className="flex justify-between items-center border-b border-border pb-4">
                   <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Base_Location</span>
                   <span className="text-xs font-mono text-primary flex items-center gap-2 underline decoration-primary/20">
                     <Globe size={12} /> DUBAI_DXB
                   </span>
                 </div>
-                <div className="flex justify-between items-center border-b border-white/5 pb-4">
+                <div className="flex justify-between items-center border-b border-border pb-4">
                   <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Compiler_Mode</span>
                   <span className="text-xs font-mono">STRICT_VALIDATION</span>
                 </div>
-                <div className="flex justify-between items-center border-b border-white/5 pb-4">
+                <div className="flex justify-between items-center border-b border-border pb-4">
                   <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Uptime</span>
                   <span className="text-xs font-mono">11_YEARS_EXP</span>
                 </div>
-                <div className="flex justify-between items-center border-b border-white/5 pb-4">
+                <div className="flex justify-between items-center border-b border-border pb-4">
                   <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Specialization</span>
                   <span className="text-xs font-mono">PRODUCT_ENG</span>
                 </div>
@@ -134,7 +134,7 @@ export default function AboutPage() {
                 <MagneticButton>
                   <Link 
                     href="/builds" 
-                    className="w-full flex h-12 items-center justify-center rounded-xl border border-white/10 px-6 text-sm font-bold bg-white/5 backdrop-blur-sm transition-transform hover:scale-105"
+                    className="w-full flex h-12 items-center justify-center rounded-xl border border-border px-6 text-sm font-bold bg-card/60 backdrop-blur-sm transition-transform hover:scale-105"
                   >
                     Protocol_Builds <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
@@ -142,7 +142,7 @@ export default function AboutPage() {
               </div>
             </div>
 
-            <div className="p-4 rounded-xl border border-white/5 bg-black font-mono text-[9px] text-muted-foreground/40 uppercase tracking-[0.2em] leading-relaxed">
+            <div className="p-4 rounded-xl border border-border bg-background font-mono text-[9px] text-muted-foreground/40 uppercase tracking-[0.2em] leading-relaxed">
               {"// SYSLOG: fetching bio_segment..."}<br />
               {"// integrity: match..."}<br />
               {"// status: READY_TO_COLLABORATE"}

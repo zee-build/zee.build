@@ -32,7 +32,7 @@ export default function BuildsPage() {
       />
 
       {/* Global Data Stream Ticker */}
-      <div className="w-full bg-white/[0.02] border-y border-white/5 py-3 overflow-hidden">
+      <div className="w-full bg-card/20 border-y border-border py-3 overflow-hidden">
         <div className="flex whitespace-nowrap animate-marquee gap-12 items-center">
           {[1, 2, 3, 4].map((_, idx) => (
              <div key={idx} className="flex gap-12 items-center text-[10px] font-mono tracking-widest text-muted-foreground/40 uppercase">
@@ -56,13 +56,13 @@ export default function BuildsPage() {
             { label: "Lab_Version", value: "BETA.08", icon: Command, color: "text-white" },
             { label: "Global_Link", value: "ONLINE", icon: Globe, color: "text-lab-amber" },
           ].map((stat, i) => (
-            <div key={i} className="flex flex-col p-6 rounded-2xl bg-white/[0.02] border border-white/5 backdrop-blur-sm group hover:border-primary/20 transition-all duration-300">
+            <div key={i} className="flex flex-col p-6 rounded-2xl bg-card/40 border border-border backdrop-blur-sm group hover:border-primary/20 transition-all duration-300">
               <div className="flex justify-between items-start mb-4">
                 <stat.icon className={`${stat.color} opacity-40 group-hover:opacity-100 group-hover:scale-110 transition-all`} size={20} />
                 <span className="text-[10px] font-mono opacity-40 uppercase tracking-[0.3em] group-hover:opacity-80 transition-opacity">{stat.label}</span>
               </div>
               <span className={`text-2xl font-bold tracking-tight ${i === 2 ? 'text-primary' : ''}`}>{stat.value}</span>
-              <div className="w-full h-px bg-white/5 mt-4 group-hover:bg-primary/20 transition-colors" />
+              <div className="w-full h-px bg-border mt-4 group-hover:bg-primary/20 transition-colors" />
             </div>
           ))}
         </div>
@@ -81,9 +81,9 @@ export default function BuildsPage() {
               Current inventory of production-ready systems and architectural prototypes.
             </p>
           </div>
-          <div className="flex gap-2 p-1.5 bg-white/5 rounded-2xl border border-white/5 backdrop-blur-sm">
-            <button className="px-6 py-2 rounded-xl text-[10px] font-mono uppercase bg-white text-black font-bold tracking-[0.2em] shadow-xl">List_Index</button>
-            <button className="px-6 py-2 rounded-xl text-[10px] font-mono uppercase text-muted-foreground hover:text-foreground hover:bg-white/5 transition-all tracking-[0.2em]">Active_Only</button>
+          <div className="flex gap-2 p-1.5 bg-card/40 rounded-2xl border border-border backdrop-blur-sm">
+            <button className="px-6 py-2 rounded-xl text-[10px] font-mono uppercase bg-foreground text-background font-bold tracking-[0.2em] shadow-xl">List_Index</button>
+            <button className="px-6 py-2 rounded-xl text-[10px] font-mono uppercase text-muted-foreground hover:text-foreground hover:bg-card/60 transition-all tracking-[0.2em]">Active_Only</button>
           </div>
         </div>
 
@@ -104,7 +104,7 @@ export default function BuildsPage() {
               className="p-10 lg:p-12 h-full group/card"
             >
               {/* App Preview Image */}
-              <div className="relative aspect-video rounded-xl overflow-hidden border border-white/10 bg-white/[0.02] mb-8 group-hover/card:border-primary/20 transition-colors">
+              <div className="relative aspect-video rounded-xl overflow-hidden border border-border bg-card/40 mb-8 group-hover/card:border-primary/20 transition-colors">
                 <Image
                   src="/builds/nutrinest/collage.png"
                   alt="NutriNest App Screens"
@@ -112,12 +112,12 @@ export default function BuildsPage() {
                   className="object-cover opacity-80 group-hover/card:opacity-100 transition-opacity"
                   sizes="(max-width: 768px) 100vw, 50vw"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent" />
               </div>
 
               <div className="flex justify-between items-start mb-8">
                 <Box className="text-lab-cyan opacity-40 group-hover/card:opacity-100 group-hover/card:scale-110 transition-all duration-500" size={48} />
-                <div className="p-2 rounded-lg bg-white/5 border border-white/10 group-hover/card:border-primary/40 transition-colors">
+                <div className="p-2 rounded-lg bg-card/60 border border-border group-hover/card:border-primary/40 transition-colors">
                    <Braces className="text-primary/40 group-hover/card:text-primary transition-colors" size={16} />
                 </div>
               </div>
@@ -125,9 +125,9 @@ export default function BuildsPage() {
                 Netflix-style meal discovery engine for toddlers (6-36 months). Synthesized pantry 
                 intelligence and hard-coded safety benchmarks.
               </p>
-              <div className="flex flex-wrap gap-2 pt-4 border-t border-white/5">
+              <div className="flex flex-wrap gap-2 pt-4 border-t border-border">
                 {["NextJS 15", "OpenAI", "Supabase", "Motion"].map(tag => (
-                   <Badge key={tag} variant="outline" className="border-white/10 bg-white/[0.02] uppercase text-[10px] tracking-widest font-mono py-1 px-3 text-muted-foreground group-hover/card:text-white transition-colors">
+                   <Badge key={tag} variant="outline" className="border-border bg-card/60 uppercase text-[10px] tracking-widest font-mono py-1 px-3 text-muted-foreground group-hover/card:text-foreground transition-colors">
                       {tag}
                    </Badge>
                 ))}
@@ -145,7 +145,7 @@ export default function BuildsPage() {
             >
               <div className="flex justify-between items-start mb-8">
                  <Shield className="text-lab-magenta opacity-40 group-hover/card:opacity-100 group-hover/card:scale-110 transition-all duration-500" size={48} />
-                 <div className="p-2 rounded-lg bg-white/5 border border-white/10 group-hover/card:border-lab-magenta/40 transition-colors">
+                 <div className="p-2 rounded-lg bg-card/60 border border-border group-hover/card:border-lab-magenta/40 transition-colors">
                    <Binary className="text-lab-magenta/40 group-hover/card:text-lab-magenta transition-colors" size={16} />
                 </div>
               </div>
@@ -153,9 +153,9 @@ export default function BuildsPage() {
                 Automated risk assessment and compliance tracking system. 
                 Streamlining methodology for modern enterprise security infrastructures.
               </p>
-              <div className="flex flex-wrap gap-2 pt-4 border-t border-white/5">
+              <div className="flex flex-wrap gap-2 pt-4 border-t border-border">
                  {["React", "NodeJs", "Enterprise", "CRAC"].map(tag => (
-                   <Badge key={tag} variant="outline" className="border-white/10 bg-white/[0.02] uppercase text-[10px] tracking-widest font-mono py-1 px-3">
+                   <Badge key={tag} variant="outline" className="border-border bg-card/60 uppercase text-[10px] tracking-widest font-mono py-1 px-3">
                       {tag}
                    </Badge>
                 ))}
@@ -173,7 +173,7 @@ export default function BuildsPage() {
             >
               <div className="flex justify-between items-start mb-8">
                 <Zap className="text-lab-amber opacity-40 group-hover/card:opacity-100 group-hover/card:scale-110 transition-all duration-500" size={48} />
-                <div className="p-2 rounded-lg bg-white/5 border border-white/10 group-hover/card:border-lab-amber/40 transition-colors">
+                <div className="p-2 rounded-lg bg-card/60 border border-border group-hover/card:border-lab-amber/40 transition-colors">
                    <Cpu className="text-lab-amber/40 group-hover/card:text-lab-amber transition-colors" size={16} />
                 </div>
               </div>
@@ -181,9 +181,9 @@ export default function BuildsPage() {
                 Collection of internal orchestration tools to automate repetitive engineering workflows. 
                 Optimized for maximum developer velocity.
               </p>
-              <div className="flex flex-wrap gap-2 pt-4 border-t border-white/5">
+              <div className="flex flex-wrap gap-2 pt-4 border-t border-border">
                  {["CLI", "DevOps", "Docker", "Go"].map(tag => (
-                   <Badge key={tag} variant="outline" className="border-white/10 bg-white/[0.02] uppercase text-[10px] tracking-widest font-mono py-1 px-3">
+                   <Badge key={tag} variant="outline" className="border-border bg-card/60 uppercase text-[10px] tracking-widest font-mono py-1 px-3">
                       {tag}
                    </Badge>
                 ))}
@@ -201,7 +201,7 @@ export default function BuildsPage() {
             >
               <div className="flex justify-between items-start mb-8">
                 <FlaskConical className="text-primary opacity-40 group-hover/card:opacity-100 group-hover/card:scale-110 transition-all duration-500" size={48} />
-                <div className="p-2 rounded-lg bg-white/5 border border-white/10 group-hover/card:border-primary/40 transition-colors">
+                <div className="p-2 rounded-lg bg-card/60 border border-border group-hover/card:border-primary/40 transition-colors">
                    <Globe className="text-primary/40 group-hover/card:text-primary transition-colors" size={16} />
                 </div>
               </div>
@@ -209,9 +209,9 @@ export default function BuildsPage() {
                 Rapid prototypes exploring GPU-rendering patterns, Three.js orchestration, 
                 and novel human-computer interaction models.
               </p>
-              <div className="flex flex-wrap gap-2 pt-4 border-t border-white/5">
+              <div className="flex flex-wrap gap-2 pt-4 border-t border-border">
                  {["ThreeJS", "WebGL", "Rust", "WASM"].map(tag => (
-                   <Badge key={tag} variant="outline" className="border-white/10 bg-white/[0.02] uppercase text-[10px] tracking-widest font-mono py-1 px-3">
+                   <Badge key={tag} variant="outline" className="border-border bg-card/60 uppercase text-[10px] tracking-widest font-mono py-1 px-3">
                       {tag}
                    </Badge>
                 ))}
@@ -223,8 +223,8 @@ export default function BuildsPage() {
 
       {/* Real-time System Log Element */}
       <section className="container mx-auto px-4 mt-40">
-        <div className="max-w-6xl mx-auto p-8 rounded-[2rem] bg-black border border-white/5 font-mono text-[10px] text-muted-foreground/60 shadow-inner">
-          <div className="flex items-center justify-between mb-8 border-b border-white/10 pb-4">
+        <div className="max-w-6xl mx-auto p-8 rounded-[2rem] bg-card border border-border font-mono text-[10px] text-muted-foreground/60 shadow-inner">
+          <div className="flex items-center justify-between mb-8 border-b border-border pb-4">
              <div className="flex items-center gap-3">
                <div className="w-2 h-2 rounded-full bg-primary" />
                <span className="text-primary uppercase tracking-[0.4em] font-bold">Lab_System_Log</span>

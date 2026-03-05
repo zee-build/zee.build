@@ -65,11 +65,11 @@ export function ScreensGallery() {
         {/* Section Header */}
         <div className="text-center mb-12">
           <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="w-10 h-[1px] bg-primary/40" />
+            <div className="w-10 h-[1px] bg-primary/20" />
             <span className="text-[10px] font-mono uppercase tracking-[0.4em] text-primary font-bold">
               Interface_Preview
             </span>
-            <div className="w-10 h-[1px] bg-primary/40" />
+            <div className="w-10 h-[1px] bg-primary/20" />
           </div>
           <h2 className="text-3xl md:text-5xl font-bold tracking-tight mb-4">
             Screens Gallery
@@ -89,11 +89,11 @@ export function ScreensGallery() {
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
               whileHover={{ scale: 1.02 }}
-              className="relative aspect-[9/16] rounded-2xl overflow-hidden border border-white/10 bg-white/[0.02] cursor-pointer group"
+              className="relative aspect-[9/16] rounded-2xl overflow-hidden border border-border bg-card/40 cursor-pointer group"
               onClick={() => openModal(i)}
             >
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent z-10" />
-              <div className="absolute top-4 right-4 z-20 p-3 rounded-full bg-black/50 backdrop-blur-sm border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="absolute top-4 right-4 z-20 p-3 rounded-full bg-black/50 backdrop-blur-sm border border-border opacity-0 group-hover:opacity-100 transition-opacity">
                 <ZoomIn className="w-5 h-5" />
               </div>
               
@@ -122,7 +122,7 @@ export function ScreensGallery() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
-              className="p-4 rounded-xl border border-white/5 bg-white/[0.02] backdrop-blur-sm hover:border-primary/20 transition-colors"
+              className="p-4 rounded-xl border border-border bg-card/40 backdrop-blur-sm hover:border-primary/20 transition-colors"
             >
               <div className="flex items-start gap-3">
                 <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -153,7 +153,7 @@ export function ScreensGallery() {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className="absolute top-4 right-4 p-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors border border-white/10 z-50"
+              className="absolute top-4 right-4 p-3 rounded-full bg-card/40 hover:bg-card/60 transition-colors border border-border z-50"
               onClick={() => setIsModalOpen(false)}
             >
               <X className="w-6 h-6" />
@@ -164,7 +164,7 @@ export function ScreensGallery() {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
-              className="absolute left-4 p-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors border border-white/10 z-50"
+              className="absolute left-4 p-3 rounded-full bg-card/40 hover:bg-card/60 transition-colors border border-border z-50"
               onClick={(e) => {
                 e.stopPropagation()
                 prevImage()
@@ -178,7 +178,7 @@ export function ScreensGallery() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 20 }}
-              className="absolute right-4 p-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors border border-white/10 z-50"
+              className="absolute right-4 p-3 rounded-full bg-card/40 hover:bg-card/60 transition-colors border border-border z-50"
               onClick={(e) => {
                 e.stopPropagation()
                 nextImage()
@@ -194,7 +194,7 @@ export function ScreensGallery() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="relative max-w-4xl w-full aspect-[9/16] rounded-2xl overflow-hidden border border-white/20"
+              className="relative max-w-4xl w-full aspect-[9/16] rounded-2xl overflow-hidden border border-border"
               onClick={(e) => e.stopPropagation()}
             >
               <Image

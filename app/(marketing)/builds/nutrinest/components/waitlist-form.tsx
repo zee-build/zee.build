@@ -85,11 +85,11 @@ export function WaitlistForm() {
         {/* Section Header */}
         <div className="text-center mb-12">
           <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="w-10 h-[1px] bg-primary/40" />
+            <div className="w-10 h-[1px] bg-primary/20" />
             <span className="text-[10px] font-mono uppercase tracking-[0.4em] text-primary font-bold">
               Early_Access
             </span>
-            <div className="w-10 h-[1px] bg-primary/40" />
+            <div className="w-10 h-[1px] bg-primary/20" />
           </div>
           <h2 className="text-3xl md:text-5xl font-bold tracking-tight mb-4">
             Join the Waitlist
@@ -105,7 +105,7 @@ export function WaitlistForm() {
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          className="p-8 md:p-12 rounded-3xl border border-white/10 bg-white/[0.02] backdrop-blur-sm"
+          className="p-8 md:p-12 rounded-3xl border border-border bg-card/40 backdrop-blur-sm"
         >
           {isSuccess ? (
             <motion.div
@@ -138,7 +138,7 @@ export function WaitlistForm() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="parent@example.com"
-                  className="w-full h-12 px-4 rounded-xl bg-white/5 border border-white/10 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                  className="w-full h-12 px-4 rounded-xl bg-card/60 border border-border focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
                   required
                 />
               </div>
@@ -152,11 +152,11 @@ export function WaitlistForm() {
                   id="childAgeMonths"
                   value={childAgeMonths}
                   onChange={(e) => setChildAgeMonths(e.target.value)}
-                  className="w-full h-12 px-4 rounded-xl bg-white/5 border border-white/10 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                  className="w-full h-12 px-4 rounded-xl bg-card/60 border border-border focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
                 >
-                  <option value="">Select age</option>
+                  <option value="" className="bg-background">Select age</option>
                   {Array.from({ length: 31 }, (_, i) => i + 6).map((age) => (
-                    <option key={age} value={age}>
+                    <option key={age} value={age} className="bg-background">
                       {age} months
                     </option>
                   ))}
@@ -172,10 +172,10 @@ export function WaitlistForm() {
                   id="location"
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
-                  className="w-full h-12 px-4 rounded-xl bg-white/5 border border-white/10 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                  className="w-full h-12 px-4 rounded-xl bg-card/60 border border-border focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
                 >
-                  <option value="UAE">UAE</option>
-                  <option value="Other">Other</option>
+                  <option value="UAE" className="bg-background">UAE</option>
+                  <option value="Other" className="bg-background">Other</option>
                 </select>
               </div>
 

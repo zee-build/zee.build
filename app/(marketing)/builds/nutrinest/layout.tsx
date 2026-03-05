@@ -1,6 +1,4 @@
 import { Metadata } from "next"
-import { Navbar } from "@/components/navbar"
-import { Footer } from "@/components/footer"
 
 export const metadata: Metadata = {
   title: "NutriNest - Toddler Nutrition Planner | zee.build",
@@ -36,11 +34,5 @@ export default function NutriNestLayout({
 }: {
   children: React.ReactNode
 }) {
-  return (
-    <>
-      <Navbar />
-      <main className="min-h-screen">{children}</main>
-      <Footer />
-    </>
-  )
+  return <>{children}</>
 }

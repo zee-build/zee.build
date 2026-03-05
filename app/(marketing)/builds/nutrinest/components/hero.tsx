@@ -25,8 +25,8 @@ export function Hero() {
   return (
     <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
       {/* Background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(255,176,0,0.1),transparent_50%)]" />
+      <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent opacity-60" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,hsl(var(--primary)/var(--glow-opacity)),transparent_50%)]" />
       
       <div className="container mx-auto px-4 relative z-10">
         <motion.div
@@ -88,7 +88,7 @@ export function Hero() {
               <Badge
                 key={feature}
                 variant="secondary"
-                className="bg-white/5 border-white/10 text-sm px-4 py-2"
+                className="bg-card/40 border-border border text-sm px-4 py-2"
               >
                 {feature}
               </Badge>
@@ -113,7 +113,7 @@ export function Hero() {
             <MagneticButton>
               <button
                 onClick={scrollToScreens}
-                className="inline-flex h-14 items-center justify-center rounded-full border border-white/10 px-8 text-sm font-bold bg-white/5 backdrop-blur-sm transition-transform hover:scale-105"
+                className="inline-flex h-14 items-center justify-center rounded-full border border-border px-8 text-sm font-bold bg-card/40 backdrop-blur-sm transition-transform hover:scale-105"
               >
                 View Screens <ChevronDown className="ml-2 h-4 w-4" />
               </button>
@@ -132,12 +132,12 @@ export function Hero() {
         <motion.div
           animate={{ y: [0, 10, 0] }}
           transition={{ repeat: Infinity, duration: 2 }}
-          className="w-6 h-10 rounded-full border-2 border-white/20 flex items-start justify-center p-2"
+          className="w-6 h-10 rounded-full border-2 border-border flex items-start justify-center p-2"
         >
           <motion.div
             animate={{ y: [0, 12, 0] }}
             transition={{ repeat: Infinity, duration: 2 }}
-            className="w-1 h-2 bg-white/40 rounded-full"
+            className="w-1 h-2 bg-primary/40 rounded-full"
           />
         </motion.div>
       </motion.div>
