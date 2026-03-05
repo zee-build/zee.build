@@ -135,6 +135,35 @@ export default function BuildsPage() {
             </LabCard>
           </motion.div>
 
+          {/* SentinelRisk - Prototype */}
+          <motion.div variants={item}>
+            <LabCard 
+              title="SentinelRisk"
+              subtitle="Corporate Risk Intelligence"
+              metadata={["PHASE_01", "PROTOTYPE"]}
+              href="/builds/sentinelrisk"
+              className="p-10 lg:p-12 h-full group/card"
+            >
+              <div className="flex justify-between items-start mb-8">
+                 <Shield className="text-lab-magenta opacity-40 group-hover/card:opacity-100 group-hover/card:scale-110 transition-all duration-500" size={48} />
+                 <div className="p-2 rounded-lg bg-card/60 border border-border group-hover/card:border-lab-magenta/40 transition-colors">
+                   <Binary className="text-lab-magenta/40 group-hover/card:text-lab-magenta transition-colors" size={16} />
+                </div>
+              </div>
+              <p className="text-xl text-muted-foreground/90 mb-10 leading-relaxed font-light">
+                AI-assisted corporate risk intelligence platform. Analyze portfolios, identify compliance 
+                exposure, and monitor financial threats in real time.
+              </p>
+              <div className="flex flex-wrap gap-2 pt-4 border-t border-border">
+                 {["React", "AI/ML", "Fintech", "Enterprise"].map(tag => (
+                   <Badge key={tag} variant="outline" className="border-border bg-card/60 uppercase text-[10px] tracking-widest font-mono py-1 px-3 text-muted-foreground group-hover/card:text-foreground transition-colors">
+                      {tag}
+                   </Badge>
+                ))}
+              </div>
+            </LabCard>
+          </motion.div>
+
           {/* CRAC Risk App - Planning */}
           <motion.div variants={item}>
             <LabCard 
@@ -144,9 +173,9 @@ export default function BuildsPage() {
               className="p-10 lg:p-12 h-full opacity-60 grayscale hover:grayscale-0 group/card transition-all duration-700 font-normal"
             >
               <div className="flex justify-between items-start mb-8">
-                 <Shield className="text-lab-magenta opacity-40 group-hover/card:opacity-100 group-hover/card:scale-110 transition-all duration-500" size={48} />
-                 <div className="p-2 rounded-lg bg-card/60 border border-border group-hover/card:border-lab-magenta/40 transition-colors">
-                   <Binary className="text-lab-magenta/40 group-hover/card:text-lab-magenta transition-colors" size={16} />
+                 <Shield className="text-lab-amber opacity-40 group-hover/card:opacity-100 group-hover/card:scale-110 transition-all duration-500" size={48} />
+                 <div className="p-2 rounded-lg bg-card/60 border border-border group-hover/card:border-lab-amber/40 transition-colors">
+                   <Binary className="text-lab-amber/40 group-hover/card:text-lab-amber transition-colors" size={16} />
                 </div>
               </div>
               <p className="text-xl text-muted-foreground/90 mb-10 leading-relaxed font-light">

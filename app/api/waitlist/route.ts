@@ -47,6 +47,7 @@ interface WaitlistPayload {
   email: string
   childAgeMonths?: number
   location?: string
+  product?: string // 'nutrinest' or 'sentinelrisk'
   startedAt: number
   company?: string // honeypot
 }
@@ -119,7 +120,7 @@ export async function POST(request: NextRequest) {
 
     // Parse request body
     const body: WaitlistPayload = await request.json()
-    const { email, childAgeMonths, location, startedAt, company } = body
+    const { email, childAgeMonths, location, product, startedAt, company } = body
 
     // 1. HONEYPOT CHECK
     if (company) {
@@ -209,12 +210,13 @@ export async function POST(request: NextRequest) {
       email, 
       childAgeMonths, 
       location,
+      product,
       ip: clientIP,
       googleStatus: response.status 
     })
 
     // Analytics event (replace with your analytics service)
-    console.log('[ANALYTICS] submit_waitlist_success', { email, location, childAgeMonths })
+    console.log('[ANALYTICS] submit_waitlist_success', { email, location, childAgeMonths, product })
 
     return NextResponse.json({ 
       success: true,

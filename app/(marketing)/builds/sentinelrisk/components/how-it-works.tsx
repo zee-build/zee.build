@@ -1,0 +1,85 @@
+"use client"
+
+import { motion } from "framer-motion"
+import { Database, Brain, Bell } from "lucide-react"
+
+const steps = [
+  {
+    icon: Database,
+    title: "Connect Your Data",
+    description: "Integrate with existing financial systems and data sources. Import corporate entities, portfolios, and compliance requirements.",
+  },
+  {
+    icon: Brain,
+    title: "AI Risk Analysis",
+    description: "Our AI engine analyzes risk factors across multiple dimensions: financial, operational, compliance, and market exposure.",
+  },
+  {
+    icon: Bell,
+    title: "Monitor & Alert",
+    description: "Receive real-time alerts when risk thresholds are breached. Generate automated reports for stakeholders and regulators.",
+  },
+]
+
+export function HowItWorks() {
+  return (
+    <section className="container mx-auto px-4">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        className="max-w-6xl mx-auto"
+      >
+        {/* Section Header */}
+        <div className="text-center mb-16">
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <div className="w-10 h-[1px] bg-primary/20" />
+            <span className="text-[10px] font-mono uppercase tracking-[0.4em] text-primary font-bold">
+              System_Flow
+            </span>
+            <div className="w-10 h-[1px] bg-primary/20" />
+          </div>
+          <h2 className="text-3xl md:text-5xl font-bold tracking-tight mb-4">
+            How It Works
+          </h2>
+          <p className="text-muted-foreground max-w-2xl mx-auto">
+            Three simple steps to comprehensive corporate risk intelligence.
+          </p>
+        </div>
+
+        {/* Steps */}
+        <div className="grid md:grid-cols-3 gap-8">
+          {steps.map((step, i) => (
+            <motion.div
+              key={step.title}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.2 }}
+              className="relative group"
+            >
+              {i < steps.length - 1 && (
+                <div className="hidden md:block absolute top-16 left-[calc(50%+2rem)] w-[calc(100%-4rem)] h-[2px] bg-gradient-to-r from-primary/40 to-transparent" />
+              )}
+
+              <div className="relative p-8 rounded-2xl border border-border bg-card/40 backdrop-blur-sm hover:border-primary/20 transition-all duration-300 h-full">
+                <div className="absolute -top-4 -left-4 w-10 h-10 rounded-full bg-primary flex items-center justify-center font-bold text-primary-foreground shadow-lg shadow-primary/20">
+                  {i + 1}
+                </div>
+
+                <div className="mb-6 p-4 rounded-xl bg-primary/10 inline-flex group-hover:scale-110 transition-transform">
+                  <step.icon className="w-8 h-8 text-primary" />
+                </div>
+
+                <h3 className="text-xl font-bold mb-3">{step.title}</h3>
+                <p className="text-muted-foreground leading-relaxed">
+                  {step.description}
+                </p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </motion.div>
+    </section>
+  )
+}

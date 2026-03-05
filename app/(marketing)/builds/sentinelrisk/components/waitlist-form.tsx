@@ -1,0 +1,180 @@
+"use client"
+
+import { useState } from "react"
+import { motion } from "framer-motion"
+import { Check, Loader2, Mail } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+
+export function WaitlistForm() {
+  const [email, setEmail] = useState("")
+  const [company, setCompany] = useState("") // honeypot
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSuccess, setIsSuccess] = useState(false)
+  const [error, setError] = useState("")
+  const [startedAt] = useState(Date.now())
+
+  const validateEmail = (email: string) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError("")
+
+    if (!email) {
+      setError("Email is required")
+      return
+    }
+
+    if (!validateEmail(email)) {
+      setError("Please enter a valid email address")
+      return
+    }
+
+    setIsSubmitting(true)
+
+    try {
+      const response = await fetch('/api/waitlist', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          product: 'sentinelrisk',
+          startedAt,
+          company, // honeypot
+        }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Submission failed')
+      }
+
+      setIsSuccess(true)
+      console.log('[Analytics] submit_waitlist_success', { email, product: 'sentinelrisk' })
+      setEmail("")
+    } catch (err) {
+      console.error('[Waitlist] Submission error:', err)
+      setError(err instanceof Error ? err.message : "Something went wrong. Please try again.")
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  return (
+    <section id="waitlist" className="container mx-auto px-4">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        className="max-w-2xl mx-auto"
+      >
+        {/* Section Header */}
+        <div className="text-center mb-12">
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <div className="w-10 h-[1px] bg-primary/20" />
+            <span className="text-[10px] font-mono uppercase tracking-[0.4em] text-primary font-bold">
+              Early_Access
+            </span>
+            <div className="w-10 h-[1px] bg-primary/20" />
+          </div>
+          <h2 className="text-3xl md:text-5xl font-bold tracking-tight mb-4">
+            Join the Waitlist
+          </h2>
+          <p className="text-muted-foreground">
+            Be the first to know when SentinelRisk launches. Get exclusive early access and special pricing.
+          </p>
+        </div>
+
+        {/* Form Card */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+          className="p-8 md:p-12 rounded-3xl border border-border bg-card/40 backdrop-blur-sm"
+        >
+          {isSuccess ? (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="text-center py-8"
+            >
+              <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-6">
+                <Check className="w-8 h-8 text-primary" />
+              </div>
+              <h3 className="text-2xl font-bold mb-3">You're on the list!</h3>
+              <p className="text-muted-foreground mb-6">
+                We'll notify you as soon as SentinelRisk is ready for early access.
+              </p>
+              <Badge variant="outline" className="border-primary/20 bg-primary/5 text-primary">
+                <Mail className="w-3 h-3 mr-2" />
+                Check your email for confirmation
+              </Badge>
+            </motion.div>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium mb-2">
+                  Work Email Address <span className="text-primary">*</span>
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="you@company.com"
+                  className="w-full h-12 px-4 rounded-xl bg-card/60 border border-border focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                  required
+                />
+              </div>
+
+              {/* Honeypot (hidden) */}
+              <input
+                type="text"
+                name="company"
+                value={company}
+                onChange={(e) => setCompany(e.target.value)}
+                style={{ display: 'none' }}
+                tabIndex={-1}
+                autoComplete="off"
+              />
+
+              {error && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="p-4 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-sm"
+                >
+                  {error}
+                </motion.div>
+              )}
+
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full h-14 rounded-full bg-primary text-primary-foreground font-bold hover:scale-105 transition-transform disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center gap-2"
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Joining...
+                  </>
+                ) : (
+                  "Join Waitlist"
+                )}
+              </button>
+
+              <p className="text-xs text-muted-foreground text-center">
+                We respect your privacy. No spam, just product updates.
+              </p>
+            </form>
+          )}
+        </motion.div>
+      </motion.div>
+    </section>
+  )
+}
