@@ -4,7 +4,7 @@ import { checkMotoScoutAccess } from '@/lib/motoscout/auth';
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { allowed, user } = await checkMotoScoutAccess();
@@ -13,7 +13,7 @@ export async function PATCH(
     }
 
     const body = await request.json();
-    const { id } = params;
+    const { id } = await params;
 
     const { data, error } = await supabase
       .from('motoscout_saved_searches')
@@ -33,7 +33,7 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { allowed, user } = await checkMotoScoutAccess();
@@ -41,7 +41,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id } = params;
+    const { id } = await params;
 
     const { error } = await supabase
       .from('motoscout_saved_searches')

@@ -6,11 +6,11 @@ export async function getCurrentUser() {
   return user;
 }
 
-export async function isAllowedEmail(email: string): boolean {
+export function isAllowedEmail(email: string): boolean {
   const allowedEmail = process.env.MOTOSCOUT_ALLOWED_EMAIL || process.env.NEXT_PUBLIC_MOTOSCOUT_ALLOWED_EMAIL;
   if (!allowedEmail) return false;
   
-  const allowedEmails = allowedEmail.split(',').map(e => e.trim().toLowerCase());
+  const allowedEmails = allowedEmail.split(',').map((e: string) => e.trim().toLowerCase());
   return allowedEmails.includes(email.toLowerCase());
 }
 
