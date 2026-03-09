@@ -4,7 +4,7 @@ import { checkMotoScoutAccess } from '@/lib/motoscout/auth';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { allowed, user } = await checkMotoScoutAccess();
@@ -13,7 +13,7 @@ export async function POST(
     }
 
     const body = await request.json();
-    const { id: listingId } = params;
+    const { id: listingId } = await params;
     const { is_favorite, is_ignored, notes } = body;
 
     // Upsert action

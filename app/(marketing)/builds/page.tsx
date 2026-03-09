@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
-import { Box, Shield, Zap, FlaskConical, Command, Database, Cpu, Globe, Activity, Terminal as TerminalIcon, Braces, Layers, Binary, Radio, TrendingUp, BarChart3 } from "lucide-react";
+import { Box, Shield, Zap, FlaskConical, Command, Database, Cpu, Globe, Activity, Terminal as TerminalIcon, Braces, Layers, Binary, Radio, TrendingUp, BarChart3, Calendar } from "lucide-react";
 import { ModernAnimatedHero } from "@/components/ui/modern-animated-hero-section";
 import { LabCard } from "@/components/ui/lab-card";
 import { motion, Variants } from "framer-motion";
@@ -51,7 +51,7 @@ export default function BuildsPage() {
         {/* Technical HUD Dashboard */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-6xl mx-auto mb-20 relative">
           {[
-            { label: "Active_Nodes", value: "05", icon: Database, color: "text-lab-cyan" },
+            { label: "Active_Nodes", value: "06", icon: Database, color: "text-lab-cyan" },
             { label: "Compiler_Status", value: "STRICT", icon: Cpu, color: "text-lab-magenta" },
             { label: "Lab_Version", value: "BETA.08", icon: Command, color: "text-white" },
             { label: "Global_Link", value: "ONLINE", icon: Globe, color: "text-lab-amber" },
@@ -225,6 +225,35 @@ export default function BuildsPage() {
               </p>
               <div className="flex flex-wrap gap-2 pt-4 border-t border-border">
                  {["NextJS", "Supabase", "Telegram", "Scraping"].map(tag => (
+                   <Badge key={tag} variant="outline" className="border-border bg-card/60 uppercase text-[10px] tracking-widest font-mono py-1 px-3 text-muted-foreground group-hover/card:text-foreground transition-colors">
+                      {tag}
+                   </Badge>
+                ))}
+              </div>
+            </LabCard>
+          </motion.div>
+
+          {/* NeverLate - Active */}
+          <motion.div variants={item}>
+            <LabCard 
+              title="NeverLate"
+              subtitle="Life Admin OS"
+              metadata={["PHASE_01", "ACTIVE"]}
+              href="/neverlate"
+              className="p-10 lg:p-12 h-full group/card"
+            >
+              <div className="flex justify-between items-start mb-8">
+                <Calendar className="text-lab-cyan opacity-40 group-hover/card:opacity-100 group-hover/card:scale-110 transition-all duration-500" size={48} />
+                <div className="p-2 rounded-lg bg-card/60 border border-border group-hover/card:border-lab-cyan/40 transition-colors">
+                   <Shield className="text-lab-cyan/40 group-hover/card:text-lab-cyan transition-colors" size={16} />
+                </div>
+              </div>
+              <p className="text-xl text-muted-foreground/90 mb-10 leading-relaxed font-light">
+                Premium life admin OS for tracking passports, visas, licenses, and family renewals. 
+                Calm, simple control with OCR upload and smart reminders.
+              </p>
+              <div className="flex flex-wrap gap-2 pt-4 border-t border-border">
+                 {["NextJS", "TypeScript", "OCR", "Premium"].map(tag => (
                    <Badge key={tag} variant="outline" className="border-border bg-card/60 uppercase text-[10px] tracking-widest font-mono py-1 px-3 text-muted-foreground group-hover/card:text-foreground transition-colors">
                       {tag}
                    </Badge>
