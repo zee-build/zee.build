@@ -12,6 +12,9 @@ export function getProfiles(): Profile[] {
   return data ? JSON.parse(data) : [];
 }
 
+export function getProfile(profileId: string): Profile | null {
+  return getProfiles().find(p => p.id === profileId) ?? null;
+}
 export function saveProfile(profile: Profile): void {
   const profiles = getProfiles();
   const existingIndex = profiles.findIndex(p => p.id === profile.id);
@@ -66,3 +69,4 @@ export function deleteDocument(documentId: string): void {
 export function generateId(): string {
   return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 }
+

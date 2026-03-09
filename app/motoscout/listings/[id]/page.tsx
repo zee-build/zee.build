@@ -12,6 +12,7 @@ import {
   MessageCircle,
   AlertTriangle,
   ShieldCheck,
+  Check,
   Zap,
   ChevronRight,
   ChevronLeft
@@ -46,7 +47,7 @@ const mockListingData = {
   ]
 }
 
-export default function ListingDetailPage({ params }: { params: { id: string } }) {
+export default function ListingDetailPage() {
   const [currentImageIdx, setCurrentImageIdx] = useState(0)
 
   const nextImage = () => setCurrentImageIdx(prev => Math.min(prev + 1, mockListingData.images.length - 1))
@@ -235,3 +236,4 @@ export default function ListingDetailPage({ params }: { params: { id: string } }
     </div>
   )
 }
+

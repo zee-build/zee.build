@@ -63,14 +63,42 @@ export function formatDaysUntilExpiry(expiryDate: string | undefined): string {
   return `${daysUntilExpiry} days remaining`;
 }
 
+export function getRelativeTime(dateString: string | undefined): string {
+  if (!dateString) return 'Unknown';
+  
+  const date = new Date(dateString);
+  const today = new Date();
+  const diffTime = date.getTime() - today.getTime();
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  
+  if (diffDays < 0) {
+    const absDays = Math.abs(diffDays);
+    if (absDays === 1) return 'Yesterday';
+    if (absDays < 30) return `${absDays} days ago`;
+    const diffMonths = Math.floor(absDays / 30);
+    if (diffMonths === 1) return '1 month ago';
+    if (diffMonths < 12) return `${diffMonths} months ago`;
+    return `${Math.floor(diffMonths / 12)} years ago`;
+  }
+  
+  if (diffDays === 0) return 'Today';
+  if (diffDays === 1) return 'Tomorrow';
+  if (diffDays < 30) return `In ${diffDays} days`;
+  
+  const diffMonths = Math.floor(diffDays / 30);
+  if (diffMonths === 1) return 'In 1 month';
+  if (diffMonths < 12) return `In ${diffMonths} months`;
+  return `In ${Math.floor(diffMonths / 12)} years`;
+}
+
 export function getRelationTypeColor(relationType: string): string {
   const colors: Record<string, string> = {
-    self: 'rgb(99 102 241)', // Indigo
-    spouse: 'rgb(236 72 153)', // Pink
-    child: 'rgb(34 197 94)', // Green
-    parent: 'rgb(251 191 36)', // Amber
-    business: 'rgb(139 92 246)', // Purple
-    other: 'rgb(107 114 128)', // Gray
+    self: 'rgb(45 212 191)', // Teal
+    spouse: 'rgb(139 92 246)', // Violet
+    child: 'rgb(16 185 129)', // Emerald
+    parent: 'rgb(56 189 248)', // Blue
+    business: 'rgb(250 204 21)', // Yellow
+    other: 'rgb(148 163 184)', // Slate
   };
   
   return colors[relationType] || colors.other;
