@@ -1,35 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  ChevronRight, 
-  ChevronLeft, 
-  Check, 
-  Bike, 
-  Search, 
-  MapPin, 
-  DollarSign, 
-  Calendar,
-  Layers,
-  Facebook,
-  Globe,
-  Bell,
-  Zap,
-  Trash2,
-  Power,
-  PowerOff
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Plus, Search, Trash2, Power, PowerOff } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import Link from 'next/link';
-
-interface BikeData {
-  brand: string;
-  model: string;
-  displayName: string;
-  imageSideUrl: string;
-  category: string;
-}
 
 interface SavedSearch {
   id: string;
