@@ -104,7 +104,7 @@ export default function BuildsWindow() {
     return matchesText && matchesStatus;
   });
 
-  const handleCardClick = (b: Build) => {
+  const handleCardClick = (b: { url?: string }) => {
     if (b.url) {
       if (b.url.startsWith("http")) {
         window.open(b.url, "_blank", "noopener,noreferrer");

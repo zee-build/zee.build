@@ -1,5 +1,16 @@
 // ZeeBuild OS — static data
 
+export type BuildStatus = "Shipped" | "Building" | "Archived";
+
+export interface Build {
+  name: string;
+  status: BuildStatus;
+  desc: string;
+  stack: string[];
+  url?: string;
+  image?: string;
+}
+
 export const ZB_DATA = {
   identity: {
     name: "Ziyan Bin Anoos",
@@ -23,61 +34,61 @@ export const ZB_DATA = {
   builds: [
     {
       name: "tarbiya.ai",
-      status: "Building",
+      status: "Building" as BuildStatus,
       desc: "AI story generator for Muslim kids — values-aligned bedtime stories on demand.",
       stack: ["Next.js", "OpenAI", "Supabase"],
       url: "https://github.com/zee-build/tarbiya-ai",
     },
     {
       name: "NoorBot",
-      status: "Shipped",
+      status: "Shipped" as BuildStatus,
       desc: "Telegram bot for Islamic Q&A with sourced citations and prayer reminders. 12k+ users.",
       stack: ["Python", "Telegram", "GPT-4"],
       url: "https://github.com/zee-build/noorbot",
     },
     {
       name: "QueueFlow",
-      status: "Shipped",
+      status: "Shipped" as BuildStatus,
       desc: "Virtual queueing for clinics in the GCC. Used by 40+ branches.",
       stack: ["Flutter", "Firebase", ".NET"],
       url: "https://github.com/zee-build/queueflow",
     },
     {
       name: "NutriNest",
-      status: "Shipped",
+      status: "Shipped" as BuildStatus,
       desc: "Macro tracker with image-based meal logging. Personal data lake.",
       stack: ["Next.js", "Vision API"],
       url: "/builds/nutrinest",
     },
     {
       name: "SentinelRisk",
-      status: "Building",
+      status: "Building" as BuildStatus,
       desc: "Real-time AML/KYC risk scoring engine for emerging-market banks.",
       stack: ["C#", ".NET", "Azure"],
       url: "/builds/sentinelrisk",
     },
     {
       name: "MotoScout",
-      status: "Shipped",
+      status: "Shipped" as BuildStatus,
       desc: "Used-bike marketplace aggregator for the UAE. Scrapes + scores + Telegram alerts.",
       stack: ["Next.js", "Supabase", "Telegram"],
       url: "/motoscout",
     },
     {
       name: "NeverLate",
-      status: "Building",
+      status: "Building" as BuildStatus,
       desc: "Life admin OS — track passports, visas, licenses, and family renewals.",
       stack: ["Next.js", "TypeScript", "OCR"],
       url: "/neverlate",
     },
     {
       name: "zee.build",
-      status: "Shipped",
+      status: "Shipped" as BuildStatus,
       desc: "This portfolio OS. macOS-style desktop with draggable windows and WebGL shaders.",
       stack: ["Next.js", "TypeScript", "WebGL"],
       url: "https://github.com/zee-build/zee.build",
     },
-  ],
+  ] as Build[],
   experience: [
     {
       co: "Yuze Digital",
@@ -199,14 +210,3 @@ export const skillScores: Record<string, number> = {
   "Make.com": 88,
   "SQL / Postgres": 85,
 };
-
-export type BuildStatus = "Shipped" | "Building" | "Archived";
-
-export interface Build {
-  name: string;
-  status: BuildStatus;
-  desc: string;
-  stack: string[];
-  url?: string;
-  image?: string;
-}
