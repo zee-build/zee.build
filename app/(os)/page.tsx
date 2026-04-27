@@ -15,6 +15,8 @@ import ResumeWindow from "@/components/os/windows/Resume";
 import ContactWindow from "@/components/os/windows/Contact";
 import TerminalWindow from "@/components/os/windows/Terminal";
 import TrashWindow from "@/components/os/windows/Trash";
+import NotesWindow from "@/components/os/windows/Notes";
+import NotificationCenter from "@/components/os/NotificationCenter";
 
 interface WinState {
   id: string;
@@ -39,6 +41,7 @@ const APP_REGISTRY: Record<string, {
   contact:  { title: "Contact",                       meta: "~/contact",     w: 720, h: 500, render: () => <ContactWindow /> },
   terminal: { title: "terminal — zsh",                meta: "80×24",         w: 720, h: 460, render: () => <TerminalWindow /> },
   trash:    { title: "Trash — Archived Ideas",        meta: "5 items",       w: 700, h: 460, render: () => <TrashWindow /> },
+  notes:    { title: "Notes",                         meta: "~/notes",       w: 800, h: 520, render: () => <NotesWindow /> },
 };
 
 const ALL_APP_IDS = Object.keys(APP_REGISTRY);
@@ -56,6 +59,8 @@ export default function OSPage() {
   const [particleDensity, setParticleDensity] = useState(50);
   const [showCursor, setShowCursor] = useState(true);
   const [showTweaks, setShowTweaks] = useState(false);
+  const [showNotifs, setShowNotifs] = useState(false);
+  const [visitorCount, setVisitorCount] = useState(0);
 
   // Apply accent CSS vars
   useEffect(() => {
@@ -72,6 +77,21 @@ export default function OSPage() {
       root.style.setProperty("--hairline-warm", "rgba(255, 140, 66, 0.18)");
     }
   }, [accentMode]);
+
+  // Ping visitor counter
+  useEffect(() => {
+    fetch("/api/visitors", { method: "POST" })
+      .then((r) => r.json())
+      .then((d) => setVisitorCount(d.active))
+      .catch(() => {});
+    const interval = setInterval(() => {
+      fetch("/api/visitors")
+        .then((r) => r.json())
+        .then((d) => setVisitorCount(d.active))
+        .catch(() => {});
+    }, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
   const openApp = useCallback((id: string) => {
     if (id === "home") { setWindows([]); setFocused(null); return; }
@@ -166,6 +186,27 @@ export default function OSPage() {
 
       {/* Custom cursor */}
       {showCursor && <Cursor />}
+
+      {/* Notification Center */}
+      <NotificationCenter open={showNotifs} onClose={() => setShowNotifs(false)} />
+
+      {/* Notification bell */}
+      <button
+        onClick={() => setShowNotifs((v) => !v)}
+        style={{
+          position: "fixed", top: 14, right: 90, zIndex: 150,
+          padding: "8px 12px", borderRadius: 999,
+          background: "rgba(13,13,16,0.7)", border: "1px solid rgba(255,255,255,0.06)",
+          backdropFilter: "blur(20px)", color: "var(--text-dim)",
+          fontFamily: "var(--mono)", fontSize: 10, letterSpacing: "0.1em",
+          cursor: "none", transition: "color 0.15s",
+          display: "flex", alignItems: "center", gap: 6,
+        }}
+        onMouseEnter={(e) => (e.currentTarget.style.color = "var(--text)")}
+        onMouseLeave={(e) => (e.currentTarget.style.color = "var(--text-dim)")}
+      >
+        🔔 {visitorCount > 0 && <span style={{ color: "var(--accent)" }}>{visitorCount}</span>}
+      </button>
 
       {/* Boot sequence */}
       {booting && <BootSequence onDone={doneBoot} />}

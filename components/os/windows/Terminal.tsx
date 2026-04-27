@@ -15,8 +15,7 @@ const INITIAL: HistoryItem[] = [
   { type: "out", text: "ZeeBuild OS Terminal · zsh 5.9 (arm64-apple-darwin)" },
   { type: "out", text: 'Type "help" for available commands.' },
   { type: "spacer" },
-  { type: "out", text: "// Recent activity from github.com/zee-build:", cls: "dim" },
-  ...FAKE_COMMITS.map((c) => ({ type: "commit" as const, c })),
+  { type: "out", text: "// Fetching live activity from github.com/zee-build...", cls: "dim" },
   { type: "spacer" },
 ];
 
@@ -26,6 +25,41 @@ export default function TerminalWindow() {
   const [input, setInput] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
+
+  // Fetch live GitHub commits on mount
+  useEffect(() => {
+    fetch("/api/github/events")
+      .then((r) => r.json())
+      .then((data) => {
+        const commits = (data.events || []).slice(0, 5);
+        if (commits.length > 0) {
+          const items: HistoryItem[] = [
+            { type: "out", text: "// Live activity from github.com/zee-build:", cls: "dim" },
+            ...commits.map((c: any) => ({
+              type: "commit" as const,
+              c: { hash: c.hash, repo: c.repo, msg: c.msg, t: c.ago },
+            })),
+            { type: "spacer" },
+          ];
+          setHistory((prev) => {
+            // Replace the "Fetching..." line
+            const filtered = prev.filter(
+              (h) => !(h.type === "out" && h.text?.includes("Fetching live"))
+            );
+            return [...filtered, ...items];
+          });
+        }
+      })
+      .catch(() => {
+        // Fallback to static commits
+        setHistory((prev) => [
+          ...prev,
+          { type: "out", text: "// Using cached activity:", cls: "dim" },
+          ...FAKE_COMMITS.slice(0, 5).map((c) => ({ type: "commit" as const, c })),
+          { type: "spacer" },
+        ]);
+      });
+  }, []);
 
   useEffect(() => {
     if (bodyRef.current) bodyRef.current.scrollTop = bodyRef.current.scrollHeight;

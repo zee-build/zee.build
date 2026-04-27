@@ -69,6 +69,13 @@ export function Glyph({ kind, tone }: { kind: string; tone?: Tone }) {
         <path d="M13 27v-7h6v7" stroke={stroke} strokeWidth="1.3" fill="none" />
       </svg>
     ),
+    notes: (
+      <svg viewBox="0 0 32 32" fill="none" width={48} height={48}>
+        <rect x="6" y="4" width="20" height="24" rx="2" stroke={stroke} strokeWidth="1.4" fill={fill} />
+        <path d="M10 10h12M10 14h12M10 18h8" stroke={stroke} strokeWidth="1.2" strokeLinecap="round" opacity="0.7" />
+        <path d="M10 22h5" stroke={stroke} strokeWidth="1.2" strokeLinecap="round" opacity="0.4" />
+      </svg>
+    ),
   };
 
   return <div className="glyph">{icons[kind] ?? null}</div>;

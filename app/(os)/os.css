@@ -939,10 +939,10 @@ nextjs-portal { display: none !important; }
   position: relative;
   z-index: 10;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px 12px;
   justify-items: center;
-  padding: 0 48px;
+  padding: 0 24px;
   flex: 1;
   align-content: start;
 }
@@ -1222,4 +1222,267 @@ nextjs-portal { display: none !important; }
   body {
     cursor: default !important;
   }
+}
+
+/* —— Notes window —— */
+.notes {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  height: 100%;
+  min-height: 0;
+}
+.notes-sidebar {
+  border-right: 1px solid var(--hairline);
+  overflow-y: auto;
+  padding: 0;
+}
+.notes-sidebar-header {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--hairline);
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-faint);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+.notes-count { color: var(--text-dim); }
+.notes-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 12px 16px;
+  border: none;
+  background: transparent;
+  border-bottom: 1px solid var(--hairline);
+  cursor: none;
+  transition: background 0.15s;
+}
+.notes-item:hover { background: rgba(255,255,255,0.03); }
+.notes-item.active { background: var(--accent-soft); border-left: 2px solid var(--accent); }
+.notes-item-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.notes-item-meta {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-faint);
+  margin-bottom: 6px;
+}
+.notes-item-preview {
+  font-size: 11px;
+  color: var(--text-dim);
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.notes-content {
+  overflow-y: auto;
+  padding: 28px 32px;
+}
+.notes-content-header h1 {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 28px;
+  color: var(--text);
+  margin: 0 0 8px;
+}
+.notes-content-meta {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-faint);
+  letter-spacing: 0.04em;
+}
+.notes-content-body {
+  margin-top: 24px;
+  color: var(--text-dim);
+  font-size: 14px;
+  line-height: 1.7;
+}
+.notes-content-body p { margin: 0 0 16px; }
+.notes-content-body strong { color: var(--text); font-weight: 600; }
+.notes-content-body ul { margin: 0 0 16px; padding-left: 20px; }
+.notes-content-body li { margin-bottom: 6px; }
+.notes-content-body code {
+  background: var(--panel-2);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: var(--mono);
+  font-size: 12px;
+}
+.notes-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-faint);
+  gap: 12px;
+}
+.notes-empty-icon { font-size: 48px; opacity: 0.3; }
+
+/* Mobile notes override */
+.mob-sheet-body .notes {
+  display: flex;
+  flex-direction: column;
+  grid-template-columns: none;
+}
+.mob-sheet-body .notes-sidebar {
+  border-right: none;
+  border-bottom: 1px solid var(--hairline);
+  max-height: 200px;
+  overflow-y: auto;
+}
+.mob-sheet-body .notes-content {
+  padding: 16px;
+}
+
+/* —— Notification Center —— */
+.nc-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 140;
+  background: rgba(0, 0, 0, 0.3);
+}
+.nc-panel {
+  position: fixed;
+  top: 0;
+  right: -380px;
+  width: 360px;
+  height: 100vh;
+  z-index: 145;
+  background: rgba(13, 13, 16, 0.92);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-left: 1px solid var(--hairline);
+  overflow-y: auto;
+  transition: right 300ms cubic-bezier(0.32, 0.72, 0, 1);
+  padding: 0 0 20px;
+}
+.nc-panel.open { right: 0; }
+.nc-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid var(--hairline);
+}
+.nc-title {
+  font-family: var(--display);
+  font-style: italic;
+  font-size: 16px;
+  color: var(--text);
+}
+.nc-close {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--panel-2);
+  border: 1px solid var(--hairline);
+  color: var(--text-dim);
+  font-size: 14px;
+  display: grid;
+  place-items: center;
+  cursor: none;
+  transition: color 0.15s;
+}
+.nc-close:hover { color: var(--text); }
+.nc-card {
+  margin: 12px 14px;
+  background: var(--panel-2);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-md);
+  overflow: hidden;
+}
+.nc-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--hairline);
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.nc-card-icon { font-size: 14px; }
+.nc-visitors {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--hairline);
+}
+.nc-visitor-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px;
+  background: var(--panel-2);
+}
+.nc-visitor-num {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--accent);
+  font-family: var(--mono);
+}
+.nc-visitor-label {
+  font-size: 10px;
+  color: var(--text-faint);
+  font-family: var(--mono);
+  margin-top: 4px;
+}
+.nc-events { padding: 8px 0; }
+.nc-event {
+  display: flex;
+  gap: 10px;
+  padding: 8px 14px;
+  transition: background 0.15s;
+}
+.nc-event:hover { background: rgba(255,255,255,0.02); }
+.nc-event-hash {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--accent);
+  flex-shrink: 0;
+  padding-top: 2px;
+}
+.nc-event-body { flex: 1; min-width: 0; }
+.nc-event-msg {
+  font-size: 12px;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.nc-event-meta {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-faint);
+  margin-top: 2px;
+}
+.nc-empty {
+  padding: 20px;
+  text-align: center;
+  color: var(--text-faint);
+  font-size: 12px;
+}
+.nc-status-list { padding: 8px 14px; }
+.nc-status-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 0;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+.nc-status-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+}
+.nc-status-dot.green {
+  background: var(--green);
+  box-shadow: 0 0 6px rgba(74, 222, 128, 0.5);
 }
