@@ -839,6 +839,7 @@ nextjs-portal { display: none !important; }
   cursor: default;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
+  padding-top: env(safe-area-inset-top, 0px);
 }
 
 /* wallpaper — CSS gradient, no canvas */
@@ -886,9 +887,9 @@ nextjs-portal { display: none !important; }
   text-align: center;
   font-family: var(--display);
   font-style: italic;
-  font-size: 28px;
+  font-size: 24px;
   color: var(--text);
-  padding: 24px 0 32px;
+  padding: 12px 0 20px;
   letter-spacing: -0.02em;
 }
 
@@ -898,9 +899,9 @@ nextjs-portal { display: none !important; }
   z-index: 10;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 24px;
+  gap: 16px;
   justify-items: center;
-  padding: 0 40px;
+  padding: 0 48px;
   flex: 1;
   align-content: start;
 }
@@ -924,9 +925,9 @@ nextjs-portal { display: none !important; }
 }
 
 .mob-icon-box {
-  width: 72px;
-  height: 72px;
-  border-radius: 18px;
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
   background: var(--panel-2);
   border: 1px solid var(--hairline);
   display: flex;
@@ -935,8 +936,8 @@ nextjs-portal { display: none !important; }
   overflow: hidden;
 }
 .mob-icon-box .glyph svg {
-  width: 52px;
-  height: 52px;
+  width: 40px;
+  height: 40px;
 }
 
 .mob-icon-label {
@@ -949,10 +950,11 @@ nextjs-portal { display: none !important; }
 /* dock */
 .mob-dock {
   position: fixed;
-  bottom: 20px;
+  bottom: 28px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 20;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 .mob-dock-pill {
@@ -969,8 +971,8 @@ nextjs-portal { display: none !important; }
 
 .mob-dock-icon {
   position: relative;
-  width: 52px;
-  height: 52px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -985,8 +987,8 @@ nextjs-portal { display: none !important; }
   transform: scale(0.94);
 }
 .mob-dock-icon .glyph svg {
-  width: 36px;
-  height: 36px;
+  width: 30px;
+  height: 30px;
 }
 
 .mob-dock-dot {
@@ -1083,6 +1085,90 @@ nextjs-portal { display: none !important; }
 .mob-sheet-body .trash {
   height: auto;
   min-height: 100%;
+}
+
+/* —— Mobile content overrides —— */
+
+/* About: stack sidebar above main on mobile */
+.mob-sheet-body .about {
+  display: flex;
+  flex-direction: column;
+  grid-template-columns: none;
+}
+.mob-sheet-body .about-side {
+  border-right: none;
+  border-bottom: 1px solid var(--hairline);
+  padding: 20px 16px;
+}
+.mob-sheet-body .about-photo {
+  width: 120px;
+  aspect-ratio: 1/1;
+  margin: 0 auto 12px;
+  font-size: 40px;
+}
+.mob-sheet-body .about-main {
+  padding: 20px 16px;
+}
+.mob-sheet-body .about-name {
+  font-size: 26px;
+}
+.mob-sheet-body .about-bio {
+  font-size: 13px;
+  max-width: none;
+}
+.mob-sheet-body .about-links {
+  flex-wrap: wrap;
+}
+
+/* Builds: single column on mobile */
+.mob-sheet-body .builds {
+  padding: 16px;
+}
+.mob-sheet-body .builds-grid {
+  grid-template-columns: 1fr;
+}
+
+/* Resume: stack layout */
+.mob-sheet-body .resume {
+  display: flex;
+  flex-direction: column;
+  grid-template-columns: none;
+}
+.mob-sheet-body .resume-side {
+  border-right: none;
+  border-bottom: 1px solid var(--hairline);
+  overflow: visible;
+  max-height: none;
+}
+.mob-sheet-body .resume-main {
+  padding: 16px;
+  overflow: visible;
+}
+
+/* Contact: stack layout */
+.mob-sheet-body .contact {
+  display: flex;
+  flex-direction: column;
+  grid-template-columns: none;
+}
+.mob-sheet-body .contact-side {
+  border-right: none;
+  border-bottom: 1px solid var(--hairline);
+  padding: 16px;
+}
+.mob-sheet-body .contact-main {
+  padding: 16px;
+}
+
+/* Terminal: full width */
+.mob-sheet-body .terminal {
+  padding: 12px;
+  font-size: 11px;
+}
+
+/* Trash: full width */
+.mob-sheet-body .trash {
+  padding: 16px;
 }
 
 /* hide desktop elements on mobile */
