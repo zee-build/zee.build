@@ -184,6 +184,8 @@ nextjs-portal { display: none !important; }
   border: 1px solid var(--hairline);
   border-radius: var(--r-pill);
   gap: 4px;
+  max-width: calc(100vw - 120px);
+  white-space: nowrap;
 }
 .menubar-os {
   font-family: var(--display);
@@ -214,6 +216,8 @@ nextjs-portal { display: none !important; }
   border-left: 1px solid var(--hairline);
   font-family: var(--mono); font-size: 11px;
   color: var(--text-dim);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 .menubar-stat { display: flex; align-items: center; gap: 6px; }
 .menubar-stat .dot {
@@ -778,6 +782,7 @@ nextjs-portal { display: none !important; }
   padding: 4px; border-radius: var(--r-md);
   transition: transform 0.15s;
 }
+.dock-item .glyph svg { width: 36px; height: 36px; }
 .dock-item:hover { transform: translateY(-4px) scale(1.1); }
 .dock-item .dock-tooltip {
   position: absolute; bottom: calc(100% + 10px);
