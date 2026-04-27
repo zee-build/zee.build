@@ -26,42 +26,56 @@ export const ZB_DATA = {
       status: "Building",
       desc: "AI story generator for Muslim kids — values-aligned bedtime stories on demand.",
       stack: ["Next.js", "OpenAI", "Supabase"],
+      url: "https://github.com/zee-build/tarbiya-ai",
     },
     {
       name: "NoorBot",
       status: "Shipped",
       desc: "Telegram bot for Islamic Q&A with sourced citations and prayer reminders. 12k+ users.",
       stack: ["Python", "Telegram", "GPT-4"],
+      url: "https://github.com/zee-build/noorbot",
     },
     {
       name: "QueueFlow",
       status: "Shipped",
       desc: "Virtual queueing for clinics in the GCC. Used by 40+ branches.",
       stack: ["Flutter", "Firebase", ".NET"],
+      url: "https://github.com/zee-build/queueflow",
     },
     {
       name: "NutriNest",
       status: "Shipped",
       desc: "Macro tracker with image-based meal logging. Personal data lake.",
       stack: ["Next.js", "Vision API"],
+      url: "/builds/nutrinest",
     },
     {
       name: "SentinelRisk",
       status: "Building",
       desc: "Real-time AML/KYC risk scoring engine for emerging-market banks.",
       stack: ["C#", ".NET", "Azure"],
+      url: "/builds/sentinelrisk",
     },
     {
       name: "MotoScout",
       status: "Shipped",
-      desc: "Used-bike marketplace aggregator for the UAE. Scrapes + scores.",
-      stack: ["Python", "Postgres"],
+      desc: "Used-bike marketplace aggregator for the UAE. Scrapes + scores + Telegram alerts.",
+      stack: ["Next.js", "Supabase", "Telegram"],
+      url: "/motoscout",
     },
     {
       name: "NeverLate",
-      status: "Archived",
-      desc: "Calendar guilt-tripper. Killed by Apple's Live Activities.",
-      stack: ["Swift", "Firebase"],
+      status: "Building",
+      desc: "Life admin OS — track passports, visas, licenses, and family renewals.",
+      stack: ["Next.js", "TypeScript", "OCR"],
+      url: "/neverlate",
+    },
+    {
+      name: "zee.build",
+      status: "Shipped",
+      desc: "This portfolio OS. macOS-style desktop with draggable windows and WebGL shaders.",
+      stack: ["Next.js", "TypeScript", "WebGL"],
+      url: "https://github.com/zee-build/zee.build",
     },
   ],
   experience: [
@@ -155,20 +169,20 @@ export const ZB_DATA = {
     "Volunteer · DigiMarCon Digital Marketing Conference",
   ],
   trash: [
-    { nm: "NeverLate", reason: "Calendar guilt app. Apple shipped Live Activities the same week." },
     { nm: "CryptoChores", reason: "Pay your kids in stablecoins. Lawyers said no." },
     { nm: "Halal-GPT", reason: "Folded into NoorBot. Better as a feature than a product." },
     { nm: "DubaiDeals", reason: "Groupon clone. Built it in 2 weeks. Killed it in 1." },
     { nm: "FinFinity", reason: "Personal finance OS. Vaporware twice. Maybe v3." },
+    { nm: "AutoPilot HR", reason: "HR automation tool. Market too crowded. Pivoted to QueueFlow." },
   ],
 };
 
 export const FAKE_COMMITS = [
-  { hash: "a3f2c81", repo: "zee-build/tarbiya-ai", msg: "feat(tutor): stream curriculum-aware responses", t: "2h" },
-  { hash: "9e4d12b", repo: "zee-build/sentinel-risk", msg: "fix: edge case in transaction velocity scorer", t: "5h" },
-  { hash: "1c8b7a3", repo: "zee-build/noorbot", msg: "chore: bump telegram sdk; cleaner webhook errors", t: "1d" },
-  { hash: "f0a91d4", repo: "zee-build/zee.build", msg: "feat(os): add terminal app to dock", t: "1d" },
-  { hash: "44c0e2f", repo: "zee-build/queueflow", msg: "perf: drop redundant rebuilds in scheduler", t: "2d" },
+  { hash: "bab0b7d", repo: "zee-build/zee.build", msg: "fix: enhance mobile wallpaper with aurora gradients", t: "1h" },
+  { hash: "7493841", repo: "zee-build/zee.build", msg: "fix: improve mobile OS layout and content responsiveness", t: "2h" },
+  { hash: "1474e86", repo: "zee-build/zee.build", msg: "feat: add iOS-style mobile home screen", t: "4h" },
+  { hash: "2b7098c", repo: "zee-build/zee.build", msg: "feat: implement NeverLate life admin OS", t: "6h" },
+  { hash: "6a366fb", repo: "zee-build/zee.build", msg: "feat: implement MotoScout motorcycle aggregator", t: "1d" },
 ];
 
 export const ASCII_LOGO = `   ╔═══════════════════════╗
@@ -193,4 +207,6 @@ export interface Build {
   status: BuildStatus;
   desc: string;
   stack: string[];
+  url?: string;
+  image?: string;
 }

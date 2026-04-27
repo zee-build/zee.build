@@ -381,7 +381,8 @@ nextjs-portal { display: none !important; }
   border: none; padding: 0; margin: 0; cursor: none;
   transition: filter 0.15s, color 0.1s;
   flex-shrink: 0;
-  box-sizing: content-box;
+  box-sizing: border-box;
+  vertical-align: middle;
 }
 .win-ctrl:hover { color: rgba(0,0,0,0.65); }
 .win-ctrl.close { background: #ff5f57; }
@@ -578,6 +579,27 @@ nextjs-portal { display: none !important; }
 }
 .builds-search input { width: 100%; background: transparent; border: none; outline: none; color: var(--text); }
 .builds-search input::placeholder { color: var(--text-faint); }
+
+.builds-filter-seg {
+  display: flex; gap: 2px;
+  background: var(--panel-2); border: 1px solid var(--hairline);
+  border-radius: var(--r-pill); padding: 2px;
+}
+.builds-filter-seg button {
+  padding: 4px 10px; border-radius: var(--r-pill);
+  font-size: 10px; font-family: var(--mono);
+  color: var(--text-dim); background: transparent;
+  border: none; cursor: none; transition: all 0.15s;
+  letter-spacing: 0.04em;
+}
+.builds-filter-seg button.on {
+  background: var(--panel-3); color: var(--text);
+  border: 1px solid var(--hairline);
+}
+.builds-filter-seg button:hover { color: var(--text); }
+
+.build-card.clickable { cursor: none; }
+.build-card.clickable:hover { border-color: var(--accent); box-shadow: 0 0 20px rgba(255, 140, 66, 0.08); }
 
 .seg {
   display: inline-flex; background: var(--panel);
