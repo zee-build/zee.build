@@ -225,11 +225,6 @@ export default function OSPage() {
       {/* Dock */}
       <Dock onOpen={openApp} openApps={openApps} />
 
-      {/* Floating widget */}
-      <div className="float-widget" title="Daily puzzle coming soon">
-        🧩
-      </div>
-
       {/* Feedback bubbles */}
       <FeedbackBubbles />
 
@@ -237,7 +232,7 @@ export default function OSPage() {
       <FeedbackPrompt onOpen={() => openApp("feedback")} />
 
       {/* Photo widget */}
-      <PhotoWidget onClick={() => openApp("photo")} />
+      <PhotoWidget onClick={(id) => openApp(id)} />
 
       {/* Custom cursor */}
       {showCursor && <Cursor />}
