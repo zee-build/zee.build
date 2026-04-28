@@ -23,7 +23,7 @@ const APPS: { id: string; label: string; render: () => React.ReactNode }[] = [
   { id: "trash",    label: "Trash",    render: () => <TrashWindow /> },
 ];
 
-const DOCK_IDS = ["about", "builds", "contact", "terminal"];
+const DOCK_IDS = ["about", "builds", "feedback", "terminal"];
 
 /* ── status bar ───────────────────────────────────────── */
 function StatusBar() {
@@ -46,7 +46,24 @@ function StatusBar() {
   return (
     <div className="mob-status">
       <span className="mob-status-time">{time ?? "\u00A0"}</span>
-      <span className="mob-status-right">●●●● WiFi 🔋87%</span>
+      <span className="mob-status-right">●●●● WiFi 🔋</span>
+    </div>
+  );
+}
+
+/* ── today widget ─────────────────────────────────────── */
+function TodayWidget() {
+  const [date, setDate] = useState("");
+
+  useEffect(() => {
+    const now = new Date();
+    setDate(now.toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" }));
+  }, []);
+
+  return (
+    <div className="mob-today">
+      <div className="mob-today-date">{date}</div>
+      <div className="mob-today-greeting">Welcome back.</div>
     </div>
   );
 }
@@ -64,7 +81,6 @@ function Sheet({
   const touchRef = useRef({ startY: 0, scrollTop: 0 });
   const bodyRef = useRef<HTMLDivElement>(null);
 
-  /* slide in on mount */
   useEffect(() => {
     requestAnimationFrame(() => setVisible(true));
   }, []);
@@ -78,7 +94,6 @@ function Sheet({
     if (!visible) onClose();
   };
 
-  /* swipe-to-dismiss */
   const onTouchStart = (e: React.TouchEvent) => {
     touchRef.current.startY = e.touches[0].clientY;
     touchRef.current.scrollTop = bodyRef.current?.scrollTop ?? 0;
@@ -117,7 +132,6 @@ function Sheet({
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
       >
-        {/* header */}
         <div className="mob-sheet-header">
           <button className="mob-sheet-back" onClick={dismiss}>
             ‹ Home
@@ -125,11 +139,7 @@ function Sheet({
           <span className="mob-sheet-title">{app.label}</span>
           <span className="mob-sheet-spacer" />
         </div>
-
-        {/* pull indicator */}
         <div className="mob-sheet-pill" />
-
-        {/* body */}
         <div className="mob-sheet-body" ref={bodyRef}>
           {app.render()}
         </div>
@@ -138,42 +148,70 @@ function Sheet({
   );
 }
 
-/* ── mobile boot sequence ──────────────────────────────── */
+/* ── mobile boot sequence (upgraded) ──────────────────── */
 function MobileBoot({ onDone }: { onDone: () => void }) {
+  const [phase, setPhase] = useState<"logo" | "loading" | "fade">("logo");
   const [progress, setProgress] = useState(0);
+  const [glitch, setGlitch] = useState(false);
 
   useEffect(() => {
+    const timers: ReturnType<typeof setTimeout>[] = [];
+
+    // Glitch effect on logo
+    timers.push(setTimeout(() => setGlitch(true), 300));
+    timers.push(setTimeout(() => setGlitch(false), 420));
+    timers.push(setTimeout(() => setGlitch(true), 700));
+    timers.push(setTimeout(() => setGlitch(false), 780));
+
+    // Start loading phase
+    timers.push(setTimeout(() => setPhase("loading"), 1000));
+
+    // Progress bar
     const interval = setInterval(() => {
       setProgress((p) => {
         if (p >= 100) {
           clearInterval(interval);
-          setTimeout(onDone, 300);
           return 100;
         }
-        return p + Math.random() * 15 + 5;
+        return p + Math.random() * 12 + 4;
       });
+    }, 150);
+
+    // Fade out and done
+    timers.push(setTimeout(() => setPhase("fade"), 3200));
+    timers.push(setTimeout(onDone, 3600));
+
+    // Tap to skip (delayed)
+    const skipTimer = setTimeout(() => {
+      const skip = () => {
+        setPhase("fade");
+        setTimeout(onDone, 300);
+      };
+      window.addEventListener("touchstart", skip, { once: true });
     }, 200);
 
-    // Tap to skip
-    const skip = () => onDone();
-    window.addEventListener("touchstart", skip, { once: true });
-
     return () => {
+      timers.forEach(clearTimeout);
+      clearTimeout(skipTimer);
       clearInterval(interval);
-      window.removeEventListener("touchstart", skip);
     };
   }, [onDone]);
 
   return (
-    <div className="mob-boot">
-      <div className="mob-boot-logo">ZeeBuild</div>
-      <div className="mob-boot-sub">OS v2.0</div>
-      <div className="mob-boot-bar">
-        <div
-          className="mob-boot-fill"
-          style={{ width: `${Math.min(progress, 100)}%` }}
-        />
+    <div className={`mob-boot ${phase === "fade" ? "mob-boot-fade" : ""}`}>
+      <div className="mob-boot-glow" />
+      <div className={`mob-boot-logo ${glitch ? "mob-boot-glitch" : ""}`}>
+        ZeeBuild
       </div>
+      <div className="mob-boot-sub">OS v2.0 · Personal</div>
+      {phase !== "logo" && (
+        <div className="mob-boot-bar">
+          <div
+            className="mob-boot-fill"
+            style={{ width: `${Math.min(progress, 100)}%` }}
+          />
+        </div>
+      )}
       <div className="mob-boot-skip">TAP TO SKIP</div>
     </div>
   );
@@ -184,10 +222,15 @@ export default function MobileOS() {
   const [booting, setBooting] = useState(true);
   const [openApp, setOpenApp] = useState<string | null>(null);
   const [recent, setRecent] = useState<Set<string>>(new Set());
+  const [pressed, setPressed] = useState<string | null>(null);
 
   const launch = (id: string) => {
-    setRecent((prev) => new Set(prev).add(id));
-    setOpenApp(id);
+    setPressed(id);
+    setTimeout(() => {
+      setRecent((prev) => new Set(prev).add(id));
+      setOpenApp(id);
+      setPressed(null);
+    }, 100);
   };
 
   const activeApp = APPS.find((a) => a.id === openApp) ?? null;
@@ -198,7 +241,6 @@ export default function MobileOS() {
 
   return (
     <div className="mob-root">
-      {/* CSS gradient wallpaper */}
       <div className="mob-wallpaper" />
 
       <StatusBar />
@@ -206,12 +248,15 @@ export default function MobileOS() {
       {/* wordmark */}
       <div className="mob-wordmark">ZeeBuild OS</div>
 
-      {/* app grid — 2×3 */}
+      {/* Today widget */}
+      <TodayWidget />
+
+      {/* app grid */}
       <div className="mob-grid">
         {APPS.map((app) => (
           <button
             key={app.id}
-            className="mob-icon-cell"
+            className={`mob-icon-cell ${pressed === app.id ? "mob-icon-pressed" : ""}`}
             onClick={() => launch(app.id)}
           >
             <div className="mob-icon-box">
@@ -222,26 +267,22 @@ export default function MobileOS() {
         ))}
       </div>
 
-      {/* floating widget */}
-      <div className="mob-float-widget">🧩</div>
-
       {/* dock */}
       <div className="mob-dock">
         <div className="mob-dock-pill">
-          {DOCK_IDS.map((id) => {
-            const app = APPS.find((a) => a.id === id)!;
-            return (
-              <button
-                key={id}
-                className="mob-dock-icon"
-                onClick={() => launch(id)}
-              >
-                <Glyph kind={id} />
-                {recent.has(id) && <span className="mob-dock-dot" />}
-              </button>
-            );
-          })}
+          {DOCK_IDS.map((id) => (
+            <button
+              key={id}
+              className="mob-dock-icon"
+              onClick={() => launch(id)}
+            >
+              <Glyph kind={id} />
+              {recent.has(id) && <span className="mob-dock-dot" />}
+            </button>
+          ))}
         </div>
+        {/* Home indicator */}
+        <div className="mob-home-indicator" />
       </div>
 
       {/* sheet */}
