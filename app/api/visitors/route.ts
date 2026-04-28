@@ -1,40 +1,60 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { supabase } from '@/lib/supabase/client';
 
-// In-memory visitor tracking (resets on cold start)
-// Replace with Supabase for persistence later
-const visitors = new Map<string, number>();
-let totalVisitors = 0;
-const uniqueIPs = new Set<string>();
-
-function cleanOld() {
-  const cutoff = Date.now() - 5 * 60 * 1000; // 5 min window
-  for (const [key, ts] of visitors) {
-    if (ts < cutoff) visitors.delete(key);
-  }
-}
+export const dynamic = 'force-dynamic';
 
 export async function POST(req: NextRequest) {
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
-  const fingerprint = req.headers.get('user-agent')?.slice(0, 40) || '';
-  const key = `${ip}:${fingerprint}`;
+  const userAgent = req.headers.get('user-agent')?.slice(0, 100) || '';
 
-  visitors.set(key, Date.now());
-  totalVisitors++;
-  uniqueIPs.add(ip);
-  cleanOld();
+  // Log visit
+  await supabase.from('os_visitors').insert({ ip, user_agent: userAgent });
+
+  // Count active (last 5 min)
+  const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+  const { count: active } = await supabase
+    .from('os_visitors')
+    .select('*', { count: 'exact', head: true })
+    .gte('visited_at', fiveMinAgo);
+
+  // Count total unique
+  const { data: uniqueData } = await supabase
+    .from('os_visitors')
+    .select('ip');
+  const unique = new Set(uniqueData?.map((r: any) => r.ip)).size;
+
+  // Count total
+  const { count: total } = await supabase
+    .from('os_visitors')
+    .select('*', { count: 'exact', head: true });
 
   return NextResponse.json({
-    active: visitors.size,
-    total: totalVisitors,
-    unique: uniqueIPs.size,
+    active: active || 0,
+    total: total || 0,
+    unique: unique || 0,
   });
 }
 
 export async function GET() {
-  cleanOld();
+  const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+
+  const { count: active } = await supabase
+    .from('os_visitors')
+    .select('*', { count: 'exact', head: true })
+    .gte('visited_at', fiveMinAgo);
+
+  const { count: total } = await supabase
+    .from('os_visitors')
+    .select('*', { count: 'exact', head: true });
+
+  const { data: uniqueData } = await supabase
+    .from('os_visitors')
+    .select('ip');
+  const unique = new Set(uniqueData?.map((r: any) => r.ip)).size;
+
   return NextResponse.json({
-    active: visitors.size,
-    total: totalVisitors,
-    unique: uniqueIPs.size,
+    active: active || 0,
+    total: total || 0,
+    unique: unique || 0,
   });
 }

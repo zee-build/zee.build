@@ -1,63 +1,59 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { readFileSync, writeFileSync, existsSync } from 'fs';
-import { join } from 'path';
-
-const DATA_FILE = join(process.cwd(), 'data', 'notes.json');
-
-function ensureDataDir() {
-  const dir = join(process.cwd(), 'data');
-  if (!existsSync(dir)) {
-    const { mkdirSync } = require('fs');
-    mkdirSync(dir, { recursive: true });
-  }
-}
-
-function readNotes(): any[] {
-  ensureDataDir();
-  if (!existsSync(DATA_FILE)) return [];
-  return JSON.parse(readFileSync(DATA_FILE, 'utf-8'));
-}
-
-function writeNotes(notes: any[]) {
-  ensureDataDir();
-  writeFileSync(DATA_FILE, JSON.stringify(notes, null, 2));
-}
+import { supabase } from '@/lib/supabase/client';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  return NextResponse.json({ notes: readNotes() });
+  const { data, error } = await supabase
+    .from('os_notes')
+    .select('*')
+    .order('updated_at', { ascending: false });
+
+  if (error) {
+    return NextResponse.json({ notes: [], error: error.message }, { status: 500 });
+  }
+
+  return NextResponse.json({ notes: data || [] });
 }
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const notes = readNotes();
 
   if (body.action === 'create') {
-    const note = {
-      id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
-      title: body.title || 'Untitled',
-      content: body.content || '',
-      updated_at: new Date().toISOString(),
-    };
-    notes.unshift(note);
-    writeNotes(notes);
-    return NextResponse.json({ note });
+    const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+    const { data, error } = await supabase
+      .from('os_notes')
+      .insert({
+        id,
+        title: body.title || 'Untitled',
+        content: body.content || '',
+      })
+      .select()
+      .single();
+
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ note: data });
   }
 
   if (body.action === 'update') {
-    const idx = notes.findIndex((n: any) => n.id === body.id);
-    if (idx >= 0) {
-      notes[idx] = { ...notes[idx], ...body.data, updated_at: new Date().toISOString() };
-      writeNotes(notes);
-      return NextResponse.json({ note: notes[idx] });
-    }
-    return NextResponse.json({ error: 'Not found' }, { status: 404 });
+    const { data, error } = await supabase
+      .from('os_notes')
+      .update({ ...body.data, updated_at: new Date().toISOString() })
+      .eq('id', body.id)
+      .select()
+      .single();
+
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ note: data });
   }
 
   if (body.action === 'delete') {
-    const filtered = notes.filter((n: any) => n.id !== body.id);
-    writeNotes(filtered);
+    const { error } = await supabase
+      .from('os_notes')
+      .delete()
+      .eq('id', body.id);
+
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
     return NextResponse.json({ success: true });
   }
 
