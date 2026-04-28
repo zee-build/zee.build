@@ -251,6 +251,11 @@ export default function MobileOS() {
       {/* Today widget */}
       <TodayWidget />
 
+      {/* Desktop hint */}
+      <div className="mob-desktop-hint">
+        💻 Open on desktop for the full OS experience
+      </div>
+
       {/* app grid */}
       <div className="mob-grid">
         {APPS.map((app) => (
