@@ -33,7 +33,7 @@ export default function ResumeWindow() {
           </a>
         ))}
         <div style={{ marginTop: 24 }}>
-          <button className="btn" style={{ width: "100%", justifyContent: "center" }} onClick={() => window.print()}>
+          <button className="btn" style={{ width: "100%", justifyContent: "center" }} onClick={() => window.open("/os/ziyan-binanoos-resume-2026.pdf", "_blank")}>
             ↓ Export PDF
           </button>
         </div>
