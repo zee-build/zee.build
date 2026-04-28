@@ -127,6 +127,7 @@ const DESKTOP_ITEMS = [
   { id: "builds",   label: "Builds/",     kind: "builds" },
   { id: "resume",   label: "resume.pdf",  kind: "resume" },
   { id: "contact",  label: "Contact.app", kind: "contact" },
+  { id: "notes",    label: "Notes",       kind: "notes" },
   { id: "terminal", label: "Terminal",    kind: "terminal", tone: "cyan" as Tone },
   { id: "trash",    label: "Trash/",      kind: "trash",    tone: "danger" as Tone },
 ];

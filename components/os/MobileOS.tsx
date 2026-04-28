@@ -136,8 +136,50 @@ function Sheet({
   );
 }
 
+/* ── mobile boot sequence ──────────────────────────────── */
+function MobileBoot({ onDone }: { onDone: () => void }) {
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setProgress((p) => {
+        if (p >= 100) {
+          clearInterval(interval);
+          setTimeout(onDone, 300);
+          return 100;
+        }
+        return p + Math.random() * 15 + 5;
+      });
+    }, 200);
+
+    // Tap to skip
+    const skip = () => onDone();
+    window.addEventListener("touchstart", skip, { once: true });
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener("touchstart", skip);
+    };
+  }, [onDone]);
+
+  return (
+    <div className="mob-boot">
+      <div className="mob-boot-logo">ZeeBuild</div>
+      <div className="mob-boot-sub">OS v2.0</div>
+      <div className="mob-boot-bar">
+        <div
+          className="mob-boot-fill"
+          style={{ width: `${Math.min(progress, 100)}%` }}
+        />
+      </div>
+      <div className="mob-boot-skip">TAP TO SKIP</div>
+    </div>
+  );
+}
+
 /* ── main component ───────────────────────────────────── */
 export default function MobileOS() {
+  const [booting, setBooting] = useState(true);
   const [openApp, setOpenApp] = useState<string | null>(null);
   const [recent, setRecent] = useState<Set<string>>(new Set());
 
@@ -147,6 +189,10 @@ export default function MobileOS() {
   };
 
   const activeApp = APPS.find((a) => a.id === openApp) ?? null;
+
+  if (booting) {
+    return <MobileBoot onDone={() => setBooting(false)} />;
+  }
 
   return (
     <div className="mob-root">
@@ -173,6 +219,9 @@ export default function MobileOS() {
           </button>
         ))}
       </div>
+
+      {/* floating widget */}
+      <div className="mob-float-widget">🧩</div>
 
       {/* dock */}
       <div className="mob-dock">

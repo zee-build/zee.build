@@ -22,14 +22,16 @@ export default function BootSequence({ onDone }: { onDone: () => void }) {
     });
     timers.push(setTimeout(onDone, 2700));
 
-    const skip = () => onDone();
-    window.addEventListener("keydown", skip, { once: true });
-    window.addEventListener("click", skip, { once: true });
+    // Delay adding skip listener to avoid immediate trigger from the click that opened boot
+    const skipTimer = setTimeout(() => {
+      const skip = () => onDone();
+      window.addEventListener("keydown", skip, { once: true });
+      window.addEventListener("click", skip, { once: true });
+    }, 100);
 
     return () => {
       timers.forEach(clearTimeout);
-      window.removeEventListener("keydown", skip);
-      window.removeEventListener("click", skip);
+      clearTimeout(skipTimer);
     };
   }, [onDone]);
 

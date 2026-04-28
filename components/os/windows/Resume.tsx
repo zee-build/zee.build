@@ -33,7 +33,7 @@ export default function ResumeWindow() {
           </a>
         ))}
         <div style={{ marginTop: 24 }}>
-          <button className="btn" style={{ width: "100%", justifyContent: "center" }}>
+          <button className="btn" style={{ width: "100%", justifyContent: "center" }} onClick={() => window.print()}>
             ↓ Export PDF
           </button>
         </div>

@@ -1486,3 +1486,140 @@ nextjs-portal { display: none !important; }
   background: var(--green);
   box-shadow: 0 0 6px rgba(74, 222, 128, 0.5);
 }
+
+/* —— Mobile Boot —— */
+.mob-boot {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+.mob-boot-logo {
+  font-family: var(--display);
+  font-style: italic;
+  font-size: 36px;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+.mob-boot-sub {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-faint);
+  letter-spacing: 0.2em;
+}
+.mob-boot-bar {
+  width: 160px;
+  height: 3px;
+  background: var(--panel-2);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 24px;
+}
+.mob-boot-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+  transition: width 200ms ease;
+}
+.mob-boot-skip {
+  position: absolute;
+  bottom: 60px;
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--text-faint);
+  letter-spacing: 0.3em;
+}
+
+/* —— Desktop icon improvements —— */
+.desk-icon-img {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-sm);
+  transition: background 0.15s, border-color 0.15s;
+}
+.desk-icon:hover .desk-icon-img {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--hairline-strong);
+}
+.desk-icon.sel .desk-icon-img {
+  background: var(--accent-soft);
+  border-color: var(--hairline-warm);
+}
+
+/* —— Mobile Trash override —— */
+.mob-sheet-body .trash {
+  padding: 16px;
+  overflow-y: auto;
+}
+.mob-sheet-body .trash-row {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 12px;
+}
+.mob-sheet-body .trash-row .nm {
+  font-size: 14px;
+}
+.mob-sheet-body .trash-row .reason {
+  font-size: 12px;
+}
+
+/* —— Floating Widget (Puzzle) —— */
+.float-widget {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  z-index: 80;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(13, 13, 16, 0.8);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--hairline);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  cursor: none;
+  transition: transform 0.2s, box-shadow 0.2s;
+  animation: float-bob 3s ease-in-out infinite;
+}
+.float-widget:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 20px var(--accent-glow);
+  border-color: var(--accent);
+}
+@keyframes float-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+/* Mobile floating widget */
+.mob-float-widget {
+  position: fixed;
+  bottom: 100px;
+  right: 16px;
+  z-index: 15;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(13, 13, 16, 0.8);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--hairline);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  -webkit-tap-highlight-color: transparent;
+  animation: float-bob 3s ease-in-out infinite;
+}

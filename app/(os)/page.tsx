@@ -184,6 +184,11 @@ export default function OSPage() {
       {/* Dock */}
       <Dock onOpen={openApp} openApps={openApps} />
 
+      {/* Floating widget */}
+      <div className="float-widget" title="Daily puzzle coming soon">
+        🧩
+      </div>
+
       {/* Custom cursor */}
       {showCursor && <Cursor />}
 

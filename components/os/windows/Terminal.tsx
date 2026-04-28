@@ -69,12 +69,26 @@ export default function TerminalWindow() {
     const c = cmd.trim();
     const out: HistoryItem[] = [{ type: "cmd", text: c }];
 
-    if (c === "help") {
+    if (c.startsWith("admin")) {
+      const parts = c.split(" ");
+      const pass = parts[1] || "";
+      const adminPass = process.env.NEXT_PUBLIC_ADMIN_PASS || "zeebuild2026";
+      if (pass === adminPass) {
+        out.push({ type: "out", text: "[auth] Access granted. Opening admin portal...", cls: "ok" });
+        setTimeout(() => { window.open("/admin", "_self"); }, 600);
+      } else if (!pass) {
+        out.push({ type: "out", text: "Usage: admin <password>", cls: "dim" });
+        out.push({ type: "out", text: "Hint: authorized personnel only.", cls: "dim" });
+      } else {
+        out.push({ type: "out", text: "[auth] Access denied. Invalid credentials.", cls: "err" });
+      }
+    } else if (c === "help") {
       out.push({ type: "out", text: "Available commands:" });
       out.push({ type: "out", text: "  whoami       · who am I" });
       out.push({ type: "out", text: "  ls builds    · list all builds" });
       out.push({ type: "out", text: "  cat about    · show bio" });
       out.push({ type: "out", text: "  sudo hire me · attempt elevated access" });
+      out.push({ type: "out", text: "  admin <pass> · admin portal (restricted)" });
       out.push({ type: "out", text: "  clear        · clear the terminal" });
     } else if (c === "whoami") {
       out.push({ type: "out", text: `${D.identity.name}, Builder.`, cls: "ok" });
