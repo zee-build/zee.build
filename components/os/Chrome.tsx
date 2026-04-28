@@ -76,6 +76,12 @@ export function Glyph({ kind, tone }: { kind: string; tone?: Tone }) {
         <path d="M10 22h5" stroke={stroke} strokeWidth="1.2" strokeLinecap="round" opacity="0.4" />
       </svg>
     ),
+    feedback: (
+      <svg viewBox="0 0 32 32" fill="none" width={48} height={48}>
+        <path d="M4 8h24v14H14l-6 5v-5H4z" stroke={stroke} strokeWidth="1.4" fill={fill} />
+        <path d="M9 13h14M9 17h8" stroke={stroke} strokeWidth="1.2" strokeLinecap="round" opacity="0.7" />
+      </svg>
+    ),
   };
 
   return <div className="glyph">{icons[kind] ?? null}</div>;
@@ -128,7 +134,7 @@ const DESKTOP_ITEMS = [
   { id: "resume",   label: "resume.pdf",  kind: "resume" },
   { id: "contact",  label: "Contact.app", kind: "contact" },
   { id: "notes",    label: "Notes",       kind: "notes" },
-  { id: "feedback", label: "Feedback",    kind: "contact" },
+  { id: "feedback", label: "Feedback",    kind: "feedback" },
   { id: "terminal", label: "Terminal",    kind: "terminal", tone: "cyan" as Tone },
   { id: "trash",    label: "Trash/",      kind: "trash",    tone: "danger" as Tone },
 ];
@@ -168,7 +174,7 @@ const DOCK_ITEMS = [
   { id: "builds",   label: "Builds",   kind: "builds" },
   { id: "resume",   label: "Resume",   kind: "resume" },
   { id: "contact",  label: "Contact",  kind: "contact" },
-  { id: "feedback", label: "Feedback", kind: "contact" },
+  { id: "feedback", label: "Feedback", kind: "feedback" },
   { id: "terminal", label: "Terminal", kind: "terminal", tone: "cyan" as Tone },
   { id: "divider" },
   { id: "trash",    label: "Trash",    kind: "trash", tone: "danger" as Tone },
