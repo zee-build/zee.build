@@ -19,7 +19,7 @@ export default function FeedbackWindow() {
   useEffect(() => {
     fetch("/api/feedback")
       .then((r) => r.json())
-      .then((d) => setFeedbackList((d.feedback || []).filter((f: FeedbackItem) => f.visible)))
+      .then((d) => setFeedbackList(d.feedback || []))
       .catch(() => {});
   }, []);
 

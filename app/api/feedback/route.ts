@@ -4,6 +4,7 @@ import { supabase } from '@/lib/supabase/client';
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
+  // Fetch all feedback (visible ones for public display)
   const { data, error } = await supabase
     .from('os_feedback')
     .select('*')
