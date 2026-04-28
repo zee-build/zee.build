@@ -9,6 +9,7 @@ import ContactWindow from "@/components/os/windows/Contact";
 import TerminalWindow from "@/components/os/windows/Terminal";
 import TrashWindow from "@/components/os/windows/Trash";
 import NotesWindow from "@/components/os/windows/Notes";
+import FeedbackWindow from "@/components/os/windows/Feedback";
 
 /* ── app registry ─────────────────────────────────────── */
 const APPS: { id: string; label: string; render: () => React.ReactNode }[] = [
@@ -16,6 +17,7 @@ const APPS: { id: string; label: string; render: () => React.ReactNode }[] = [
   { id: "builds",   label: "Builds",   render: () => <BuildsWindow /> },
   { id: "resume",   label: "Resume",   render: () => <ResumeWindow /> },
   { id: "contact",  label: "Contact",  render: () => <ContactWindow /> },
+  { id: "feedback", label: "Feedback", render: () => <FeedbackWindow /> },
   { id: "terminal", label: "Terminal", render: () => <TerminalWindow /> },
   { id: "notes",    label: "Notes",    render: () => <NotesWindow /> },
   { id: "trash",    label: "Trash",    render: () => <TrashWindow /> },

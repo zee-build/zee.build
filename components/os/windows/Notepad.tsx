@@ -2,28 +2,11 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-const STORAGE_KEY = "zb-notepad";
-const SAVE_DELAY = 800; // ms debounce
-
 interface Note {
   id: string;
   title: string;
   content: string;
   updated_at: string;
-}
-
-function generateId() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
-}
-
-function loadNotes(): Note[] {
-  if (typeof window === "undefined") return [];
-  const raw = localStorage.getItem(STORAGE_KEY);
-  return raw ? JSON.parse(raw) : [];
-}
-
-function saveNotes(notes: Note[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
 }
 
 export default function NotepadWindow() {
@@ -34,12 +17,16 @@ export default function NotepadWindow() {
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    const loaded = loadNotes();
-    setNotes(loaded);
-    if (loaded.length > 0) {
-      setActiveId(loaded[0].id);
-      setContent(loaded[0].content);
-    }
+    fetch("/api/notes")
+      .then((r) => r.json())
+      .then((d) => {
+        setNotes(d.notes || []);
+        if (d.notes?.length > 0) {
+          setActiveId(d.notes[0].id);
+          setContent(d.notes[0].content);
+        }
+      })
+      .catch(() => {});
   }, []);
 
   const activeNote = notes.find((n) => n.id === activeId);
@@ -50,47 +37,55 @@ export default function NotepadWindow() {
 
     if (timerRef.current) clearTimeout(timerRef.current);
     timerRef.current = setTimeout(() => {
-      const updated = notes.map((n) =>
-        n.id === activeId
-          ? { ...n, content: val, updated_at: new Date().toISOString() }
-          : n
-      );
-      setNotes(updated);
-      saveNotes(updated);
-      setSaved(true);
-    }, SAVE_DELAY);
+      fetch("/api/notes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "update", id: activeId, data: { content: val } }),
+      }).then(() => {
+        setNotes((prev) =>
+          prev.map((n) => (n.id === activeId ? { ...n, content: val, updated_at: new Date().toISOString() } : n))
+        );
+        setSaved(true);
+      });
+    }, 800);
   };
 
   const handleTitleChange = (val: string) => {
-    const updated = notes.map((n) =>
-      n.id === activeId ? { ...n, title: val, updated_at: new Date().toISOString() } : n
-    );
-    setNotes(updated);
-    saveNotes(updated);
+    fetch("/api/notes", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "update", id: activeId, data: { title: val } }),
+    });
+    setNotes((prev) => prev.map((n) => (n.id === activeId ? { ...n, title: val } : n)));
   };
 
   const createNote = () => {
-    const newNote: Note = {
-      id: generateId(),
-      title: "Untitled",
-      content: "",
-      updated_at: new Date().toISOString(),
-    };
-    const updated = [newNote, ...notes];
-    setNotes(updated);
-    saveNotes(updated);
-    setActiveId(newNote.id);
-    setContent("");
+    fetch("/api/notes", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "create", title: "Untitled", content: "" }),
+    })
+      .then((r) => r.json())
+      .then((d) => {
+        setNotes((prev) => [d.note, ...prev]);
+        setActiveId(d.note.id);
+        setContent("");
+      });
   };
 
   const deleteNote = (id: string) => {
-    const updated = notes.filter((n) => n.id !== id);
-    setNotes(updated);
-    saveNotes(updated);
-    if (activeId === id) {
-      setActiveId(updated[0]?.id || null);
-      setContent(updated[0]?.content || "");
-    }
+    fetch("/api/notes", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "delete", id }),
+    }).then(() => {
+      const updated = notes.filter((n) => n.id !== id);
+      setNotes(updated);
+      if (activeId === id) {
+        setActiveId(updated[0]?.id || null);
+        setContent(updated[0]?.content || "");
+      }
+    });
   };
 
   const selectNote = (id: string) => {
@@ -139,10 +134,7 @@ export default function NotepadWindow() {
                 ) : (
                   <span className="notepad-saving">Saving...</span>
                 )}
-                <button
-                  className="notepad-delete"
-                  onClick={() => deleteNote(activeNote.id)}
-                >
+                <button className="notepad-delete" onClick={() => deleteNote(activeNote.id)}>
                   🗑
                 </button>
               </div>

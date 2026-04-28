@@ -19,6 +19,7 @@ import NotesWindow from "@/components/os/windows/Notes";
 import NotepadWindow from "@/components/os/windows/Notepad";
 import FeedbackWindow from "@/components/os/windows/Feedback";
 import FeedbackBubbles from "@/components/os/FeedbackBubbles";
+import FeedbackPrompt from "@/components/os/FeedbackPrompt";
 import NotificationCenter from "@/components/os/NotificationCenter";
 import PhotoWidget from "@/components/os/PhotoWidget";
 import Image from "next/image";
@@ -221,6 +222,9 @@ export default function OSPage() {
 
       {/* Feedback bubbles */}
       <FeedbackBubbles />
+
+      {/* Feedback prompt (appears after 30s) */}
+      <FeedbackPrompt onOpen={() => openApp("feedback")} />
 
       {/* Photo widget */}
       <PhotoWidget onClick={() => openApp("photo")} />

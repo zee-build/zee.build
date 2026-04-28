@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FeedbackItem, getFeedbackItems } from "./windows/Feedback";
 
 interface Bubble {
   id: string;
@@ -15,30 +14,35 @@ interface Bubble {
 export default function FeedbackBubbles() {
   const [bubbles, setBubbles] = useState<Bubble[]>([]);
 
-  // Load existing feedback as initial bubbles (show last 3)
+  // Load visible feedback from API
   useEffect(() => {
-    const items = getFeedbackItems().slice(0, 3);
-    const initial = items.map((item, i) => ({
-      id: item.id,
-      name: item.name,
-      message: item.message.slice(0, 60) + (item.message.length > 60 ? "..." : ""),
-      x: 60 + Math.random() * 20,
-      y: 20 + i * 25,
-      opacity: 0.7 - i * 0.15,
-    }));
-    setBubbles(initial);
+    fetch("/api/feedback")
+      .then((r) => r.json())
+      .then((d) => {
+        const visible = (d.feedback || []).filter((f: any) => f.visible).slice(0, 4);
+        const initial = visible.map((item: any, i: number) => ({
+          id: item.id,
+          name: item.name,
+          message: item.message.slice(0, 60) + (item.message.length > 60 ? "..." : ""),
+          x: 55 + Math.random() * 25,
+          y: 15 + i * 20,
+          opacity: 0.75 - i * 0.12,
+        }));
+        setBubbles(initial);
+      })
+      .catch(() => {});
   }, []);
 
   // Listen for new feedback
   useEffect(() => {
     const handler = (e: Event) => {
-      const item = (e as CustomEvent<FeedbackItem>).detail;
+      const item = (e as CustomEvent).detail;
       const newBubble: Bubble = {
         id: item.id,
         name: item.name,
         message: item.message.slice(0, 60) + (item.message.length > 60 ? "..." : ""),
         x: 50 + Math.random() * 30,
-        y: 30 + Math.random() * 40,
+        y: 25 + Math.random() * 35,
         opacity: 1,
       };
       setBubbles((prev) => [newBubble, ...prev].slice(0, 5));
@@ -59,7 +63,7 @@ export default function FeedbackBubbles() {
             left: `${b.x}%`,
             top: `${b.y}%`,
             opacity: b.opacity,
-            animationDelay: `${i * 0.3}s`,
+            animationDelay: `${i * 0.5}s`,
           }}
         >
           <span className="feedback-bubble-name">{b.name}</span>

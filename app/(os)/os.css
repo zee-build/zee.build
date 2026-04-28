@@ -2054,3 +2054,82 @@ nextjs-portal { display: none !important; }
 .admin-exp-when { display: block; font-size: 10px; color: var(--text-faint); margin-top: 4px; font-family: var(--mono); }
 .admin-hint { font-size: 11px; color: var(--text-faint); margin-top: 12px; }
 .admin-hint code { background: var(--panel-2); padding: 2px 6px; border-radius: 4px; font-family: var(--mono); }
+
+/* —— Feedback Prompt Popup —— */
+.feedback-prompt {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  z-index: 130;
+  animation: prompt-slide-in 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+}
+.feedback-prompt-card {
+  position: relative;
+  padding: 20px 24px;
+  background: rgba(13, 13, 16, 0.92);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--hairline);
+  border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  max-width: 240px;
+}
+.feedback-prompt-close {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--panel-2);
+  border: 1px solid var(--hairline);
+  color: var(--text-dim);
+  font-size: 14px;
+  display: grid;
+  place-items: center;
+  cursor: none;
+}
+.feedback-prompt-emoji {
+  font-size: 28px;
+  margin-bottom: 8px;
+}
+.feedback-prompt-card h3 {
+  font-family: var(--sans);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0 0 4px;
+}
+.feedback-prompt-card p {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin: 0 0 14px;
+  line-height: 1.4;
+}
+.feedback-prompt-btn {
+  padding: 8px 16px;
+  background: var(--accent);
+  border: none;
+  border-radius: 8px;
+  color: #000;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: none;
+  width: 100%;
+}
+.feedback-prompt-btn:hover { opacity: 0.85; }
+@keyframes prompt-slide-in {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Mobile feedback prompt */
+@media (max-width: 767px) {
+  .feedback-prompt {
+    bottom: 80px;
+    left: 16px;
+    right: 16px;
+  }
+  .feedback-prompt-card {
+    max-width: none;
+  }
+}

@@ -137,3 +137,7 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# Data files (server-persisted notes/feedback)
+# Keep data/*.json tracked for initial empty state
+# Actual data will be overwritten at runtime

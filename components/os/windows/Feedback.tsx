@@ -2,23 +2,12 @@
 
 import { useState } from "react";
 
-const STORAGE_KEY = "zb-feedback";
-
 export interface FeedbackItem {
   id: string;
   name: string;
   message: string;
   timestamp: string;
-}
-
-export function getFeedbackItems(): FeedbackItem[] {
-  if (typeof window === "undefined") return [];
-  const raw = localStorage.getItem(STORAGE_KEY);
-  return raw ? JSON.parse(raw) : [];
-}
-
-function saveFeedback(items: FeedbackItem[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+  visible: boolean;
 }
 
 export default function FeedbackWindow() {
@@ -28,26 +17,26 @@ export default function FeedbackWindow() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim() || !message.trim()) return;
+    if (!message.trim()) return;
 
-    const item: FeedbackItem = {
-      id: Date.now().toString(36),
-      name: name.trim(),
-      message: message.trim(),
-      timestamp: new Date().toISOString(),
-    };
-
-    const existing = getFeedbackItems();
-    saveFeedback([item, ...existing]);
-
-    // Dispatch event for bubble animation
-    window.dispatchEvent(new CustomEvent("os-feedback", { detail: item }));
-
-    setSubmitted(true);
-    setName("");
-    setMessage("");
-
-    setTimeout(() => setSubmitted(false), 4000);
+    fetch("/api/feedback", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "submit",
+        name: name.trim() || "Anonymous",
+        message: message.trim(),
+      }),
+    })
+      .then((r) => r.json())
+      .then((d) => {
+        // Dispatch event for bubble animation
+        window.dispatchEvent(new CustomEvent("os-feedback", { detail: d.feedback }));
+        setSubmitted(true);
+        setName("");
+        setMessage("");
+        setTimeout(() => setSubmitted(false), 5000);
+      });
   };
 
   if (submitted) {
@@ -57,8 +46,9 @@ export default function FeedbackWindow() {
           <div className="feedback-thanks-emoji">🙏</div>
           <h2>Thank you!</h2>
           <p>
-            Appreciate you taking the time to share your thoughts.
-            <br />— Ziyan
+            Really appreciate you taking the time to share your thoughts.
+            <br />It means a lot.
+            <br /><br />— Ziyan
           </p>
           <button className="feedback-another" onClick={() => setSubmitted(false)}>
             Send another

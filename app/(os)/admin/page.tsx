@@ -15,10 +15,19 @@ function saveOverrides(data: Record<string, any>) {
   localStorage.setItem(ADMIN_STORAGE_KEY, JSON.stringify(data));
 }
 
+interface FeedbackItem {
+  id: string;
+  name: string;
+  message: string;
+  timestamp: string;
+  visible: boolean;
+}
+
 export default function AdminPortal() {
   const [authed, setAuthed] = useState(false);
   const [pass, setPass] = useState("");
   const [saved, setSaved] = useState(false);
+  const [feedbackItems, setFeedbackItems] = useState<FeedbackItem[]>([]);
 
   // Editable fields
   const [title, setTitle] = useState(ZB_DATA.identity.title);
@@ -38,6 +47,11 @@ export default function AdminPortal() {
     if (overrides.location) setLocation(overrides.location);
     if (overrides.email) setEmail(overrides.email);
     if (overrides.phone) setPhone(overrides.phone);
+    // Load feedback
+    fetch("/api/feedback")
+      .then((r) => r.json())
+      .then((d) => setFeedbackItems(d.feedback || []))
+      .catch(() => {});
   }, []);
 
   const handleLogin = (e: React.FormEvent) => {
@@ -173,6 +187,64 @@ export default function AdminPortal() {
           <p className="admin-hint">
             To edit experience, update <code>lib/os-data.ts</code> and redeploy.
           </p>
+        </section>
+
+        {/* Feedback Management */}
+        <section className="admin-section">
+          <h2>Feedback ({feedbackItems.length})</h2>
+          {feedbackItems.length === 0 ? (
+            <p className="admin-hint">No feedback yet.</p>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {feedbackItems.map((f) => (
+                <div key={f.id} className="admin-exp-card" style={{ opacity: f.visible ? 1 : 0.5 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start" }}>
+                    <div>
+                      <strong style={{ color: "var(--accent)" }}>{f.name}</strong>
+                      <p style={{ fontSize: 12, color: "var(--text-dim)", margin: "4px 0" }}>{f.message}</p>
+                      <span style={{ fontSize: 9, color: "var(--text-faint)", fontFamily: "var(--mono)" }}>
+                        {new Date(f.timestamp).toLocaleString()}
+                      </span>
+                    </div>
+                    <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
+                      <button
+                        className="admin-btn"
+                        onClick={() => {
+                          fetch("/api/feedback", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ action: "toggle", id: f.id }),
+                          }).then(() => {
+                            setFeedbackItems((prev) =>
+                              prev.map((item) => item.id === f.id ? { ...item, visible: !item.visible } : item)
+                            );
+                          });
+                        }}
+                      >
+                        {f.visible ? "Hide" : "Show"}
+                      </button>
+                      <button
+                        className="admin-btn"
+                        style={{ color: "var(--red)" }}
+                        onClick={() => {
+                          if (!confirm("Delete this feedback?")) return;
+                          fetch("/api/feedback", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ action: "delete", id: f.id }),
+                          }).then(() => {
+                            setFeedbackItems((prev) => prev.filter((item) => item.id !== f.id));
+                          });
+                        }}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </section>
       </div>
     </div>
