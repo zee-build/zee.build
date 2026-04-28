@@ -1411,7 +1411,7 @@ nextjs-portal { display: none !important; }
 .nc-card-icon { font-size: 14px; }
 .nc-visitors {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 1px;
   background: var(--hairline);
 }

@@ -17,7 +17,7 @@ export default function NotificationCenter({
   onClose: () => void;
 }) {
   const [events, setEvents] = useState<GitEvent[]>([]);
-  const [visitors, setVisitors] = useState({ active: 0, total: 0 });
+  const [visitors, setVisitors] = useState({ active: 0, total: 0, unique: 0 });
 
   useEffect(() => {
     if (!open) return;
@@ -58,8 +58,12 @@ export default function NotificationCenter({
               <span className="nc-visitor-label">Active now</span>
             </div>
             <div className="nc-visitor-stat">
+              <span className="nc-visitor-num">{visitors.unique}</span>
+              <span className="nc-visitor-label">Unique visitors</span>
+            </div>
+            <div className="nc-visitor-stat">
               <span className="nc-visitor-num">{visitors.total}</span>
-              <span className="nc-visitor-label">Total hits</span>
+              <span className="nc-visitor-label">Total visits</span>
             </div>
           </div>
         </div>
