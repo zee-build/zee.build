@@ -21,7 +21,6 @@ export default function AboutWindow() {
     <div className="about">
       <div className="about-side">
         <div className="about-photo" style={{ backgroundImage: "url(/os/pfp.jpeg)", backgroundSize: "cover", backgroundPosition: "center", fontSize: 0 }}>
-          <div className="ring" />
         </div>
         {[
           { k: "Location", v: D.identity.location },

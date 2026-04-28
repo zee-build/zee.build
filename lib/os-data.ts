@@ -31,7 +31,7 @@ export const ZB_DATA = {
     "Automation": ["Make.com", "n8n", "GitHub Actions", "Resend"],
     "Research": ["LLM Eval", "Risk Modeling", "FinTech Compliance"],
   },
-  builds: [
+  builds: [ 
     {
       name: "tarbiya.ai",
       status: "Building" as BuildStatus,
@@ -42,14 +42,14 @@ export const ZB_DATA = {
     {
       name: "NoorBot",
       status: "Shipped" as BuildStatus,
-      desc: "Telegram bot for Islamic Q&A with sourced citations and prayer reminders. 12k+ users.",
+      desc: "Telegram bot for Islamic Q&A with sourced citations and prayer reminders.",
       stack: ["Python", "Telegram", "GPT-4"],
       url: "https://github.com/zee-build/noorbot",
     },
     {
       name: "QueueFlow",
       status: "Shipped" as BuildStatus,
-      desc: "Virtual queueing for clinics in the GCC. Used by 40+ branches.",
+      desc: "Virtual queueing for clinics in the GCC.",
       stack: ["Flutter", "Firebase", ".NET"],
       url: "https://github.com/zee-build/queueflow",
     },
@@ -97,7 +97,7 @@ export const ZB_DATA = {
       bullets: [
         "Co-built Bank Onboarding Orchestrator APIs in .NET and Azure DevOps, automating OCR-based KYC flows.",
         "Architected Make.com automation pipelines for document expiry alerting using SQL Server, Google Sheets, and SendGrid.",
-        "Engineered customer communication infrastructure covering 23 SMS/email templates with SendGrid integration.",
+        "Engineered customer communication infrastructure covering SMS/email templates with SendGrid integration.",
         "Led QA automation for Android app using Maestro and ADB screen capture for AI-assisted test generation.",
       ],
     },
@@ -107,8 +107,6 @@ export const ZB_DATA = {
       when: "Jan 2023 — Nov 2024",
       bullets: [
         "Automated finance workflows using Power Automate, reducing manual input by 30% across subsidiaries.",
-        "Implemented WhatsApp automation for B2B/B2C communication, improving response time by 40%.",
-        "Integrated HubSpot CRM for omnichannel support across UAE, Saudi Arabia, and India.",
       ],
     },
     {
@@ -123,7 +121,7 @@ export const ZB_DATA = {
     },
     {
       co: "SAZN Network",
-      role: "Chief Technology Officer & Co-founder",
+      role: "Technology Officer & Co-founder",
       when: "Jan 2019 — Jun 2022",
       bullets: [
         "Co-founded and led technical operations of a digital marketing and automation company for 3+ years.",

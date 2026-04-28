@@ -1,39 +1,24 @@
 "use client";
 
-import { useState } from "react";
 import Image from "next/image";
 
 interface PhotoWidgetProps {
-  onOpenAbout: () => void;
+  onClick: () => void;
 }
 
-export default function PhotoWidget({ onOpenAbout }: PhotoWidgetProps) {
-  const [hovered, setHovered] = useState(false);
-
+export default function PhotoWidget({ onClick }: PhotoWidgetProps) {
   return (
-    <button
-      className={`photo-widget${hovered ? " hovered" : ""}`}
-      onClick={onOpenAbout}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      title="Open About"
-    >
+    <button className="photo-widget" onClick={onClick} title="View photo">
       <div className="photo-widget-img">
         <Image
           src="/os/mycorner.jpeg"
-          alt="Ziyan"
+          alt="My Corner"
           fill
-          sizes="80px"
-          style={{ objectFit: "cover", objectPosition: "center top" }}
+          sizes="140px"
+          style={{ objectFit: "cover", objectPosition: "center" }}
           priority
         />
       </div>
-      {hovered && (
-        <div className="photo-widget-tooltip">
-          Ziyan Bin Anoos
-          <span>Click to open →</span>
-        </div>
-      )}
     </button>
   );
 }

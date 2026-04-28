@@ -18,6 +18,7 @@ import TrashWindow from "@/components/os/windows/Trash";
 import NotesWindow from "@/components/os/windows/Notes";
 import NotificationCenter from "@/components/os/NotificationCenter";
 import PhotoWidget from "@/components/os/PhotoWidget";
+import Image from "next/image";
 
 interface WinState {
   id: string;
@@ -43,6 +44,11 @@ const APP_REGISTRY: Record<string, {
   terminal: { title: "terminal — zsh",                meta: "80×24",         w: 720, h: 460, render: () => <TerminalWindow /> },
   trash:    { title: "Trash — Archived Ideas",        meta: "5 items",       w: 700, h: 460, render: () => <TrashWindow /> },
   notes:    { title: "Notes",                         meta: "~/notes",       w: 800, h: 520, render: () => <NotesWindow /> },
+  photo:    { title: "My Corner",                     meta: "photo.jpeg",    w: 520, h: 600, render: () => (
+    <div style={{ width: "100%", height: "100%", position: "relative", background: "#000" }}>
+      <Image src="/os/mycorner.jpeg" alt="My Corner" fill style={{ objectFit: "contain" }} sizes="520px" />
+    </div>
+  )},
 };
 
 const ALL_APP_IDS = Object.keys(APP_REGISTRY);
@@ -191,7 +197,7 @@ export default function OSPage() {
       </div>
 
       {/* Photo widget */}
-      <PhotoWidget onOpenAbout={() => openApp("about")} />
+      <PhotoWidget onClick={() => openApp("photo")} />
 
       {/* Custom cursor */}
       {showCursor && <Cursor />}
