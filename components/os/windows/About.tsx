@@ -20,8 +20,7 @@ export default function AboutWindow() {
   return (
     <div className="about">
       <div className="about-side">
-        <div className="about-photo">
-          ZB
+        <div className="about-photo" style={{ backgroundImage: "url(/os/pfp.jpeg)", backgroundSize: "cover", backgroundPosition: "center", fontSize: 0 }}>
           <div className="ring" />
         </div>
         {[

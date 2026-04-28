@@ -17,6 +17,7 @@ import TerminalWindow from "@/components/os/windows/Terminal";
 import TrashWindow from "@/components/os/windows/Trash";
 import NotesWindow from "@/components/os/windows/Notes";
 import NotificationCenter from "@/components/os/NotificationCenter";
+import PhotoWidget from "@/components/os/PhotoWidget";
 
 interface WinState {
   id: string;
@@ -188,6 +189,9 @@ export default function OSPage() {
       <div className="float-widget" title="Daily puzzle coming soon">
         🧩
       </div>
+
+      {/* Photo widget */}
+      <PhotoWidget onOpenAbout={() => openApp("about")} />
 
       {/* Custom cursor */}
       {showCursor && <Cursor />}
