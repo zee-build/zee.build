@@ -186,7 +186,7 @@ export default function OSPage() {
   if (isMobile) return <MobileOS />;
 
   return (
-    <div className="os-root">
+    <div className={`os-root${showCursor ? " custom-cursor-on" : ""}`}>
       {/* Wallpaper */}
       {wallpaperType === "particles"
         ? <Wallpaper density={particleDensity} />
