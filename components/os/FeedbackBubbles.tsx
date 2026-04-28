@@ -19,14 +19,14 @@ export default function FeedbackBubbles() {
     fetch("/api/feedback")
       .then((r) => r.json())
       .then((d) => {
-        const visible = (d.feedback || []).filter((f: any) => f.visible).slice(0, 4);
-        const initial = visible.map((item: any, i: number) => ({
+        const all = d.feedback || [];
+        const initial = all.map((item: any, i: number) => ({
           id: item.id,
           name: item.name,
           message: item.message.slice(0, 60) + (item.message.length > 60 ? "..." : ""),
-          x: 55 + Math.random() * 25,
-          y: 15 + i * 20,
-          opacity: 0.75 - i * 0.12,
+          x: 45 + Math.random() * 40,
+          y: 10 + (i * 18) % 75,
+          opacity: Math.max(0.4, 0.9 - i * 0.06),
         }));
         setBubbles(initial);
       })
@@ -45,7 +45,7 @@ export default function FeedbackBubbles() {
         y: 25 + Math.random() * 35,
         opacity: 1,
       };
-      setBubbles((prev) => [newBubble, ...prev].slice(0, 5));
+      setBubbles((prev) => [newBubble, ...prev]);
     };
     window.addEventListener("os-feedback", handler);
     return () => window.removeEventListener("os-feedback", handler);
