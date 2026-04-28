@@ -16,6 +16,7 @@ import ContactWindow from "@/components/os/windows/Contact";
 import TerminalWindow from "@/components/os/windows/Terminal";
 import TrashWindow from "@/components/os/windows/Trash";
 import NotesWindow from "@/components/os/windows/Notes";
+import NotepadWindow from "@/components/os/windows/Notepad";
 import NotificationCenter from "@/components/os/NotificationCenter";
 import PhotoWidget from "@/components/os/PhotoWidget";
 import Image from "next/image";
@@ -49,6 +50,7 @@ const APP_REGISTRY: Record<string, {
       <Image src="/os/mycorner.jpeg" alt="My Corner" fill style={{ objectFit: "contain" }} sizes="520px" />
     </div>
   )},
+  notepad:  { title: "My Notepad",                    meta: "private",       w: 700, h: 480, render: () => <NotepadWindow /> },
 };
 
 const ALL_APP_IDS = Object.keys(APP_REGISTRY);
@@ -99,6 +101,16 @@ export default function OSPage() {
     }, 30000);
     return () => clearInterval(interval);
   }, []);
+
+  // Listen for custom app-open events (from terminal)
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const id = (e as CustomEvent).detail;
+      if (id && APP_REGISTRY[id]) openApp(id);
+    };
+    window.addEventListener("os-open-app", handler);
+    return () => window.removeEventListener("os-open-app", handler);
+  });
 
   const openApp = useCallback((id: string) => {
     if (id === "home") { setWindows([]); setFocused(null); return; }

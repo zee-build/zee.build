@@ -89,7 +89,17 @@ export default function TerminalWindow() {
       out.push({ type: "out", text: "  cat about    · show bio" });
       out.push({ type: "out", text: "  sudo hire me · attempt elevated access" });
       out.push({ type: "out", text: "  admin <pass> · admin portal (restricted)" });
+      out.push({ type: "out", text: "  notepad      · open private notepad (requires admin)" });
       out.push({ type: "out", text: "  clear        · clear the terminal" });
+    } else if (c === "notepad") {
+      const isAdmin = typeof window !== "undefined" && sessionStorage.getItem("zb-admin") === "1";
+      if (isAdmin) {
+        out.push({ type: "out", text: "Opening notepad...", cls: "ok" });
+        // Dispatch custom event to open notepad window
+        setTimeout(() => window.dispatchEvent(new CustomEvent("os-open-app", { detail: "notepad" })), 200);
+      } else {
+        out.push({ type: "out", text: "[auth] Access denied. Run 'admin <pass>' first.", cls: "err" });
+      }
     } else if (c === "whoami") {
       out.push({ type: "out", text: `${D.identity.name}, Builder.`, cls: "ok" });
     } else if (c === "ls builds" || c === "ls /builds") {
