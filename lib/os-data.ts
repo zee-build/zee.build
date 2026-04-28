@@ -19,7 +19,7 @@ export const ZB_DATA = {
     languages: 6,
     years: "5+",
     email: "ziyanalibusiness@gmail.com",
-    phone: "+971 50 270 4146",
+    phone: "+971 50 XXX XXXX",
     linkedin: "linkedin.com/in/ziyanbinanoos",
     github: "github.com/zee-build",
   },
