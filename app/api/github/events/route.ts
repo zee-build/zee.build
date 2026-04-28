@@ -1,9 +1,11 @@
 import { NextResponse } from 'next/server';
 
-const GITHUB_ORG = 'zee-build';
+const GITHUB_USER = 'zee-build';
 const CACHE_TTL = 120; // 2 minutes
 
 let cache: { data: any; ts: number } | null = null;
+
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
   // Return cache if fresh
@@ -19,28 +21,20 @@ export async function GET() {
       headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
     }
 
-    // Try org events first, then user events as fallback
-    let raw: any[] = [];
-    
-    const orgRes = await fetch(
-      `https://api.github.com/orgs/${GITHUB_ORG}/events?per_page=30`,
-      { headers, next: { revalidate: CACHE_TTL } }
+    const res = await fetch(
+      `https://api.github.com/users/${GITHUB_USER}/events/public?per_page=30`,
+      { headers }
     );
-    
-    if (orgRes.ok) {
-      raw = await orgRes.json();
-    } else {
-      // Fallback: try as user
-      const userRes = await fetch(
-        `https://api.github.com/users/${GITHUB_ORG}/events/public?per_page=30`,
-        { headers, next: { revalidate: CACHE_TTL } }
-      );
-      if (userRes.ok) {
-        raw = await userRes.json();
-      }
+
+    if (!res.ok) {
+      return NextResponse.json({ events: [], error: `GitHub ${res.status}` }, { status: 502 });
     }
 
-    if (!Array.isArray(raw)) raw = [];
+    const raw = await res.json();
+
+    if (!Array.isArray(raw)) {
+      return NextResponse.json({ events: [], error: 'Invalid response' }, { status: 502 });
+    }
 
     const events = raw
       .filter((e: any) => e.type === 'PushEvent')
