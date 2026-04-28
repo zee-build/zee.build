@@ -17,6 +17,8 @@ import TerminalWindow from "@/components/os/windows/Terminal";
 import TrashWindow from "@/components/os/windows/Trash";
 import NotesWindow from "@/components/os/windows/Notes";
 import NotepadWindow from "@/components/os/windows/Notepad";
+import FeedbackWindow from "@/components/os/windows/Feedback";
+import FeedbackBubbles from "@/components/os/FeedbackBubbles";
 import NotificationCenter from "@/components/os/NotificationCenter";
 import PhotoWidget from "@/components/os/PhotoWidget";
 import Image from "next/image";
@@ -51,6 +53,7 @@ const APP_REGISTRY: Record<string, {
     </div>
   )},
   notepad:  { title: "My Notepad",                    meta: "private",       w: 700, h: 480, render: () => <NotepadWindow /> },
+  feedback: { title: "Feedback",                      meta: "public",        w: 480, h: 420, render: () => <FeedbackWindow /> },
 };
 
 const ALL_APP_IDS = Object.keys(APP_REGISTRY);
@@ -70,6 +73,7 @@ export default function OSPage() {
   const [showTweaks, setShowTweaks] = useState(false);
   const [showNotifs, setShowNotifs] = useState(false);
   const [visitorCount, setVisitorCount] = useState(0);
+  const [adminMode, setAdminMode] = useState(false);
 
   // Apply accent CSS vars
   useEffect(() => {
@@ -108,8 +112,15 @@ export default function OSPage() {
       const id = (e as CustomEvent).detail;
       if (id && APP_REGISTRY[id]) openApp(id);
     };
+    const adminHandler = () => setAdminMode(true);
     window.addEventListener("os-open-app", handler);
-    return () => window.removeEventListener("os-open-app", handler);
+    window.addEventListener("os-admin-unlock", adminHandler);
+    // Check if already admin
+    if (sessionStorage.getItem("zb-admin") === "1") setAdminMode(true);
+    return () => {
+      window.removeEventListener("os-open-app", handler);
+      window.removeEventListener("os-admin-unlock", adminHandler);
+    };
   });
 
   const openApp = useCallback((id: string) => {
@@ -173,7 +184,7 @@ export default function OSPage() {
 
       {/* OS Chrome */}
       <Menubar activeApp={activeTitle} />
-      <DesktopIcons onOpen={openApp} />
+      <DesktopIcons onOpen={openApp} adminMode={adminMode} />
 
       {/* Windows */}
       {windows
@@ -207,6 +218,9 @@ export default function OSPage() {
       <div className="float-widget" title="Daily puzzle coming soon">
         🧩
       </div>
+
+      {/* Feedback bubbles */}
+      <FeedbackBubbles />
 
       {/* Photo widget */}
       <PhotoWidget onClick={() => openApp("photo")} />

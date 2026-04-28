@@ -1816,3 +1816,241 @@ nextjs-portal { display: none !important; }
 .mob-sheet-body .notepad-textarea {
   min-height: 300px;
 }
+
+/* —— Feedback Window —— */
+.feedback {
+  padding: 28px 32px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+.feedback.submitted {
+  align-items: center;
+  justify-content: center;
+}
+.feedback-header h2 {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 24px;
+  color: var(--text);
+  margin: 0 0 8px;
+}
+.feedback-header p {
+  font-size: 13px;
+  color: var(--text-dim);
+  margin: 0 0 24px;
+}
+.feedback-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.feedback-field label {
+  display: block;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-faint);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.feedback-field input,
+.feedback-field textarea {
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--panel-2);
+  border: 1px solid var(--hairline);
+  border-radius: 10px;
+  color: var(--text);
+  font-size: 14px;
+  font-family: var(--sans);
+  outline: none;
+  transition: border-color 0.15s;
+  resize: none;
+}
+.feedback-field input:focus,
+.feedback-field textarea:focus {
+  border-color: var(--accent);
+}
+.feedback-field input::placeholder,
+.feedback-field textarea::placeholder {
+  color: var(--text-faint);
+}
+.feedback-submit {
+  padding: 12px 20px;
+  background: var(--accent);
+  border: none;
+  border-radius: 10px;
+  color: #000;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: none;
+  transition: opacity 0.15s;
+  margin-top: 8px;
+}
+.feedback-submit:hover { opacity: 0.85; }
+.feedback-thanks {
+  text-align: center;
+}
+.feedback-thanks-emoji {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+.feedback-thanks h2 {
+  font-family: var(--display);
+  font-size: 28px;
+  font-weight: 400;
+  color: var(--text);
+  margin: 0 0 12px;
+}
+.feedback-thanks p {
+  font-size: 14px;
+  color: var(--text-dim);
+  line-height: 1.6;
+}
+.feedback-another {
+  margin-top: 20px;
+  padding: 8px 16px;
+  background: var(--panel-2);
+  border: 1px solid var(--hairline);
+  border-radius: 8px;
+  color: var(--text-dim);
+  font-size: 12px;
+  cursor: none;
+}
+.feedback-another:hover { color: var(--text); }
+
+/* —— Feedback Bubbles —— */
+.feedback-bubbles {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  overflow: hidden;
+}
+.feedback-bubble {
+  position: absolute;
+  max-width: 200px;
+  padding: 10px 14px;
+  background: rgba(13, 13, 16, 0.75);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+  animation: bubble-float 6s ease-in-out infinite alternate;
+}
+.feedback-bubble-name {
+  display: block;
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--accent);
+  letter-spacing: 0.08em;
+  margin-bottom: 4px;
+}
+.feedback-bubble-msg {
+  display: block;
+  font-size: 11px;
+  color: var(--text-dim);
+  line-height: 1.4;
+}
+@keyframes bubble-float {
+  0% { transform: translateY(0) rotate(-0.5deg); }
+  100% { transform: translateY(-8px) rotate(0.5deg); }
+}
+
+/* Mobile feedback override */
+.mob-sheet-body .feedback {
+  padding: 20px 16px;
+}
+
+/* —— Admin Portal —— */
+.admin-login-wrap {
+  position: fixed; inset: 0; background: #000;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); color: var(--text);
+}
+.admin-login-form {
+  display: flex; flex-direction: column; gap: 16px;
+  padding: 40px; background: var(--panel); border: 1px solid var(--hairline);
+  border-radius: 14px; width: 320px;
+}
+.admin-login-form h2 { font-family: var(--display); font-style: italic; font-size: 22px; margin: 0; }
+.admin-login-form p { font-size: 12px; color: var(--text-dim); margin: 0; }
+.admin-login-form input {
+  padding: 10px 14px; background: var(--panel-2); border: 1px solid var(--hairline);
+  border-radius: 8px; color: var(--text); font-size: 14px; outline: none;
+}
+.admin-login-form button[type="submit"] {
+  padding: 10px 14px; background: var(--accent); border: none; border-radius: 8px;
+  color: #000; font-weight: 600; font-size: 13px; cursor: pointer;
+}
+.admin-login-form a { font-size: 11px; color: var(--text-faint); text-align: center; text-decoration: none; }
+
+.admin-wrap {
+  position: fixed; inset: 0; background: var(--bg);
+  overflow-y: auto; font-family: var(--sans); color: var(--text); padding: 40px;
+}
+.admin-container { max-width: 900px; margin: 0 auto; }
+.admin-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 32px; flex-wrap: wrap; gap: 12px;
+}
+.admin-header h1 { font-family: var(--display); font-style: italic; font-size: 28px; margin: 0; }
+.admin-header-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.admin-saved { color: var(--green); font-family: var(--mono); font-size: 11px; }
+.admin-btn {
+  padding: 8px 14px; background: var(--panel-2); border: 1px solid var(--hairline);
+  border-radius: 8px; color: var(--text-dim); font-size: 11px; cursor: pointer;
+  text-decoration: none; font-family: var(--mono);
+}
+.admin-btn:hover { color: var(--text); border-color: var(--hairline-strong); }
+.admin-btn.primary { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 600; }
+.admin-btn.primary:hover { opacity: 0.85; }
+
+.admin-section { margin-bottom: 36px; }
+.admin-section h2 {
+  font-size: 14px; color: var(--accent); font-family: var(--mono);
+  letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 16px;
+  padding-bottom: 8px; border-bottom: 1px solid var(--hairline);
+}
+.admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.admin-field { display: flex; flex-direction: column; gap: 4px; }
+.admin-field.full { grid-column: 1 / -1; }
+.admin-field label {
+  font-family: var(--mono); font-size: 10px; color: var(--text-faint);
+  letter-spacing: 0.08em; text-transform: uppercase;
+}
+.admin-field input, .admin-field textarea {
+  padding: 10px 14px; background: var(--panel-2); border: 1px solid var(--hairline);
+  border-radius: 8px; color: var(--text); font-size: 13px; outline: none;
+  font-family: var(--sans); resize: vertical; width: 100%;
+}
+.admin-field input:disabled { opacity: 0.5; cursor: not-allowed; }
+.admin-field input:focus, .admin-field textarea:focus { border-color: var(--accent); }
+
+.admin-builds-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.admin-build-card {
+  background: var(--panel); border: 1px solid var(--hairline);
+  border-radius: 10px; padding: 14px;
+}
+.admin-build-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.admin-build-name { font-weight: 600; font-size: 13px; }
+.admin-build-status {
+  font-size: 9px; padding: 2px 8px; border-radius: 99px;
+  font-family: var(--mono); letter-spacing: 0.05em;
+}
+.admin-build-status.shipped { background: rgba(74,222,128,0.1); color: var(--green); }
+.admin-build-status.building { background: rgba(0,212,255,0.1); color: var(--cyan); }
+.admin-build-desc { font-size: 11px; color: var(--text-dim); margin: 0 0 8px; }
+.admin-build-stack { display: flex; gap: 4px; flex-wrap: wrap; }
+.admin-build-stack span {
+  font-size: 9px; padding: 2px 6px; background: var(--panel-2);
+  border-radius: 4px; color: var(--text-faint); font-family: var(--mono);
+}
+.admin-exp-card {
+  background: var(--panel); border: 1px solid var(--hairline);
+  border-radius: 10px; padding: 12px 14px; margin-bottom: 8px; font-size: 13px;
+}
+.admin-exp-when { display: block; font-size: 10px; color: var(--text-faint); margin-top: 4px; font-family: var(--mono); }
+.admin-hint { font-size: 11px; color: var(--text-faint); margin-top: 12px; }
+.admin-hint code { background: var(--panel-2); padding: 2px 6px; border-radius: 4px; font-family: var(--mono); }

@@ -74,8 +74,14 @@ export default function TerminalWindow() {
       const pass = parts[1] || "";
       const adminPass = process.env.NEXT_PUBLIC_ADMIN_PASS || "zeebuild2026";
       if (pass === adminPass) {
-        out.push({ type: "out", text: "[auth] Access granted. Opening admin portal...", cls: "ok" });
-        setTimeout(() => { window.open("/admin", "_self"); }, 600);
+        sessionStorage.setItem("zb-admin", "1");
+        out.push({ type: "out", text: "╔══════════════════════════════════╗", cls: "ok" });
+        out.push({ type: "out", text: "║   ADMIN MODE ACTIVATED           ║", cls: "ok" });
+        out.push({ type: "out", text: "╚══════════════════════════════════╝", cls: "ok" });
+        out.push({ type: "out", text: "Admin folder unlocked on desktop.", cls: "dim" });
+        out.push({ type: "out", text: "Available: notepad, admin portal (/admin)", cls: "dim" });
+        // Dispatch event to show admin folder on desktop
+        window.dispatchEvent(new CustomEvent("os-admin-unlock"));
       } else if (!pass) {
         out.push({ type: "out", text: "Usage: admin <password>", cls: "dim" });
         out.push({ type: "out", text: "Hint: authorized personnel only.", cls: "dim" });

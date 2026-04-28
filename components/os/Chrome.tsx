@@ -132,14 +132,18 @@ const DESKTOP_ITEMS = [
   { id: "trash",    label: "Trash/",      kind: "trash",    tone: "danger" as Tone },
 ];
 
-export function DesktopIcons({ onOpen }: { onOpen: (id: string) => void }) {
+export function DesktopIcons({ onOpen, adminMode }: { onOpen: (id: string) => void; adminMode?: boolean }) {
   const [sel, setSel] = useState<string | null>(null);
+
+  const items = adminMode
+    ? [...DESKTOP_ITEMS, { id: "notepad", label: "Admin/", kind: "notes", tone: "cyan" as Tone }]
+    : DESKTOP_ITEMS;
 
   return (
     <>
       <div className="desk-icon-hint">// Double-click to open</div>
       <div className="desktop-icons">
-        {DESKTOP_ITEMS.map((it) => (
+        {items.map((it) => (
           <button
             key={it.id}
             className={"desk-icon" + (sel === it.id ? " sel" : "")}
@@ -163,6 +167,7 @@ const DOCK_ITEMS = [
   { id: "builds",   label: "Builds",   kind: "builds" },
   { id: "resume",   label: "Resume",   kind: "resume" },
   { id: "contact",  label: "Contact",  kind: "contact" },
+  { id: "feedback", label: "Feedback", kind: "contact" },
   { id: "terminal", label: "Terminal", kind: "terminal", tone: "cyan" as Tone },
   { id: "divider" },
   { id: "trash",    label: "Trash",    kind: "trash", tone: "danger" as Tone },
