@@ -7,6 +7,7 @@ const PHOTOS = [
   { src: "/os/mycorner.jpeg", id: "photo", x: 75, y: 55 },
   { src: "/os/bike.jpeg", id: "photo2", x: 82, y: 25 },
   { src: "/os/small-me.jpeg", id: "photo3", x: 68, y: 35 },
+  { src: "/os/smallme2.jpeg", id: "photo4", x: 60, y: 60 },
 ];
 
 interface PhotoWidgetProps {
@@ -99,7 +100,7 @@ export default function PhotoWidget({ onClick }: PhotoWidgetProps) {
           id={photo.id}
           startX={photo.x}
           startY={photo.y}
-          rotation={[-3, 2, -1.5][i]}
+          rotation={[-3, 2, -1.5, 1][i]}
           onClick={() => onClick(photo.id)}
         />
       ))}

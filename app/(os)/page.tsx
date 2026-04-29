@@ -63,6 +63,11 @@ const APP_REGISTRY: Record<string, {
       <Image src="/os/small-me.jpeg" alt="Me" fill style={{ objectFit: "contain" }} sizes="420px" />
     </div>
   )},
+  photo4:   { title: "Baby Me",                       meta: "smallme2.jpeg", w: 420, h: 520, render: () => (
+    <div style={{ width: "100%", height: "100%", position: "relative", background: "#000" }}>
+      <Image src="/os/smallme2.jpeg" alt="Baby Me" fill style={{ objectFit: "contain" }} sizes="420px" />
+    </div>
+  )},
   notepad:  { title: "My Notepad",                    meta: "private",       w: 700, h: 480, render: () => <NotepadWindow /> },
   feedback: { title: "Feedback",                      meta: "public",        w: 480, h: 420, render: () => <FeedbackWindow /> },
 };
