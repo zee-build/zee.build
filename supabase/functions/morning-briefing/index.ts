@@ -8,7 +8,7 @@ const RESEND_KEY = Deno.env.get("RESEND_API_KEY") || "";
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") || "";
 const SUPABASE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
 const OPENAI_KEY = Deno.env.get("OPENAI_API_KEY") || "";
-const ZEE_EMAIL = Deno.env.get("ZEE_EMAIL") || "zventures@gmail.com";
+const ZEE_EMAIL = Deno.env.get("ZEE_EMAIL") || "contactzventures@gmail.com";
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
