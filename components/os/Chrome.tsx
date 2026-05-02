@@ -15,6 +15,14 @@ export function Glyph({ kind, tone }: { kind: string; tone?: Tone }) {
       : "rgba(255,140,66,0.12)";
 
   const icons: Record<string, React.ReactNode> = {
+    ascend: (
+      <svg viewBox="0 0 32 32" fill="none" width={48} height={48}>
+        <path d="M16 3L28 28H4L16 3z" stroke={stroke} strokeWidth="1.4" fill={fill} />
+        <path d="M16 10v10" stroke={stroke} strokeWidth="1.4" strokeLinecap="round" />
+        <path d="M12 20h8" stroke={stroke} strokeWidth="1.2" strokeLinecap="round" />
+        <circle cx="16" cy="24" r="1.2" fill={stroke} />
+      </svg>
+    ),
     about: (
       <svg viewBox="0 0 32 32" fill="none" width={48} height={48}>
         <path d="M3 8 h10 l2 2 h14 v18 h-26 z" stroke={stroke} strokeWidth="1.4" fill={fill} />
@@ -143,7 +151,7 @@ export function DesktopIcons({ onOpen, adminMode }: { onOpen: (id: string) => vo
   const [sel, setSel] = useState<string | null>(null);
 
   const items = adminMode
-    ? [...DESKTOP_ITEMS, { id: "notepad", label: "Admin/", kind: "notes", tone: "cyan" as Tone }]
+    ? [...DESKTOP_ITEMS, { id: "notepad", label: "Admin/", kind: "notes", tone: "cyan" as Tone }, { id: "ascend", label: "ASCEND.app", kind: "ascend" }]
     : DESKTOP_ITEMS;
 
   return (
@@ -183,14 +191,20 @@ const DOCK_ITEMS = [
 export function Dock({
   onOpen,
   openApps,
+  adminMode,
 }: {
   onOpen: (id: string) => void;
   openApps: string[];
+  adminMode?: boolean;
 }) {
+  const items = adminMode
+    ? [...DOCK_ITEMS.slice(0, -2), { id: "ascend", label: "ASCEND", kind: "ascend" }, ...DOCK_ITEMS.slice(-2)]
+    : DOCK_ITEMS;
+
   return (
     <div className="dock-wrap">
       <div className="dock">
-        {DOCK_ITEMS.map((it, i) =>
+        {items.map((it, i) =>
           it.id === "divider" ? (
             <div key={i} className="dock-divider" />
           ) : (
