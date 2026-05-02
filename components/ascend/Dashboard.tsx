@@ -73,10 +73,10 @@ export default function Dashboard({ onBlockTap }: Props) {
     if (cached && cachedAt && Date.now() - Number(cachedAt) < 3600000) {
       setWeather(cached);
     } else {
-      fetch("https://wttr.in/Dubai?format=%C+%t")
-        .then((r) => r.text())
-        .then((t) => {
-          const w = t.trim();
+      fetch("/api/ascend/weather")
+        .then((r) => r.json())
+        .then((data) => {
+          const w = data.weather || "";
           setWeather(w);
           localStorage.setItem("ascend-weather", w);
           localStorage.setItem("ascend-weather-at", String(Date.now()));

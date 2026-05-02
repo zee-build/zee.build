@@ -41,9 +41,9 @@ export default function JarvisGreeting({ onDismiss }: Props) {
         if (cached && cachedAt && Date.now() - Number(cachedAt) < 3600000) {
           wx = cached;
         } else {
-          const r = await fetch("https://wttr.in/Dubai?format=%C+%t");
-          wx = await r.text();
-          wx = wx.trim();
+          const r = await fetch("/api/ascend/weather");
+          const data = await r.json();
+          wx = data.weather || "Weather unavailable";
           localStorage.setItem("ascend-weather", wx);
           localStorage.setItem("ascend-weather-at", String(Date.now()));
         }
