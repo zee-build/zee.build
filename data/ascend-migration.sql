@@ -1,0 +1,98 @@
+-- ASCEND OS — Supabase Schema Migration
+-- Run this in your Supabase SQL Editor
+
+-- Projects (dynamic — user adds ventures here)
+create table if not exists projects (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  type text, -- 'agency' | 'saas' | 'freelance' | 'learning' | 'job' | 'other'
+  goal text,
+  weekly_hours_target int default 5,
+  color text default '#C9A84C',
+  icon text default '⚡',
+  active boolean default true,
+  created_at timestamptz default now()
+);
+
+-- Daily habit logs
+create table if not exists habit_logs (
+  id uuid primary key default gen_random_uuid(),
+  date date not null default current_date,
+  habit_id text not null,
+  completed boolean default false,
+  value int default 0,
+  created_at timestamptz default now()
+);
+
+-- Schedule block logs
+create table if not exists block_logs (
+  id uuid primary key default gen_random_uuid(),
+  date date not null default current_date,
+  block_index int not null,
+  completed boolean default false,
+  project_id uuid references projects(id),
+  work_description text,
+  created_at timestamptz default now()
+);
+
+-- Income entries
+create table if not exists income_entries (
+  id uuid primary key default gen_random_uuid(),
+  month text not null, -- 'YYYY-MM'
+  stream text not null,
+  amount_aed numeric not null,
+  note text,
+  created_at timestamptz default now()
+);
+
+-- Streaks
+create table if not exists streaks (
+  id uuid primary key default gen_random_uuid(),
+  habit_id text unique not null,
+  current_streak int default 0,
+  longest_streak int default 0,
+  last_completed date,
+  updated_at timestamptz default now()
+);
+
+-- Journal entries
+create table if not exists journal_entries (
+  id uuid primary key default gen_random_uuid(),
+  date date not null default current_date,
+  type text, -- 'block_insight' | 'weekly_review' | 'reading_note'
+  question text,
+  answer text,
+  project_id uuid references projects(id),
+  created_at timestamptz default now()
+);
+
+-- Trade logs
+create table if not exists trade_logs (
+  id uuid primary key default gen_random_uuid(),
+  date date not null default current_date,
+  symbol text,
+  direction text,
+  pnl_aed numeric,
+  notes text,
+  created_at timestamptz default now()
+);
+
+-- Seed default projects
+insert into projects (name, type, goal, weekly_hours_target, color, icon) values
+  ('tarbiya.ai', 'saas', 'Get to 163 paying subscribers at $9.99/mo', 10, '#f59e0b', '📖'),
+  ('Internet Money', 'agency', 'Land first paying AI automation client in UAE', 8, '#4ade80', '🏦'),
+  ('Yuze', 'job', 'Deliver quality work, build skills for job upgrade', 40, '#60a5fa', '⚡'),
+  ('Job Hunt', 'job', 'Land AED 18-25K/month fintech role in UAE', 5, '#a78bfa', '💼'),
+  ('OpenClaw Trading', 'other', 'Grow $100 to $1000 with automated strategy', 3, '#fb7185', '📊'),
+  ('Pure Bean', 'other', 'Understand monthly profit, find ways to grow', 2, '#94a3b8', '☕');
+
+-- Initialize streaks for default habits
+insert into streaks (habit_id, current_streak, longest_streak) values
+  ('fajr', 0, 0),
+  ('water', 0, 0),
+  ('workout', 0, 0),
+  ('leetcode', 0, 0),
+  ('reading', 0, 0),
+  ('tarbiya', 0, 0),
+  ('job', 0, 0),
+  ('sleep', 0, 0);

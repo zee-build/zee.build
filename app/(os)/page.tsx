@@ -18,9 +18,11 @@ import TrashWindow from "@/components/os/windows/Trash";
 import NotesWindow from "@/components/os/windows/Notes";
 import NotepadWindow from "@/components/os/windows/Notepad";
 import FeedbackWindow from "@/components/os/windows/Feedback";
+import AscendWindow from "@/components/os/windows/Ascend";
 import FeedbackBubbles from "@/components/os/FeedbackBubbles";
 import FeedbackPrompt from "@/components/os/FeedbackPrompt";
 import NotificationCenter from "@/components/os/NotificationCenter";
+import { startAscendNotifications } from "@/lib/ascend/notifications";
 import PhotoWidget from "@/components/os/PhotoWidget";
 import Image from "next/image";
 
@@ -70,6 +72,7 @@ const APP_REGISTRY: Record<string, {
   )},
   notepad:  { title: "My Notepad",                    meta: "private",       w: 700, h: 480, render: () => <NotepadWindow /> },
   feedback: { title: "Feedback",                      meta: "public",        w: 480, h: 420, render: () => <FeedbackWindow /> },
+  ascend:   { title: "ASCEND OS",                     meta: "personal AI OS", w: 420, h: 680, render: () => <AscendWindow /> },
 };
 
 const ALL_APP_IDS = Object.keys(APP_REGISTRY);
@@ -120,6 +123,12 @@ export default function OSPage() {
         .catch(() => {});
     }, 30000);
     return () => clearInterval(interval);
+  }, []);
+
+  // ASCEND notification engine
+  useEffect(() => {
+    const cleanup = startAscendNotifications();
+    return cleanup;
   }, []);
 
   // Listen for custom app-open events (from terminal)
@@ -228,7 +237,7 @@ export default function OSPage() {
         })}
 
       {/* Dock */}
-      <Dock onOpen={openApp} openApps={openApps} />
+      <Dock onOpen={openApp} openApps={openApps} adminMode={adminMode} />
 
       {/* Feedback bubbles */}
       <FeedbackBubbles />

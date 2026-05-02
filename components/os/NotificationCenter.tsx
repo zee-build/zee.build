@@ -9,6 +9,12 @@ interface GitEvent {
   ago: string;
 }
 
+interface AscendNotif {
+  id: string;
+  text: string;
+  time: string;
+}
+
 export default function NotificationCenter({
   open,
   onClose,
@@ -18,6 +24,7 @@ export default function NotificationCenter({
 }) {
   const [events, setEvents] = useState<GitEvent[]>([]);
   const [visitors, setVisitors] = useState({ active: 0, total: 0, unique: 0 });
+  const [ascendNotifs, setAscendNotifs] = useState<AscendNotif[]>([]);
 
   useEffect(() => {
     if (!open) return;
@@ -31,6 +38,12 @@ export default function NotificationCenter({
       .then((r) => r.json())
       .then((d) => setVisitors(d))
       .catch(() => {});
+
+    // Load ASCEND notifications from localStorage
+    try {
+      const saved = localStorage.getItem("ascend-notifications");
+      if (saved) setAscendNotifs(JSON.parse(saved));
+    } catch { /* ignore */ }
   }, [open]);
 
   return (
@@ -92,6 +105,26 @@ export default function NotificationCenter({
             )}
           </div>
         </div>
+
+        {/* ASCEND notifications */}
+        {ascendNotifs.length > 0 && (
+          <div className="nc-card">
+            <div className="nc-card-header">
+              <span className="nc-card-icon">🔺</span>
+              <span>ASCEND</span>
+            </div>
+            <div className="nc-events">
+              {ascendNotifs.slice(0, 5).map((n) => (
+                <div key={n.id} className="nc-event">
+                  <div className="nc-event-body">
+                    <div className="nc-event-msg">{n.text}</div>
+                    <div className="nc-event-meta">{n.time}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Status card */}
         <div className="nc-card">
