@@ -3,7 +3,6 @@
 import { useEffect, useState, useCallback } from "react";
 import {
   getDubaiDate,
-  getDubaiTimeStr,
   getDubaiDateStr,
   getTodaySchedule,
   getCurrentBlockIndex,
@@ -43,7 +42,6 @@ interface Props {
 }
 
 export default function Dashboard({ onBlockTap }: Props) {
-  const [clock, setClock] = useState(getDubaiTimeStr());
   const [dateStr] = useState(getDubaiDateStr());
   const [weather, setWeather] = useState<string | null>(null); // null = loading
   const [income, setIncome] = useState(0);
@@ -88,12 +86,11 @@ export default function Dashboard({ onBlockTap }: Props) {
     }
   }, [loadData]);
 
-  // Live clock — ticks every second
+  // Block index refresh
   useEffect(() => {
     const t = setInterval(() => {
-      setClock(getDubaiTimeStr());
       setCurrentBlockIdx(getCurrentBlockIndex());
-    }, 1000);
+    }, 30000);
     return () => clearInterval(t);
   }, []);
 
@@ -116,6 +113,12 @@ export default function Dashboard({ onBlockTap }: Props) {
   const handleHabitToggle = async (habitId: string) => {
     const existing = habits.find((h) => h.habit_id === habitId);
     const newVal = !existing?.completed;
+    // Optimistic update — feels instant
+    setHabits((prev) =>
+      prev.some((h) => h.habit_id === habitId)
+        ? prev.map((h) => h.habit_id === habitId ? { ...h, completed: newVal } : h)
+        : [...prev, { id: "", date: "", habit_id: habitId, completed: newVal, value: newVal ? 1 : 0 }]
+    );
     await toggleHabit(habitId, newVal, newVal ? 1 : 0);
     loadData();
   };
@@ -124,7 +127,6 @@ export default function Dashboard({ onBlockTap }: Props) {
     return (
       <div className="ascend-dashboard">
         <div className="ascend-top-bar">
-          <div className="ascend-clock">{clock}</div>
           <div className="ascend-date">{dateStr}</div>
         </div>
         <div className="ascend-skeleton ascend-skeleton-hero" />
@@ -146,11 +148,21 @@ export default function Dashboard({ onBlockTap }: Props) {
     );
   }
 
+  const habitsToday = habits.filter((h) => h.completed).length;
+  const bestStreak = streaks.reduce((max, s) => Math.max(max, s.current_streak), 0);
+  const blocksPct =
+    schedule.length > 0
+      ? Math.round(
+          (schedule.filter((_, i) => blocks.find((b) => b.block_index === i && b.completed)).length /
+            schedule.length) *
+            100
+        )
+      : 0;
+
   return (
     <div className="ascend-dashboard">
       {/* Top bar */}
       <div className="ascend-top-bar">
-        <div className="ascend-clock">{clock}</div>
         <div className="ascend-date">{dateStr}</div>
         <div className="ascend-block-now">
           {currentBlockIdx >= 0 && schedule[currentBlockIdx] && (
@@ -163,6 +175,38 @@ export default function Dashboard({ onBlockTap }: Props) {
         {weather !== null && weather && (
           <div className="ascend-weather-line">{weather}</div>
         )}
+      </div>
+
+      {/* KPI cards */}
+      <div className="ascend-kpi-grid">
+        <div className="ascend-kpi-card" style={{ borderColor: incomeColor }}>
+          <div className="ascend-kpi-value" style={{ color: incomeColor }}>
+            {Math.round(pct)}%
+          </div>
+          <div className="ascend-kpi-label">Income goal</div>
+          <div className="ascend-kpi-sub">AED {income.toLocaleString()}</div>
+        </div>
+        <div className="ascend-kpi-card" style={{ borderColor: habitsToday >= 6 ? "var(--ascend-green)" : habitsToday >= 3 ? "#f59e0b" : "var(--ascend-red)" }}>
+          <div className="ascend-kpi-value" style={{ color: habitsToday >= 6 ? "var(--ascend-green)" : habitsToday >= 3 ? "#f59e0b" : "var(--ascend-red)" }}>
+            {habitsToday}/8
+          </div>
+          <div className="ascend-kpi-label">Habits today</div>
+          <div className="ascend-kpi-sub">{habitsToday >= 6 ? "Strong day" : habitsToday >= 3 ? "Keep going" : "Get moving"}</div>
+        </div>
+        <div className="ascend-kpi-card" style={{ borderColor: bestStreak >= 7 ? "var(--ascend-green)" : bestStreak > 0 ? "#f59e0b" : "var(--ascend-red)" }}>
+          <div className="ascend-kpi-value" style={{ color: bestStreak >= 7 ? "var(--ascend-green)" : bestStreak > 0 ? "#f59e0b" : "var(--ascend-red)" }}>
+            {bestStreak}d
+          </div>
+          <div className="ascend-kpi-label">Best streak</div>
+          <div className="ascend-kpi-sub">🔥 keep it</div>
+        </div>
+        <div className="ascend-kpi-card" style={{ borderColor: blocksPct >= 70 ? "var(--ascend-green)" : blocksPct >= 30 ? "#f59e0b" : "var(--ascend-red)" }}>
+          <div className="ascend-kpi-value" style={{ color: blocksPct >= 70 ? "var(--ascend-green)" : blocksPct >= 30 ? "#f59e0b" : "var(--ascend-red)" }}>
+            {blocksPct}%
+          </div>
+          <div className="ascend-kpi-label">Blocks done</div>
+          <div className="ascend-kpi-sub">Today&apos;s schedule</div>
+        </div>
       </div>
 
       {/* Income hero */}

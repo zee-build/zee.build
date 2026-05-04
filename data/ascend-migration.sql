@@ -98,6 +98,50 @@ insert into kv_store (key, value)
 values ('internet_money_pipeline', '{"leads":0,"calls":0,"proposals":0,"closed":0}')
 on conflict (key) do nothing;
 
+-- ─── Add unique constraints to existing tables (idempotent) ──
+-- Needed when tables were created without these constraints in a
+-- prior migration. CREATE TABLE IF NOT EXISTS skips the column
+-- definitions, so ALTER TABLE is required to backfill constraints.
+do $$
+begin
+  if not exists (
+    select 1 from pg_constraint
+    where conname = 'projects_name_key' and conrelid = 'projects'::regclass
+  ) then
+    alter table projects add constraint projects_name_key unique (name);
+  end if;
+end $$;
+
+do $$
+begin
+  if not exists (
+    select 1 from pg_constraint
+    where conname = 'habit_logs_date_habit_id_key' and conrelid = 'habit_logs'::regclass
+  ) then
+    alter table habit_logs add constraint habit_logs_date_habit_id_key unique (date, habit_id);
+  end if;
+end $$;
+
+do $$
+begin
+  if not exists (
+    select 1 from pg_constraint
+    where conname = 'block_logs_date_block_index_key' and conrelid = 'block_logs'::regclass
+  ) then
+    alter table block_logs add constraint block_logs_date_block_index_key unique (date, block_index);
+  end if;
+end $$;
+
+do $$
+begin
+  if not exists (
+    select 1 from pg_constraint
+    where conname = 'streaks_habit_id_key' and conrelid = 'streaks'::regclass
+  ) then
+    alter table streaks add constraint streaks_habit_id_key unique (habit_id);
+  end if;
+end $$;
+
 -- ─── Performance indexes ─────────────────────────────────────
 create index if not exists idx_habit_logs_date      on habit_logs (date);
 create index if not exists idx_habit_logs_habit_id  on habit_logs (habit_id);

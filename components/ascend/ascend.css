@@ -1520,3 +1520,292 @@
     padding: 20px 16px;
   }
 }
+
+/* ═══════════════════════════════════════════════════
+   REVAMP — OS HEADER BAR
+   ═══════════════════════════════════════════════════ */
+.ascend-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--ascend-border);
+  flex-shrink: 0;
+  background: linear-gradient(180deg, #13131a 0%, var(--ascend-panel) 100%);
+  position: relative;
+  z-index: 10;
+}
+.ascend-header-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ascend-header-logo {
+  font-family: var(--ascend-font-display);
+  font-size: 20px;
+  color: var(--ascend-gold);
+  letter-spacing: 0.15em;
+  line-height: 1;
+}
+.ascend-header-status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ascend-green);
+  box-shadow: 0 0 6px var(--ascend-green);
+  animation: ascend-dot-pulse 2.4s ease-in-out infinite;
+}
+@keyframes ascend-dot-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+.ascend-header-clock {
+  font-family: var(--ascend-font-mono);
+  font-size: 11px;
+  color: var(--ascend-text-dim);
+  letter-spacing: 0.05em;
+}
+.ascend-header-lock {
+  padding: 4px 10px;
+  background: none;
+  border: 1px solid var(--ascend-border);
+  border-radius: 4px;
+  color: var(--ascend-text-faint);
+  font-family: var(--ascend-font-mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.ascend-header-lock:hover { border-color: var(--ascend-red); color: var(--ascend-red); }
+
+/* ═══════════════════════════════════════════════════
+   REVAMP — HORIZONTAL PILL TAB BAR
+   ═══════════════════════════════════════════════════ */
+.ascend-tab-bar {
+  display: flex;
+  gap: 4px;
+  padding: 8px 12px;
+  overflow-x: auto;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--ascend-border);
+  background: var(--ascend-panel);
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.ascend-tab-bar::-webkit-scrollbar { display: none; }
+
+.ascend-tab-pill {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--ascend-border);
+  background: none;
+  color: var(--ascend-text-faint);
+  font-family: var(--ascend-font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+.ascend-tab-pill:hover { color: var(--ascend-text-dim); border-color: rgba(255,255,255,0.15); }
+.ascend-tab-pill.active {
+  background: var(--ascend-gold);
+  border-color: var(--ascend-gold);
+  color: #000;
+}
+.ascend-tab-pill-icon { font-size: 13px; line-height: 1; }
+.ascend-tab-pill-label { line-height: 1; }
+
+/* ═══════════════════════════════════════════════════
+   REVAMP — KPI CARDS GRID
+   ═══════════════════════════════════════════════════ */
+.ascend-kpi-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.ascend-kpi-card {
+  background: var(--ascend-panel);
+  border: 1px solid var(--ascend-border);
+  border-left: 3px solid var(--ascend-gold);
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  transition: background 0.15s;
+}
+.ascend-kpi-card:hover { background: rgba(255,255,255,0.02); }
+.ascend-kpi-value {
+  font-family: var(--ascend-font-display);
+  font-size: 26px;
+  line-height: 1;
+  color: var(--ascend-gold);
+}
+.ascend-kpi-label {
+  font-family: var(--ascend-font-mono);
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ascend-text-faint);
+}
+.ascend-kpi-sub {
+  font-size: 10px;
+  color: var(--ascend-text-dim);
+  margin-top: 2px;
+}
+
+/* ═══════════════════════════════════════════════════
+   REVAMP — CALENDAR TAB
+   ═══════════════════════════════════════════════════ */
+.ascend-calendar { padding-bottom: 8px; }
+
+.ascend-week-strip {
+  display: flex;
+  gap: 3px;
+  margin-bottom: 12px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.ascend-week-strip::-webkit-scrollbar { display: none; }
+
+.ascend-week-day {
+  flex: 1;
+  min-width: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 6px 4px;
+  border-radius: 6px;
+  border: 1px solid var(--ascend-border);
+  background: var(--ascend-panel);
+  position: relative;
+}
+.ascend-week-day.today {
+  border-color: var(--ascend-gold);
+  background: rgba(201, 168, 76, 0.06);
+}
+.ascend-week-day.weekend { opacity: 0.6; }
+.ascend-week-label {
+  font-family: var(--ascend-font-mono);
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ascend-text-faint);
+}
+.ascend-week-date {
+  font-family: var(--ascend-font-display);
+  font-size: 16px;
+  line-height: 1;
+  color: var(--ascend-text-dim);
+}
+.ascend-week-day.today .ascend-week-date { color: var(--ascend-gold); }
+.ascend-week-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--ascend-gold);
+}
+
+.ascend-cal-progress {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.ascend-cal-progress-bar {
+  flex: 1;
+  height: 4px;
+  background: var(--ascend-dim);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.ascend-cal-progress-fill {
+  height: 100%;
+  background: var(--ascend-gold);
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+.ascend-cal-pct-label {
+  font-family: var(--ascend-font-mono);
+  font-size: 9px;
+  color: var(--ascend-text-faint);
+  white-space: nowrap;
+}
+
+.ascend-sched-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.ascend-sched-info .ascend-sched-label { flex: none; }
+.ascend-sched-info .ascend-sched-dur {
+  font-family: var(--ascend-font-mono);
+  font-size: 8px;
+  color: var(--ascend-text-faint);
+  min-width: unset;
+  text-align: left;
+}
+
+.ascend-gcal-embed-section { margin-bottom: 10px; }
+.ascend-gcal-toggle-btn {
+  padding: 6px 12px;
+  background: var(--ascend-dim);
+  border: 1px solid var(--ascend-border);
+  border-radius: 6px;
+  color: var(--ascend-text-dim);
+  font-size: 11px;
+  font-family: var(--ascend-font-mono);
+  cursor: pointer;
+  transition: all 0.15s;
+  margin-bottom: 6px;
+}
+.ascend-gcal-toggle-btn:hover { border-color: var(--ascend-gold); color: var(--ascend-gold); }
+.ascend-gcal-iframe {
+  width: 100%;
+  height: 260px;
+  border-radius: 6px;
+  border: 1px solid var(--ascend-border);
+  background: #fff;
+}
+
+.ascend-cal-group-label {
+  font-family: var(--ascend-font-mono);
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ascend-text-faint);
+  margin-bottom: 4px;
+}
+
+/* ═══════════════════════════════════════════════════
+   REVAMP — MOBILE PILL TAB + KPI
+   ═══════════════════════════════════════════════════ */
+@media (max-width: 480px) {
+  .ascend-header { padding: 8px 12px; }
+  .ascend-header-logo { font-size: 18px; }
+  .ascend-header-clock { font-size: 10px; }
+
+  .ascend-tab-pill { padding: 4px 10px; font-size: 9px; }
+  .ascend-tab-pill-icon { font-size: 12px; }
+
+  .ascend-kpi-grid { gap: 6px; }
+  .ascend-kpi-value { font-size: 22px; }
+  .ascend-kpi-label { font-size: 7px; }
+  .ascend-kpi-sub { font-size: 9px; }
+
+  .ascend-week-day { min-width: 36px; padding: 5px 3px; }
+  .ascend-week-date { font-size: 14px; }
+  .ascend-gcal-iframe { height: 220px; }
+}

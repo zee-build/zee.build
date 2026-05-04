@@ -99,11 +99,11 @@ export function getDubaiHour(): number {
 
 /** Format Dubai time as HH:MM */
 export function getDubaiTimeStr(): string {
-  return new Date().toLocaleTimeString("en-GB", {
+  return new Date().toLocaleTimeString("en-US", {
     timeZone: "Asia/Dubai",
-    hour: "2-digit",
+    hour: "numeric",
     minute: "2-digit",
-    hour12: false,
+    hour12: true,
   });
 }
 

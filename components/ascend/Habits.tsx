@@ -86,6 +86,12 @@ export default function Habits() {
   const handleToggle = async (habitId: string) => {
     const existing = habits.find((h) => h.habit_id === habitId);
     const newVal = !(existing?.completed);
+    // Optimistic update — feels instant
+    setHabits((prev) =>
+      prev.some((h) => h.habit_id === habitId)
+        ? prev.map((h) => h.habit_id === habitId ? { ...h, completed: newVal, value: newVal ? 1 : 0 } : h)
+        : [...prev, { id: "", date: "", habit_id: habitId, completed: newVal, value: newVal ? 1 : 0 }]
+    );
     await toggleHabit(habitId, newVal, newVal ? 1 : 0);
     loadData();
   };
@@ -94,6 +100,12 @@ export default function Habits() {
     const existing = habits.find((h) => h.habit_id === "water");
     const currentVal = existing?.value || 0;
     const newVal = Math.min(currentVal + 1, 8);
+    // Optimistic update
+    setHabits((prev) =>
+      prev.some((h) => h.habit_id === "water")
+        ? prev.map((h) => h.habit_id === "water" ? { ...h, value: newVal, completed: newVal >= 8 } : h)
+        : [...prev, { id: "", date: "", habit_id: "water", completed: newVal >= 8, value: newVal }]
+    );
     await toggleHabit("water", newVal >= 8, newVal);
     loadData();
   };
