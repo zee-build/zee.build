@@ -1,7 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getDubaiDate, getCurrentBlock, getMinutesIntoBlock, getCurrentBlockIndex } from "@/lib/ascend/schedule";
+import {
+  getDubaiHour,
+  getCurrentBlock,
+  getMinutesIntoBlock,
+  getCurrentBlockIndex,
+} from "@/lib/ascend/schedule";
 import { HabitLog, BlockLog } from "@/lib/ascend/supabase";
 
 interface Props {
@@ -25,11 +30,10 @@ export default function ShameEngine({ habits, blocks }: Props) {
 
   useEffect(() => {
     function check() {
-      const now = getDubaiDate();
-      const hour = now.getHours();
+      const hour = getDubaiHour();
       const msgs: string[] = [];
 
-      // Block overdue check
+      // Block overdue check — 10+ minutes into a block with no log
       const blockIdx = getCurrentBlockIndex();
       const block = getCurrentBlock();
       const minsIn = getMinutesIntoBlock();
@@ -39,35 +43,33 @@ export default function ShameEngine({ habits, blocks }: Props) {
           (b) => b.block_index === blockIdx && b.completed
         );
         if (!blockDone) {
-          msgs.push(`⚠️ You're ${minsIn} mins late to ${block.icon} ${block.label}. Start NOW.`);
+          msgs.push(`⚠️ ${minsIn}m late to ${block.icon} ${block.label}. Start NOW.`);
         }
       }
 
-      // Evening habit shame (after 8pm / 20:00)
+      // Evening habit shame fires after 8 PM Dubai time
       if (hour >= 20) {
         const ALL = ["fajr", "water", "workout", "leetcode", "reading", "tarbiya", "job", "sleep"];
         const missed = ALL.filter(
           (h) => !habits.find((l) => l.habit_id === h && l.completed)
         );
-        if (missed.length > 0) {
-          missed.forEach((h) => {
-            if (SHAME_LINES[h]) msgs.push(SHAME_LINES[h]);
-          });
-        }
+        missed.forEach((h) => {
+          if (SHAME_LINES[h]) msgs.push(SHAME_LINES[h]);
+        });
       }
 
       setMessages(msgs);
     }
 
     check();
-    const interval = setInterval(check, 600000); // every 10 min
+    const interval = setInterval(check, 60000); // re-check every minute (not 10min)
     return () => clearInterval(interval);
   }, [habits, blocks]);
 
   if (messages.length === 0) return null;
 
   return (
-    <div className="ascend-shame">
+    <div className="ascend-shame ascend-shame-pulse">
       {messages.map((m, i) => (
         <div key={i} className="ascend-shame-line">
           {m}

@@ -45,12 +45,13 @@ interface Props {
 export default function Dashboard({ onBlockTap }: Props) {
   const [clock, setClock] = useState(getDubaiTimeStr());
   const [dateStr] = useState(getDubaiDateStr());
-  const [weather, setWeather] = useState("");
+  const [weather, setWeather] = useState<string | null>(null); // null = loading
   const [income, setIncome] = useState(0);
   const [habits, setHabits] = useState<HabitLog[]>([]);
   const [blocks, setBlocks] = useState<BlockLog[]>([]);
   const [streaks, setStreaks] = useState<Streak[]>([]);
   const [currentBlockIdx, setCurrentBlockIdx] = useState(getCurrentBlockIndex());
+  const [loading, setLoading] = useState(true);
 
   const loadData = useCallback(async () => {
     const [h, b, s, inc] = await Promise.all([
@@ -63,11 +64,13 @@ export default function Dashboard({ onBlockTap }: Props) {
     setBlocks(b);
     setStreaks(s);
     setIncome(inc);
+    setLoading(false);
   }, []);
 
   useEffect(() => {
     loadData();
-    // Weather
+
+    // Weather — localStorage cache (1 hour TTL)
     const cached = localStorage.getItem("ascend-weather");
     const cachedAt = localStorage.getItem("ascend-weather-at");
     if (cached && cachedAt && Date.now() - Number(cachedAt) < 3600000) {
@@ -85,7 +88,7 @@ export default function Dashboard({ onBlockTap }: Props) {
     }
   }, [loadData]);
 
-  // Live clock
+  // Live clock — ticks every second
   useEffect(() => {
     const t = setInterval(() => {
       setClock(getDubaiTimeStr());
@@ -100,17 +103,48 @@ export default function Dashboard({ onBlockTap }: Props) {
     const d = getDubaiDate();
     return new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate() - d.getDate();
   })();
-  const dailyNeeded = daysLeft > 0 ? Math.ceil((TARGET - income) / daysLeft) : TARGET - income;
+  const dailyNeeded =
+    daysLeft > 0 ? Math.ceil((TARGET - income) / daysLeft) : TARGET - income;
   const minsInBlock = getMinutesIntoBlock();
-
-  const incomeColor = pct < 10 ? "var(--ascend-red)" : pct < 50 ? "#f59e0b" : "var(--ascend-green)";
+  const incomeColor =
+    pct < 10
+      ? "var(--ascend-red)"
+      : pct < 50
+      ? "#f59e0b"
+      : "var(--ascend-green)";
 
   const handleHabitToggle = async (habitId: string) => {
     const existing = habits.find((h) => h.habit_id === habitId);
-    const newVal = !(existing?.completed);
+    const newVal = !existing?.completed;
     await toggleHabit(habitId, newVal, newVal ? 1 : 0);
     loadData();
   };
+
+  if (loading) {
+    return (
+      <div className="ascend-dashboard">
+        <div className="ascend-top-bar">
+          <div className="ascend-clock">{clock}</div>
+          <div className="ascend-date">{dateStr}</div>
+        </div>
+        <div className="ascend-skeleton ascend-skeleton-hero" />
+        <div className="ascend-skeleton ascend-skeleton-row" />
+        <div className="ascend-skeleton ascend-skeleton-row" />
+        <div
+          style={{
+            display: "flex",
+            gap: 8,
+            justifyContent: "center",
+            marginTop: 12,
+          }}
+        >
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="ascend-skeleton ascend-skeleton-ring" />
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="ascend-dashboard">
@@ -126,13 +160,21 @@ export default function Dashboard({ onBlockTap }: Props) {
             </>
           )}
         </div>
-        {weather && <div className="ascend-weather-line">{weather}</div>}
+        {weather !== null && weather && (
+          <div className="ascend-weather-line">{weather}</div>
+        )}
       </div>
 
       {/* Income hero */}
       <div className="ascend-income-hero">
-        <div className="ascend-income-number" style={{ color: incomeColor }}>
-          AED {income.toLocaleString()} <span className="ascend-income-target">/ AED {TARGET.toLocaleString()}</span>
+        <div
+          className="ascend-income-number"
+          style={{ color: incomeColor }}
+        >
+          AED {income.toLocaleString()}{" "}
+          <span className="ascend-income-target">
+            / AED {TARGET.toLocaleString()}
+          </span>
         </div>
         <div className="ascend-progress-bar">
           <div
@@ -160,7 +202,9 @@ export default function Dashboard({ onBlockTap }: Props) {
           return (
             <button
               key={i}
-              className={`ascend-timeline-block ${isPast ? "past" : ""} ${isCurrent ? "current" : ""} ${done ? "done" : ""}`}
+              className={`ascend-timeline-block ${isPast ? "past" : ""} ${
+                isCurrent ? "current" : ""
+              } ${done ? "done" : ""}`}
               onClick={() => onBlockTap(i)}
             >
               <span className="ascend-tl-time">{block.time}</span>
@@ -201,10 +245,17 @@ export default function Dashboard({ onBlockTap }: Props) {
         {STREAK_ITEMS.map((s) => {
           const streak = streaks.find((st) => st.habit_id === s.id);
           const count = streak?.current_streak || 0;
-          const color = count === 0 ? "var(--ascend-red)" : count < 7 ? "#f59e0b" : "var(--ascend-green)";
+          const color =
+            count === 0
+              ? "var(--ascend-red)"
+              : count < 7
+              ? "#f59e0b"
+              : "var(--ascend-green)";
           return (
             <div key={s.id} className="ascend-streak-item">
-              <span className="ascend-streak-count" style={{ color }}>{count}</span>
+              <span className="ascend-streak-count" style={{ color }}>
+                {count}
+              </span>
               <span className="ascend-streak-label">{s.label}</span>
             </div>
           );

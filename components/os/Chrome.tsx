@@ -151,7 +151,7 @@ export function DesktopIcons({ onOpen, adminMode }: { onOpen: (id: string) => vo
   const [sel, setSel] = useState<string | null>(null);
 
   const items = adminMode
-    ? [...DESKTOP_ITEMS, { id: "notepad", label: "Admin/", kind: "notes", tone: "cyan" as Tone }, { id: "ascend", label: "ASCEND.app", kind: "ascend" }]
+    ? [...DESKTOP_ITEMS, { id: "notepad", label: "Admin/", kind: "notes", tone: "cyan" as Tone }]
     : DESKTOP_ITEMS;
 
   return (
@@ -191,20 +191,14 @@ const DOCK_ITEMS = [
 export function Dock({
   onOpen,
   openApps,
-  adminMode,
 }: {
   onOpen: (id: string) => void;
   openApps: string[];
-  adminMode?: boolean;
 }) {
-  const items = adminMode
-    ? [...DOCK_ITEMS.slice(0, -2), { id: "ascend", label: "ASCEND", kind: "ascend" }, ...DOCK_ITEMS.slice(-2)]
-    : DOCK_ITEMS;
-
   return (
     <div className="dock-wrap">
       <div className="dock">
-        {items.map((it, i) =>
+        {DOCK_ITEMS.map((it, i) =>
           it.id === "divider" ? (
             <div key={i} className="dock-divider" />
           ) : (

@@ -17,6 +17,29 @@ interface Props {
 
 type Step = "select" | "focus" | "logging" | "done" | "newProject";
 
+// Negative/lazy phrases — triggers 5-minute commitment nudge
+const LAZY_PATTERNS = [
+  /don'?t feel like/i,
+  /not feel(ing)? like/i,
+  /can'?t be bothered/i,
+  /too tired/i,
+  /too lazy/i,
+  /not motivated/i,
+  /procrastinat/i,
+  /just want to (chill|relax|sleep|rest|watch)/i,
+  /maybe tomorrow/i,
+  /skip(ping)?/i,
+  /can'?t do it/i,
+  /no energy/i,
+  /feeling lazy/i,
+  /don'?t want to/i,
+  /hard to start/i,
+];
+
+function detectLazy(text: string): boolean {
+  return LAZY_PATTERNS.some((p) => p.test(text));
+}
+
 const PROJECT_PROMPTS: Record<string, { question: string; options: string[] }> = {
   "tarbiya.ai": {
     question: "What's the focus? Marketing post, pricing change, new feature, or subscriber outreach?",
@@ -38,6 +61,10 @@ const PROJECT_PROMPTS: Record<string, { question: string; options: string[] }> =
     question: "Any open positions? Log today's P&L.",
     options: [],
   },
+  "Pure Bean": {
+    question: "What are you checking on today?",
+    options: ["Monthly P&L review", "Supplier call", "Marketing idea", "Ops issue"],
+  },
 };
 
 const AI_SUGGESTIONS: Record<string, Record<string, string[]>> = {
@@ -50,7 +77,7 @@ const AI_SUGGESTIONS: Record<string, Record<string, string[]>> = {
     "Pricing change": [
       "Step 1: Change price to $9.99 in Stripe dashboard",
       "Step 2: Update landing page pricing section",
-      "Step 3: Email existing users about new features justifying price",
+      "Step 3: Email existing users about new features justifying the increase",
       "Step 4: Grandfather existing users at $2.99 for 30 days",
     ],
     "Subscriber outreach": [
@@ -82,6 +109,7 @@ export default function WorkRouter({ blockIndex, onClose }: Props) {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [selectedFocus, setSelectedFocus] = useState("");
   const [workDesc, setWorkDesc] = useState("");
+  const [lazyNudge, setLazyNudge] = useState(false);
   const [tradePnl, setTradePnl] = useState("");
   const [tradeSymbol, setTradeSymbol] = useState("");
 
@@ -109,6 +137,11 @@ export default function WorkRouter({ blockIndex, onClose }: Props) {
     setStep("focus");
   };
 
+  const handleWorkDescChange = (text: string) => {
+    setWorkDesc(text);
+    setLazyNudge(detectLazy(text));
+  };
+
   const handleLog = async () => {
     if (selectedProject?.name === "OpenClaw Trading" && tradePnl) {
       await logTrade(tradeSymbol || "N/A", "N/A", Number(tradePnl));
@@ -133,14 +166,17 @@ export default function WorkRouter({ blockIndex, onClose }: Props) {
   };
 
   const prompt = selectedProject ? PROJECT_PROMPTS[selectedProject.name] : null;
-  const suggestions = selectedProject && selectedFocus
-    ? AI_SUGGESTIONS[selectedProject.name]?.[selectedFocus] || []
-    : [];
+  const suggestions =
+    selectedProject && selectedFocus
+      ? AI_SUGGESTIONS[selectedProject.name]?.[selectedFocus] || []
+      : [];
 
   return (
     <div className="ascend-router-overlay">
       <div className="ascend-router-modal">
-        <button className="ascend-router-close" onClick={onClose}>×</button>
+        <button className="ascend-router-close" onClick={onClose}>
+          ×
+        </button>
 
         {block && (
           <div className="ascend-router-block">
@@ -189,6 +225,12 @@ export default function WorkRouter({ blockIndex, onClose }: Props) {
               </div>
             )}
 
+            {selectedProject.name === "tarbiya.ai" && (
+              <div className="ascend-router-remind">
+                Still at $2.99? Each session is a chance to push pricing to $9.99.
+              </div>
+            )}
+
             {prompt?.options && prompt.options.length > 0 && (
               <div className="ascend-router-options">
                 {prompt.options.map((o) => (
@@ -207,7 +249,9 @@ export default function WorkRouter({ blockIndex, onClose }: Props) {
               <div className="ascend-router-suggestions">
                 <div className="ascend-section-label">SUGGESTIONS</div>
                 {suggestions.map((s, i) => (
-                  <div key={i} className="ascend-router-suggestion">{s}</div>
+                  <div key={i} className="ascend-router-suggestion">
+                    {s}
+                  </div>
                 ))}
               </div>
             )}
@@ -234,8 +278,17 @@ export default function WorkRouter({ blockIndex, onClose }: Props) {
               className="ascend-input ascend-textarea"
               placeholder="Describe what you'll work on..."
               value={workDesc}
-              onChange={(e) => setWorkDesc(e.target.value)}
+              onChange={(e) => handleWorkDescChange(e.target.value)}
             />
+
+            {/* 5-minute commitment nudge when lazy text detected */}
+            {lazyNudge && (
+              <div className="ascend-router-lazy-nudge">
+                ⚡ Don&apos;t want to? Do just 5 minutes. Set a timer right now.
+                You&apos;ll keep going once you start — it&apos;s always the start
+                that&apos;s hard.
+              </div>
+            )}
 
             <button className="ascend-router-go" onClick={handleLog}>
               Block started. Go. →
@@ -248,7 +301,9 @@ export default function WorkRouter({ blockIndex, onClose }: Props) {
           <div className="ascend-router-done">
             <div className="ascend-router-done-icon">✓</div>
             <div>Block logged. Go.</div>
-            <button className="ascend-router-go" onClick={onClose}>Close</button>
+            <button className="ascend-router-go" onClick={onClose}>
+              Close
+            </button>
           </div>
         )}
 
@@ -268,7 +323,9 @@ export default function WorkRouter({ blockIndex, onClose }: Props) {
               onChange={(e) => setNpType(e.target.value)}
             >
               {PROJECT_TYPES.map((t) => (
-                <option key={t} value={t}>{t}</option>
+                <option key={t} value={t}>
+                  {t}
+                </option>
               ))}
             </select>
             <input
@@ -311,7 +368,10 @@ export default function WorkRouter({ blockIndex, onClose }: Props) {
               <button className="ascend-router-go" onClick={handleNewProject}>
                 Create Project
               </button>
-              <button className="ascend-router-cancel" onClick={() => setStep("select")}>
+              <button
+                className="ascend-router-cancel"
+                onClick={() => setStep("select")}
+              >
                 Cancel
               </button>
             </div>

@@ -1,4 +1,4 @@
-// ASCEND — Schedule data & time helpers (Dubai UTC+4)
+// ASCEND — Schedule data & time helpers (Dubai UTC+4, no DST)
 
 export interface ScheduleBlock {
   time: string;
@@ -52,9 +52,49 @@ export const WEEKEND_SCHEDULE: ScheduleBlock[] = [
   { time: "22:30", label: "SLEEP", duration: 0, icon: "🌛" },
 ];
 
-/** Get current Dubai time */
+/**
+ * Get a Date object whose local-time methods (.getHours, .getDate, etc.)
+ * return Dubai values — works correctly in any browser timezone.
+ * Dubai is UTC+4 with no daylight saving time.
+ */
 export function getDubaiDate(): Date {
-  return new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Dubai" }));
+  const now = new Date();
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "Asia/Dubai",
+    year: "numeric",
+    month: "numeric",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric",
+    hour12: false,
+  }).formatToParts(now);
+  const get = (t: string) => {
+    const val = parts.find((x) => x.type === t)?.value || "0";
+    return Number(val);
+  };
+  const h = get("hour");
+  return new Date(
+    get("year"),
+    get("month") - 1,
+    get("day"),
+    h === 24 ? 0 : h, // some engines return 24 for midnight
+    get("minute"),
+    get("second")
+  );
+}
+
+/** Current Dubai hour (0–23) — reliable cross-timezone */
+export function getDubaiHour(): number {
+  const h = parseInt(
+    new Intl.DateTimeFormat("en-US", {
+      timeZone: "Asia/Dubai",
+      hour: "numeric",
+      hour12: false,
+    }).format(new Date()),
+    10
+  );
+  return h === 24 ? 0 : h;
 }
 
 /** Format Dubai time as HH:MM */
@@ -126,24 +166,23 @@ export function getMinutesIntoBlock(): number {
 
 /** Get today's date as YYYY-MM-DD in Dubai timezone */
 export function getTodayISO(): string {
-  const d = getDubaiDate();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  // en-CA locale produces YYYY-MM-DD — reliable and clean
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Dubai" }).format(new Date());
 }
 
 /** Get yesterday's date as YYYY-MM-DD in Dubai timezone */
 export function getYesterdayISO(): string {
-  const d = getDubaiDate();
-  d.setDate(d.getDate() - 1);
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Dubai" }).format(
+    new Date(Date.now() - 86400000)
+  );
 }
 
-/** Get current month as YYYY-MM */
+/** Get current month as YYYY-MM in Dubai timezone */
 export function getCurrentMonth(): string {
-  const d = getDubaiDate();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+  return getTodayISO().slice(0, 7);
 }
 
-/** Days remaining in current month */
+/** Days remaining in current month (Dubai timezone) */
 export function getDaysLeftInMonth(): number {
   const d = getDubaiDate();
   const lastDay = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
@@ -160,6 +199,7 @@ export function getGoogleCalendarUrl(block: ScheduleBlock, isWeekend: boolean): 
   const fmt = (d: Date) =>
     d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
 
+  // UAE weekend = Fri+Sat, weekdays = Sun–Thu
   const byday = isWeekend ? "FR,SA" : "SU,MO,TU,WE,TH";
   const recur = `RRULE:FREQ=WEEKLY;BYDAY=${byday}`;
 

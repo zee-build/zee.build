@@ -28,6 +28,15 @@ export async function createProject(p: Partial<Project>): Promise<Project | null
   return data as Project | null;
 }
 
+export async function updateProject(id: string, p: Partial<Project>): Promise<void> {
+  await supabase.from("projects").update(p).eq("id", id);
+}
+
+export async function deleteProject(id: string): Promise<void> {
+  // Soft delete — set active=false
+  await supabase.from("projects").update({ active: false }).eq("id", id);
+}
+
 // ─── Habit Logs ───
 export interface HabitLog {
   id: string;
@@ -73,7 +82,6 @@ export async function toggleHabit(habitId: string, completed: boolean, value = 0
       .insert({ date: today, habit_id: habitId, completed, value });
   }
 
-  // Update streak
   await updateStreak(habitId, completed);
 }
 
@@ -92,6 +100,8 @@ export async function fetchStreaks(): Promise<Streak[]> {
 
 async function updateStreak(habitId: string, completed: boolean): Promise<void> {
   const today = getTodayISO();
+  const yesterday = getYesterdayISO();
+
   const { data: streak } = await supabase
     .from("streaks")
     .select("*")
@@ -109,8 +119,10 @@ async function updateStreak(habitId: string, completed: boolean): Promise<void> 
   }
 
   if (completed) {
-    const yesterday = getYesterdayISO();
-    const isConsecutive = streak.last_completed === yesterday || streak.last_completed === today;
+    // Already logged today — don't double-increment
+    if (streak.last_completed === today) return;
+
+    const isConsecutive = streak.last_completed === yesterday;
     const newStreak = isConsecutive ? streak.current_streak + 1 : 1;
     const longest = Math.max(newStreak, streak.longest_streak);
     await supabase
@@ -123,7 +135,19 @@ async function updateStreak(habitId: string, completed: boolean): Promise<void> 
       })
       .eq("habit_id", habitId);
   } else {
-    // Don't reset streak on uncheck — only reset if day passes without completion
+    // Unchecking: if habit was completed today, revert the increment
+    if (streak.last_completed === today) {
+      const reverted = Math.max(0, streak.current_streak - 1);
+      await supabase
+        .from("streaks")
+        .update({
+          current_streak: reverted,
+          last_completed: reverted > 0 ? yesterday : null,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("habit_id", habitId);
+    }
+    // If last_completed !== today, streak already accounts for the miss — leave it
   }
 }
 
@@ -162,18 +186,20 @@ export async function logBlock(
   if (existing) {
     await supabase
       .from("block_logs")
-      .update({ completed, project_id: projectId || null, work_description: workDescription || null })
-      .eq("id", existing.id);
-  } else {
-    await supabase
-      .from("block_logs")
-      .insert({
-        date: today,
-        block_index: blockIndex,
+      .update({
         completed,
         project_id: projectId || null,
         work_description: workDescription || null,
-      });
+      })
+      .eq("id", existing.id);
+  } else {
+    await supabase.from("block_logs").insert({
+      date: today,
+      block_index: blockIndex,
+      completed,
+      project_id: projectId || null,
+      work_description: workDescription || null,
+    });
   }
 }
 
@@ -201,6 +227,31 @@ export async function logIncome(stream: string, amount: number, note?: string): 
     amount_aed: amount,
     note: note || null,
   });
+}
+
+// ─── Pipeline (Internet Money) ───
+export interface PipelineState {
+  leads: number;
+  calls: number;
+  proposals: number;
+  closed: number;
+}
+
+export async function fetchPipeline(): Promise<PipelineState> {
+  const { data } = await supabase
+    .from("kv_store")
+    .select("value")
+    .eq("key", "internet_money_pipeline")
+    .single();
+  if (data?.value) return data.value as PipelineState;
+  return { leads: 0, calls: 0, proposals: 0, closed: 0 };
+}
+
+export async function savePipeline(state: PipelineState): Promise<void> {
+  await supabase.from("kv_store").upsert(
+    { key: "internet_money_pipeline", value: state, updated_at: new Date().toISOString() },
+    { onConflict: "key" }
+  );
 }
 
 // ─── Journal ───
@@ -244,6 +295,17 @@ export async function getMonthlyIncomeTotal(): Promise<number> {
 export async function getTodayHabitCount(): Promise<{ done: number; total: number }> {
   const habits = await fetchTodayHabits();
   const ALL_HABITS = ["fajr", "water", "workout", "leetcode", "reading", "tarbiya", "job", "sleep"];
-  const done = ALL_HABITS.filter((h) => habits.find((l) => l.habit_id === h && l.completed)).length;
+  const done = ALL_HABITS.filter((h) =>
+    habits.find((l) => l.habit_id === h && l.completed)
+  ).length;
   return { done, total: ALL_HABITS.length };
+}
+
+/** Fetch habit_logs for a date range — used by weekly review */
+export async function fetchHabitsForDates(dates: string[]): Promise<HabitLog[]> {
+  const { data } = await supabase
+    .from("habit_logs")
+    .select("*")
+    .in("date", dates);
+  return (data as HabitLog[]) || [];
 }

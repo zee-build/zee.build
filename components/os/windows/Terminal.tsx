@@ -79,8 +79,8 @@ export default function TerminalWindow() {
         out.push({ type: "out", text: "╔══════════════════════════════════╗", cls: "ok" });
         out.push({ type: "out", text: "║   ADMIN MODE ACTIVATED           ║", cls: "ok" });
         out.push({ type: "out", text: "╚══════════════════════════════════╝", cls: "ok" });
-        out.push({ type: "out", text: "Admin folder + ASCEND unlocked.", cls: "dim" });
-        out.push({ type: "out", text: "Available: notepad, ASCEND, admin portal (/admin)", cls: "dim" });
+        out.push({ type: "out", text: "Admin folder unlocked on desktop.", cls: "dim" });
+        out.push({ type: "out", text: "Available: notepad, admin portal (/admin)", cls: "dim" });
         // Dispatch event to show admin folder on desktop
         window.dispatchEvent(new CustomEvent("os-admin-unlock"));
       } else if (!pass) {

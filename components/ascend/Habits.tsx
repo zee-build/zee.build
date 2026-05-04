@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { getDubaiDate } from "@/lib/ascend/schedule";
+import { getDubaiHour } from "@/lib/ascend/schedule";
 import {
   HabitLog,
   Streak,
@@ -105,7 +105,7 @@ export default function Habits() {
     localStorage.setItem("ascend-books-done", String(newCount));
   };
 
-  const hour = getDubaiDate().getHours();
+  const hour = getDubaiHour();
   const showShame = hour >= 20;
 
   return (

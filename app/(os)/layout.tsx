@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import "./os.css";
-import "@/components/ascend/ascend.css";
 
 export const metadata: Metadata = {
   title: "ZeeBuild OS — Ziyan Bin Anoos",

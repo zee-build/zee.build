@@ -3,12 +3,12 @@
 import { useEffect, useState } from "react";
 import {
   getDubaiDate,
+  getDubaiHour,
   getDubaiTimeStr,
   getDubaiDateStr,
   getCurrentBlock,
   getMinutesIntoBlock,
   isUAEWeekend,
-  getYesterdayISO,
 } from "@/lib/ascend/schedule";
 import { fetchYesterdayHabits } from "@/lib/ascend/supabase";
 
@@ -24,7 +24,7 @@ export default function JarvisGreeting({ onDismiss }: Props) {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    // Check if already shown today
+    // Check if already shown today (once per Dubai calendar day)
     const lastShown = localStorage.getItem("ascend-greeting-date");
     const today = getDubaiDate().toDateString();
     if (lastShown === today) {
@@ -33,7 +33,7 @@ export default function JarvisGreeting({ onDismiss }: Props) {
     }
 
     async function load() {
-      // Fetch weather
+      // Fetch weather — use localStorage cache (1-hour TTL)
       let wx = "";
       try {
         const cached = localStorage.getItem("ascend-weather");
@@ -52,11 +52,12 @@ export default function JarvisGreeting({ onDismiss }: Props) {
       }
       setWeather(wx);
 
-      // Fetch yesterday's habits
+      // Fetch yesterday's habits from Supabase (live, not hardcoded)
       const yHabits = await fetchYesterdayHabits();
       const yDone = ALL_HABITS.filter((h) =>
         yHabits.find((l) => l.habit_id === h && l.completed)
       ).length;
+      const yPct = Math.round((yDone / ALL_HABITS.length) * 100);
 
       const now = getDubaiDate();
       const timeStr = getDubaiTimeStr();
@@ -64,24 +65,25 @@ export default function JarvisGreeting({ onDismiss }: Props) {
       const block = getCurrentBlock();
       const minsIn = getMinutesIntoBlock();
       const weekend = isUAEWeekend();
-      const dayName = now.toLocaleDateString("en-GB", { timeZone: "Asia/Dubai", weekday: "long" });
-      const hour = now.getHours();
+      const dayName = now.toLocaleDateString("en-GB", { weekday: "long" });
+      const hour = getDubaiHour(); // correct Dubai hour, any browser timezone
       const timeOfDay = hour < 12 ? "morning" : hour < 17 ? "afternoon" : "evening";
 
       let text = "";
       if (weekend) {
-        text = `${dayName}, Zee. ${timeStr} AM. Light day — but light doesn't mean zero. `;
-        text += `Yesterday: ${yDone}/${ALL_HABITS.length} habits. `;
+        text = `${dayName}, Zee. ${timeStr} — light day but light doesn't mean zero. `;
+        text += `Yesterday: ${yDone}/${ALL_HABITS.length} habits (${yPct}%). `;
+        if (yPct < 75) text += "Build on that. ";
         if (block) {
           text += `Current block: ${block.icon} ${block.label}. `;
         }
         text += `${wx}. One tarbiya.ai task. One chapter. That's it. What's the focus?`;
       } else {
-        text = `Good ${timeOfDay} Zee. ${dayName}, ${dateStr} — ${timeStr} in Dubai. `;
-        text += `${wx}. Yesterday: ${yDone}/${ALL_HABITS.length} habits. `;
-        if (yDone < 6) text += "Not your best. ";
+        text = `Good ${timeOfDay}, Zee. ${dayName}, ${dateStr} — ${timeStr} Dubai. `;
+        text += `${wx}. Yesterday: ${yDone}/${ALL_HABITS.length} habits (${yPct}%). `;
+        if (yDone < 6) text += "Not your best. Make today different. ";
         if (block) {
-          text += `You should be in your ${block.label} block right now. ${minsIn} minutes in already. `;
+          text += `You should be in your ${block.label} block right now. ${minsIn} minutes in. `;
         }
         text += "What are you working on?";
       }
@@ -99,6 +101,7 @@ export default function JarvisGreeting({ onDismiss }: Props) {
     setTimeout(onDismiss, 300);
   };
 
+  // Don't render until we know it should show
   if (!visible && !greeting) return null;
 
   return (
@@ -109,7 +112,7 @@ export default function JarvisGreeting({ onDismiss }: Props) {
       <div className="ascend-greeting-content">
         <div className="ascend-greeting-label">ASCEND OS</div>
         <div className="ascend-greeting-weather">{weather}</div>
-        <p className="ascend-greeting-text">{greeting}</p>
+        <p className="ascend-greeting-text">{greeting || "Loading your briefing…"}</p>
         <button className="ascend-greeting-btn" onClick={handleDismiss}>
           LET&apos;S GO →
         </button>
