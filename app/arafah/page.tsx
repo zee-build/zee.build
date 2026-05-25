@@ -69,10 +69,220 @@ const INSPIRATION_CHIPS = [
 ];
 
 const DHIKRS = [
+  { key: 'tahlil_full', arabic: 'لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ', transliteration: 'La ilaha illallahu wahdahu la sharika lahu, lahul mulku wa lahul hamdu wa huwa \'ala kulli sha\'in qadir' },
   { key: 'tahlil', arabic: 'لَا إِلَٰهَ إِلَّا اللَّهُ', transliteration: 'La ilaha illallah' },
   { key: 'tasbih', arabic: 'سُبْحَانَ اللَّهِ', transliteration: 'SubhanAllah' },
+  { key: 'tasbih_hamd', arabic: 'سُبْحَانَ اللَّهِ وَبِحَمْدِهِ', transliteration: 'SubhanAllahi wa bihamdihi' },
   { key: 'takbir', arabic: 'اللَّهُ أَكْبَرُ', transliteration: 'Allahu Akbar' },
+  { key: 'hamd', arabic: 'الْحَمْدُ لِلَّهِ', transliteration: 'Alhamdulillah' },
+  { key: 'istighfar', arabic: 'أَسْتَغْفِرُ اللَّهَ', transliteration: 'Astaghfirullah' },
+  { key: 'salawat', arabic: 'اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ', transliteration: 'Allahumma salli \'ala Muhammad' },
 ];
+
+// ─── Curated Duas Data ────────────────────────────────────────────────────────
+
+interface CuratedDua {
+  id: string;
+  title: string;
+  arabic: string;
+  transliteration: string;
+  translation: string;
+  source: string;
+  category: 'Best of Arafah' | 'Forgiveness' | 'Quran' | 'Dunya & Akhirah' | 'Family' | 'Health' | 'Protection' | 'Guidance';
+  note?: string;
+}
+
+const CURATED_DUAS: CuratedDua[] = [
+  {
+    id: 'best-arafah',
+    title: 'The Best Dhikr of Arafah',
+    arabic: 'لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ',
+    transliteration: "La ilaha illallahu wahdahu la sharika lahu, lahul mulku wa lahul hamdu wa huwa 'ala kulli sha'in qadir",
+    translation: 'None has the right to be worshipped but Allah alone, Who has no partner. His is the dominion and His is the praise, and He has power over all things.',
+    source: 'Tirmidhi — Hasan',
+    category: 'Best of Arafah',
+    note: 'The Prophet ﷺ said: "The best thing I and the Prophets before me have said on the evening of Arafah is this." Repeat abundantly.',
+  },
+  {
+    id: 'forgiveness-aisha',
+    title: 'Dua for Forgiveness & Pardon',
+    arabic: 'اللَّهُمَّ إِنَّكَ عَفُوٌّ تُحِبُّ الْعَفْوَ فَاعْفُ عَنِّي',
+    transliteration: "Allahumma innaka 'afuwwun tuhibbul 'afwa fa'fu 'anni",
+    translation: 'O Allah, You are the Pardoner, You love to pardon, so pardon me.',
+    source: 'Tirmidhi & Ibn Majah — Sahih',
+    category: 'Forgiveness',
+    note: 'Aisha (RA) asked the Prophet ﷺ what to say on Laylatul Qadr. Scholars say this dua is equally powerful on the Day of Arafah.',
+  },
+  {
+    id: 'sayyidul-istighfar',
+    title: 'Sayyidul Istighfar — The Master Supplication',
+    arabic: 'اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَٰهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَىٰ عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ، أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ، أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ، وَأَبُوءُ بِذَنْبِي فَاغْفِرْ لِي فَإِنَّهُ لَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ',
+    transliteration: "Allahumma anta Rabbi la ilaha illa anta, khalaqtani wa ana 'abduka, wa ana 'ala 'ahdika wa wa'dika mastata'tu, a'udhu bika min sharri ma sana'tu, abu'u laka bini'matika 'alayya, wa abu'u bidhanbi faghfir li fa'innahu la yaghfirudh-dhunuba illa anta",
+    translation: 'O Allah, You are my Lord, none has the right to be worshipped except You. You created me and I am Your slave. I am faithful to my covenant and my promise as much as I can. I seek refuge with You from all the evil I have done. I acknowledge Your blessings upon me, and I confess my sins. So forgive me, for nobody can forgive sins except You.',
+    source: 'Bukhari — Sahih',
+    category: 'Forgiveness',
+    note: 'Whoever says this with conviction in the morning and dies before evening enters Paradise. Whoever says it in the evening and dies before morning enters Paradise.',
+  },
+  {
+    id: 'rabbana-atina',
+    title: 'Dua for Good in This World & the Next',
+    arabic: 'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ',
+    transliteration: "Rabbana atina fid-dunya hasanatan wa fil-akhirati hasanatan wa qina 'adhaban-nar",
+    translation: 'Our Lord, give us good in this world and good in the Hereafter, and protect us from the punishment of the Fire.',
+    source: 'Quran 2:201',
+    category: 'Dunya & Akhirah',
+    note: 'Anas (RA) said the Prophet ﷺ recited this dua most often of all. It covers all of dunya and akhirah in one.',
+  },
+  {
+    id: 'protect-fire',
+    title: 'Protection from the Hellfire',
+    arabic: 'اللَّهُمَّ أَجِرْنِي مِنَ النَّارِ',
+    transliteration: 'Allahumma ajirni minan-nar',
+    translation: 'O Allah, protect me from the Fire.',
+    source: 'Abu Dawud — Sahih',
+    category: 'Protection',
+    note: 'Say this 7 times after Fajr and after Maghrib. The Prophet ﷺ said: "Allah will protect you from the Fire."',
+  },
+  {
+    id: 'paradise-protection',
+    title: 'Ask for Paradise, Refuge from Hell',
+    arabic: 'اللَّهُمَّ إِنِّي أَسْأَلُكَ الْجَنَّةَ وَأَعُوذُ بِكَ مِنَ النَّارِ',
+    transliteration: "Allahumma inni as'alukal-jannata wa a'udhu bika minan-nar",
+    translation: 'O Allah, I ask You for Paradise and I seek refuge with You from the Fire.',
+    source: 'Abu Dawud — Sahih',
+    category: 'Protection',
+    note: 'Simple and direct — the Prophet ﷺ taught us to ask for Paradise explicitly. Don\'t be shy to ask.',
+  },
+  {
+    id: 'parents-forgiveness',
+    title: 'Forgiveness for Parents & Believers',
+    arabic: 'رَبِّ اغْفِرْ لِي وَلِوَالِدَيَّ وَلِلْمُؤْمِنِينَ يَوْمَ يَقُومُ الْحِسَابُ',
+    transliteration: 'Rabbighfir li wa liwalidayya wa lil mu\'minina yawma yaqumul hisab',
+    translation: 'My Lord, forgive me and my parents and the believers on the Day the account is established.',
+    source: 'Quran 14:41',
+    category: 'Family',
+    note: 'The dua of Ibrahim (AS). No day is better to pray for your parents than today.',
+  },
+  {
+    id: 'righteous-children',
+    title: 'Dua for Righteous Children',
+    arabic: 'رَبِّ أَوْزِعْنِي أَنْ أَشْكُرَ نِعْمَتَكَ الَّتِي أَنْعَمْتَ عَلَيَّ وَعَلَىٰ وَالِدَيَّ وَأَنْ أَعْمَلَ صَالِحًا تَرْضَاهُ وَأَصْلِحْ لِي فِي ذُرِّيَّتِي',
+    transliteration: "Rabbi awzi'ni an ashkura ni'mataka allati an'amta 'alayya wa 'ala walidayya wa an a'mala salihan tardahu wa aslih li fi dhurriyyati",
+    translation: 'My Lord, enable me to be grateful for Your favour which You have bestowed upon me and my parents, and to do righteousness of which You approve. And make righteous for me my offspring.',
+    source: 'Quran 46:15',
+    category: 'Family',
+  },
+  {
+    id: 'family-hearts',
+    title: 'Dua for a Righteous Family',
+    arabic: 'رَبَّنَا هَبْ لَنَا مِنْ أَزْوَاجِنَا وَذُرِّيَّاتِنَا قُرَّةَ أَعْيُنٍ وَاجْعَلْنَا لِلْمُتَّقِينَ إِمَامًا',
+    transliteration: "Rabbana hab lana min azwajina wa dhurriyyatina qurrata a'yunin waj'alna lil-muttaqina imama",
+    translation: 'Our Lord, grant us from our spouses and offspring comfort to our eyes and make us a leader for the righteous.',
+    source: 'Quran 25:74',
+    category: 'Family',
+    note: 'The dua of the servants of the Most Merciful. Ask Allah to make your family a source of joy for your eyes.',
+  },
+  {
+    id: 'guidance-taqwa',
+    title: 'Dua for Guidance, Taqwa & Sufficiency',
+    arabic: 'اللَّهُمَّ إِنِّي أَسْأَلُكَ الْهُدَى وَالتُّقَى وَالْعَفَافَ وَالْغِنَى',
+    transliteration: "Allahumma inni as'alukal-huda wat-tuqa wal-'afafa wal-ghina",
+    translation: 'O Allah, I ask You for guidance, piety, chastity, and self-sufficiency.',
+    source: 'Muslim — Sahih',
+    category: 'Guidance',
+    note: 'Four things that cover every need: guidance on the right path, God-consciousness, modesty, and freedom from depending on others.',
+  },
+  {
+    id: 'firmness-deen',
+    title: 'Dua for Firmness on the Deen',
+    arabic: 'يَا مُقَلِّبَ الْقُلُوبِ ثَبِّتْ قَلْبِي عَلَى دِينِكَ',
+    transliteration: "Ya muqallibal qulubi, thabbit qalbi 'ala dinik",
+    translation: 'O Turner of hearts, keep my heart firm upon Your religion.',
+    source: 'Tirmidhi — Hasan Sahih',
+    category: 'Guidance',
+    note: 'The Prophet ﷺ said this often. Hearts can turn — ask Allah to anchor yours on the straight path.',
+  },
+  {
+    id: 'health-body',
+    title: 'Dua for Health in Body, Hearing & Sight',
+    arabic: 'اللَّهُمَّ عَافِنِي فِي بَدَنِي، اللَّهُمَّ عَافِنِي فِي سَمْعِي، اللَّهُمَّ عَافِنِي فِي بَصَرِي، لَا إِلَٰهَ إِلَّا أَنْتَ',
+    transliteration: "Allahumma 'afini fi badani, Allahumma 'afini fi sam'i, Allahumma 'afini fi basari, la ilaha illa ant",
+    translation: 'O Allah, grant me health in my body. O Allah, grant me health in my hearing. O Allah, grant me health in my sight. None has the right to be worshipped except You.',
+    source: 'Abu Dawud — Hasan',
+    category: 'Health',
+  },
+  {
+    id: 'anxiety-relief',
+    title: 'Relief from Anxiety & Grief',
+    arabic: 'اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ، وَالْعَجْزِ وَالْكَسَلِ، وَالْبُخْلِ وَالْجُبْنِ، وَضَلَعِ الدَّيْنِ وَغَلَبَةِ الرِّجَالِ',
+    transliteration: "Allahumma inni a'udhu bika minal-hammi wal-hazani, wal-'ajzi wal-kasali, wal-bukhli wal-jubni, wa dhala'id-dayni wa ghalabatir-rijal",
+    translation: 'O Allah, I seek refuge in You from anxiety and grief, from weakness and laziness, from miserliness and cowardice, and from being overwhelmed by debt and overpowered by men.',
+    source: 'Bukhari — Sahih',
+    category: 'Health',
+  },
+  {
+    id: 'rizq-barakah',
+    title: 'Dua for Rizq & Barakah',
+    arabic: 'اللَّهُمَّ إِنِّي أَسْأَلُكَ عِلْمًا نَافِعًا، وَرِزْقًا طَيِّبًا، وَعَمَلًا مُتَقَبَّلًا',
+    transliteration: "Allahumma inni as'aluka 'ilman nafi'an, wa rizqan tayyiban, wa 'amalan mutaqabbala",
+    translation: 'O Allah, I ask You for beneficial knowledge, good provision, and accepted deeds.',
+    source: 'Ibn Majah — Sahih',
+    category: 'Dunya & Akhirah',
+    note: 'Said after Fajr — and perfect for Arafah. Ask for knowledge, halal rizq, and deeds accepted by Allah.',
+  },
+  {
+    id: 'sins-forgiven',
+    title: 'Complete Forgiveness of All Sins',
+    arabic: 'اللَّهُمَّ اغْفِرْ لِي ذَنْبِي كُلَّهُ، دِقَّهُ وَجِلَّهُ، وَأَوَّلَهُ وَآخِرَهُ، وَعَلَانِيَتَهُ وَسِرَّهُ',
+    transliteration: "Allahummaghfir li dhanbi kullahu, diqqahu wa jillahu, wa awwalahu wa akhirahu, wa 'alaniyatahu wa sirrahu",
+    translation: 'O Allah, forgive me all my sins — the minor and the major, the first and the last, the open and the hidden.',
+    source: 'Muslim — Sahih',
+    category: 'Forgiveness',
+    note: 'Ask for complete, total forgiveness. Today is the day Allah is most generous with His pardon.',
+  },
+  {
+    id: 'ayatul-kursi-dua',
+    title: 'Dua of Āyat al-Kursī',
+    arabic: 'اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ',
+    transliteration: 'Allahu la ilaha illa huwal-hayyul-qayyum, la ta\'khudhuhus-sinatun wa la nawm',
+    translation: 'Allah — there is no deity except Him, the Ever-Living, the Sustainer of existence. Neither drowsiness overtakes Him nor sleep.',
+    source: 'Quran 2:255',
+    category: 'Quran',
+    note: 'Recite Āyat al-Kursī often today. Whoever recites it after every prayer, nothing stands between them and Paradise except death.',
+  },
+  {
+    id: 'last-two-baqarah',
+    title: 'Last Two Verses of Surah Al-Baqarah',
+    arabic: 'آمَنَ الرَّسُولُ بِمَا أُنزِلَ إِلَيْهِ مِن رَّبِّهِ وَالْمُؤْمِنُونَ ۚ كُلٌّ آمَنَ بِاللَّهِ وَمَلَائِكَتِهِ وَكُتُبِهِ وَرُسُلِهِ',
+    transliteration: "Aamanar-rasulu bima unzila ilayhi mir-rabbihi wal-mu'minun, kullun amana billahi wa mala'ikatihi wa kutubihi wa rusulihi...",
+    translation: 'The Messenger has believed in what was revealed to him from his Lord, and so have the believers. All of them have believed in Allah and His angels and His books and His messengers...',
+    source: 'Quran 2:285–286',
+    category: 'Quran',
+    note: 'The Prophet ﷺ said: "Whoever recites the last two verses of Surah Al-Baqarah at night, they will suffice him." Recite them today.',
+  },
+  {
+    id: 'ibrahim-safety',
+    title: 'Dua of Ibrahim (AS) — Safety of Family',
+    arabic: 'رَبِّ اجْعَلْ هَٰذَا الْبَلَدَ آمِنًا وَاجْنُبْنِي وَبَنِيَّ أَن نَّعْبُدَ الْأَصْنَامَ',
+    transliteration: "Rabbij'al haadhal balada aminan wajnubni wa baniyya an na'budal-asnam",
+    translation: 'My Lord, make this city [Makkah] secure and keep me and my sons away from worshipping idols.',
+    source: 'Quran 14:35',
+    category: 'Family',
+    note: 'Ask Allah to protect your family from every form of shirk and deviation — a timeless dua for every generation.',
+  },
+  {
+    id: 'ummah-dua',
+    title: 'Dua for the Ummah',
+    arabic: 'اللَّهُمَّ أَصْلِحْ أُمَّةَ مُحَمَّدٍ، اللَّهُمَّ فَرِّجْ عَنْ أُمَّةِ مُحَمَّدٍ، اللَّهُمَّ ارْحَمْ أُمَّةَ مُحَمَّدٍ',
+    transliteration: "Allahumma aslih ummata Muhammad, Allahumma farrij 'an ummati Muhammad, Allahummar-ham ummata Muhammad",
+    translation: 'O Allah, reform the Ummah of Muhammad. O Allah, relieve the hardship of the Ummah of Muhammad. O Allah, have mercy on the Ummah of Muhammad.',
+    source: 'Abu Dawud — Hasan',
+    category: 'Guidance',
+    note: 'Don\'t forget your brothers and sisters around the world. Arafah is the day to ask for the whole Ummah.',
+  },
+];
+
+const CURATED_CATEGORIES = ['All', 'Best of Arafah', 'Forgiveness', 'Quran', 'Dunya & Akhirah', 'Family', 'Health', 'Protection', 'Guidance'] as const;
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -433,8 +643,13 @@ export default function ArafahPage() {
 
   // Dhikr
   const [dhikrCounts, setDhikrCounts] = useState<Record<string, number>>({});
-  const [activeDhikr, setActiveDhikr] = useState('tahlil');
+  const [activeDhikr, setActiveDhikr] = useState('tahlil_full');
   const [resetConfirm, setResetConfirm] = useState(false);
+
+  // Curated duas
+  const [duaFilter, setDuaFilter] = useState<string>('All');
+  const [expandedDua, setExpandedDua] = useState<string | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
 
   // DnD
   const sensors = useSensors(
@@ -625,6 +840,23 @@ export default function ArafahPage() {
     safeLocalSet(STORAGE_DHIKR, updated);
     setResetConfirm(false);
   }
+
+  function copyArabic(id: string, arabic: string) {
+    navigator.clipboard.writeText(arabic).catch(() => {});
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
+  }
+
+  function addCuratedToList(dua: CuratedDua) {
+    const newDua: Dua = { id: crypto.randomUUID(), text: dua.translation, category: 'Deen' };
+    const updated = [...duas, newDua];
+    setDuas(updated);
+    safeLocalSet(STORAGE_DUAS, updated);
+  }
+
+  const filteredDuas = duaFilter === 'All'
+    ? CURATED_DUAS
+    : CURATED_DUAS.filter((d) => d.category === duaFilter);
 
   const totalDhikr = Object.values(dhikrCounts).reduce((a, b) => a + b, 0);
   const name = profile?.name ?? '';
@@ -1065,6 +1297,183 @@ export default function ArafahPage() {
             </div>
           </FadeUp>
         )}
+      </section>
+
+      <OrangeDivider />
+
+      {/* ═══════════════════════════════════════════════════════════════════
+          SECTION 2.5 — CURATED DU'ĀS OF ARAFAH
+      ════════════════════════════════════════════════════════════════════ */}
+      <section className="px-4 py-8 max-w-[1100px] mx-auto">
+        <FadeUp>
+          <h2
+            className="font-cormorant text-center text-2xl sm:text-3xl text-[#f5f5f5] mb-1"
+            style={{ fontFamily: 'Cormorant Garamond, serif' }}
+          >
+            Du&apos;ās of Arafah
+          </h2>
+          <p className="text-center text-[#a3a3a3] text-sm mb-6">
+            From the Quran, Sunnah, and the prayers of the Prophets. Raise your hands and ask.
+          </p>
+        </FadeUp>
+
+        {/* Category filter */}
+        <FadeUp delay={0.05}>
+          <div className="flex flex-wrap gap-2 justify-center mb-8">
+            {CURATED_CATEGORIES.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setDuaFilter(cat)}
+                className="px-3 py-1.5 rounded-full text-xs transition-all"
+                style={{
+                  background: duaFilter === cat ? '#f97316' : 'rgba(255,255,255,0.03)',
+                  color: duaFilter === cat ? '#000' : '#a3a3a3',
+                  border: duaFilter === cat ? 'none' : '1px solid rgba(255,255,255,0.08)',
+                  fontWeight: duaFilter === cat ? 600 : 400,
+                }}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+        </FadeUp>
+
+        {/* Dua cards grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {filteredDuas.map((dua, i) => {
+            const isExpanded = expandedDua === dua.id;
+            const isCopied = copiedId === dua.id;
+            return (
+              <FadeUp key={dua.id} delay={i * 0.04}>
+                <div
+                  className="rounded-2xl overflow-hidden transition-all"
+                  style={{
+                    background: dua.category === 'Best of Arafah'
+                      ? 'rgba(249,115,22,0.06)'
+                      : 'rgba(255,255,255,0.02)',
+                    border: dua.category === 'Best of Arafah'
+                      ? '1px solid rgba(249,115,22,0.35)'
+                      : '1px solid rgba(255,255,255,0.06)',
+                    boxShadow: dua.category === 'Best of Arafah'
+                      ? '0 0 20px rgba(249,115,22,0.08)'
+                      : 'none',
+                  }}
+                >
+                  {/* Header */}
+                  <button
+                    onClick={() => setExpandedDua(isExpanded ? null : dua.id)}
+                    className="w-full text-left px-4 pt-4 pb-3 flex items-start justify-between gap-3"
+                  >
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1 flex-wrap">
+                        {dua.category === 'Best of Arafah' && (
+                          <span className="text-[10px] font-bold tracking-widest text-[#f97316] uppercase">
+                            ⭐ Best of Arafah
+                          </span>
+                        )}
+                        <span
+                          className="text-[10px] px-2 py-0.5 rounded-full"
+                          style={{ background: 'rgba(255,255,255,0.05)', color: '#a3a3a3' }}
+                        >
+                          {dua.category !== 'Best of Arafah' ? dua.category : ''}
+                        </span>
+                      </div>
+                      <p className="text-sm font-semibold text-[#f5f5f5]">{dua.title}</p>
+                      <p className="text-xs text-[#a3a3a3] mt-0.5">{dua.source}</p>
+                    </div>
+                    <ChevronDown
+                      size={16}
+                      className="text-[#a3a3a3] shrink-0 mt-1 transition-transform duration-300"
+                      style={{ transform: isExpanded ? 'rotate(180deg)' : 'none' }}
+                    />
+                  </button>
+
+                  {/* Arabic preview (always visible) */}
+                  <div className="px-4 pb-3">
+                    <p
+                      className="font-amiri text-[#fbbf24] leading-relaxed text-right"
+                      style={{
+                        fontFamily: 'Amiri, serif',
+                        fontSize: 'clamp(16px,3.5vw,22px)',
+                        direction: 'rtl',
+                      }}
+                    >
+                      {isExpanded ? dua.arabic : dua.arabic.length > 80 ? dua.arabic.slice(0, 80) + '…' : dua.arabic}
+                    </p>
+                  </div>
+
+                  {/* Expanded content */}
+                  <AnimatePresence initial={false}>
+                    {isExpanded && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                        className="overflow-hidden"
+                      >
+                        <div
+                          className="px-4 pb-4 space-y-3"
+                          style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}
+                        >
+                          {/* Transliteration */}
+                          <div className="pt-3">
+                            <p className="text-[10px] text-[#a3a3a3] uppercase tracking-widest mb-1">Transliteration</p>
+                            <p className="text-xs text-[#f5f5f5]/80 italic leading-relaxed">{dua.transliteration}</p>
+                          </div>
+
+                          {/* Translation */}
+                          <div>
+                            <p className="text-[10px] text-[#a3a3a3] uppercase tracking-widest mb-1">Translation</p>
+                            <p className="text-sm text-[#f5f5f5] leading-relaxed">{dua.translation}</p>
+                          </div>
+
+                          {/* Note */}
+                          {dua.note && (
+                            <div
+                              className="rounded-lg px-3 py-2"
+                              style={{ background: 'rgba(249,115,22,0.06)', borderLeft: '2px solid rgba(249,115,22,0.4)' }}
+                            >
+                              <p className="text-xs text-[#a3a3a3] leading-relaxed">{dua.note}</p>
+                            </div>
+                          )}
+
+                          {/* Actions */}
+                          <div className="flex gap-2 pt-1">
+                            <button
+                              onClick={() => copyArabic(dua.id, dua.arabic)}
+                              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs transition-all"
+                              style={{
+                                background: isCopied ? 'rgba(34,197,94,0.1)' : 'rgba(255,255,255,0.04)',
+                                border: isCopied ? '1px solid rgba(34,197,94,0.4)' : '1px solid rgba(255,255,255,0.08)',
+                                color: isCopied ? '#4ade80' : '#a3a3a3',
+                              }}
+                            >
+                              {isCopied ? <Check size={12} /> : <Download size={12} />}
+                              {isCopied ? 'Copied!' : 'Copy Arabic'}
+                            </button>
+                            <button
+                              onClick={() => addCuratedToList(dua)}
+                              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs transition-all"
+                              style={{
+                                background: 'rgba(249,115,22,0.08)',
+                                border: '1px solid rgba(249,115,22,0.25)',
+                                color: '#f97316',
+                              }}
+                            >
+                              <Plus size={12} />
+                              Add to my list
+                            </button>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </FadeUp>
+            );
+          })}
+        </div>
       </section>
 
       <OrangeDivider />
