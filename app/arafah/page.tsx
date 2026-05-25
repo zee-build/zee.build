@@ -284,6 +284,88 @@ const CURATED_DUAS: CuratedDua[] = [
 
 const CURATED_CATEGORIES = ['All', 'Best of Arafah', 'Forgiveness', 'Quran', 'Dunya & Akhirah', 'Family', 'Health', 'Protection', 'Guidance'] as const;
 
+// ─── Suggested Timetable Stages ───────────────────────────────────────────────
+
+const TIMETABLE_STAGES = [
+  {
+    id: 'stage1',
+    label: 'STAGE 1 · MONDAY EVENING',
+    date: '25 May 2026',
+    title: 'The day before Arafah',
+    subtitle: 'Clear the decks and protect the day.',
+    color: '#6366f1',
+    items: [
+      { id: 's1-1', text: 'Take the day off work or studies' },
+      { id: 's1-2', text: 'Let family know you need focused time tomorrow' },
+      { id: 's1-3', text: 'Silence social media and unnecessary notifications' },
+      { id: 's1-4', text: 'Write your duʼā list or review the ones above' },
+      { id: 's1-5', text: 'Pray Witr and make istighfār before sleeping early' },
+    ],
+  },
+  {
+    id: 'stage2',
+    label: 'STAGE 2 · TUESDAY PRE-DAWN',
+    date: '26 May — Before Fajr',
+    title: 'Rise early',
+    subtitle: 'Begin with gratitude and prayer.',
+    color: '#8b5cf6',
+    items: [
+      { id: 's2-1', text: 'Wake up 30 minutes before Fajr' },
+      { id: 's2-2', text: 'Make wudu with intention and presence' },
+      { id: 's2-3', text: 'Pray 2 rakʻah Tahajjud — make duʼā in sujood' },
+      { id: 's2-4', text: 'Eat suhoor with basmala if you are fasting' },
+      { id: 's2-5', text: 'Pray Fajr with full khushuʻ' },
+    ],
+  },
+  {
+    id: 'stage3',
+    label: 'STAGE 3 · AFTER FAJR',
+    date: '26 May — Fajr to Dhuhr',
+    title: 'Protect the morning',
+    subtitle: 'Fill it with Quran and dhikr.',
+    color: '#f59e0b',
+    items: [
+      { id: 's3-1', text: 'Recite morning adhkār (Hisnul Muslim)' },
+      { id: 's3-2', text: 'Read Quran — aim for at least 1 juz' },
+      { id: 's3-3', text: 'Recite La ilaha illallahu wahdahu... abundantly' },
+      { id: 's3-4', text: 'Avoid all idle talk, social media and distractions' },
+      { id: 's3-5', text: 'Make wudu and review your duʼā list before Dhuhr' },
+    ],
+  },
+  {
+    id: 'stage4',
+    label: 'STAGE 4 · DHUHR → MAGHRIB',
+    date: '26 May — The Key Window',
+    title: 'The heart of the day',
+    subtitle: 'Raise your hands and don’t stop.',
+    color: '#f97316',
+    highlight: true,
+    items: [
+      { id: 's4-1', text: 'Pray Dhuhr — the window is OPEN. Begin immediately.' },
+      { id: 's4-2', text: 'Work through your duʼā list with full presence' },
+      { id: 's4-3', text: 'Send salawāt on the Prophet ﷺ abundantly' },
+      { id: 's4-4', text: 'Make istighfār — Astaghfirullāh — without stopping' },
+      { id: 's4-5', text: 'Pray Asr and continue duʼā immediately after' },
+      { id: 's4-6', text: 'Pour everything out in the last 15 minutes before Maghrib' },
+    ],
+  },
+  {
+    id: 'stage5',
+    label: 'STAGE 5 · MAGHRIB & EVENING',
+    date: '26 May — Evening',
+    title: 'The day is done',
+    subtitle: 'Give thanks.',
+    color: '#10b981',
+    items: [
+      { id: 's5-1', text: 'Break your fast with duʼā at Maghrib (if fasting)' },
+      { id: 's5-2', text: 'Pray Maghrib with full gratitude' },
+      { id: 's5-3', text: 'Say Alhamdulillāh from the depths of your heart' },
+      { id: 's5-4', text: 'Pray Isha and Witr' },
+      { id: 's5-5', text: 'Sleep in a state of gratitude and hope' },
+    ],
+  },
+];
+
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 function safeLocalGet<T>(key: string, fallback: T): T {
@@ -632,6 +714,15 @@ export default function ArafahPage() {
   const [loadingPrayer, setLoadingPrayer] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const targetRef = useRef<Date | null>(null);
+  // Manual location fallback
+  const [geoFailed, setGeoFailed] = useState(false);
+  const [showManualLocation, setShowManualLocation] = useState(false);
+  const [manualCity, setManualCity] = useState('');
+  const [manualLocationLoading, setManualLocationLoading] = useState(false);
+
+  // Timetable checklist
+  const [timetableChecks, setTimetableChecks] = useState<Record<string, boolean>>({});
+  const timetableRef = useRef<HTMLDivElement>(null);
 
   // Du'ā list
   const [duas, setDuas] = useState<Dua[]>([]);
@@ -673,6 +764,9 @@ export default function ArafahPage() {
 
     const savedDhikr = safeLocalGet<Record<string, number>>(STORAGE_DHIKR, {});
     setDhikrCounts(savedDhikr);
+
+    const savedTimetable = safeLocalGet<Record<string, boolean>>('arafah-timetable-2026', {});
+    setTimetableChecks(savedTimetable);
   }, []);
 
   // Geolocation + prayer time fetch after profile set
@@ -713,17 +807,19 @@ export default function ArafahPage() {
 
   useEffect(() => {
     if (!profile) return;
-    // Set default target
     targetRef.current = buildTargetDate(DEFAULT_MAGHRIB);
-    // Request geolocation
     if (typeof navigator !== 'undefined' && navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (pos) => fetchPrayerTime(pos.coords.latitude, pos.coords.longitude),
         () => {
           setLoadingPrayer(false);
+          setGeoFailed(true);
           targetRef.current = buildTargetDate(DEFAULT_MAGHRIB);
-        }
+        },
+        { timeout: 8000 }
       );
+    } else {
+      setGeoFailed(true);
     }
   }, [profile, fetchPrayerTime]);
 
@@ -766,6 +862,13 @@ export default function ArafahPage() {
     safeLocalSet(STORAGE_PROFILE, p);
     setShowModal(false);
 
+    // Save to Supabase (fire-and-forget)
+    fetch('/api/arafah-visitors', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: p.name, city: p.city, onHajj: p.onHajj, fasting: p.fasting }),
+    }).catch(() => {});
+
     // Pre-fill intention as first dua
     if (p.intention.trim()) {
       const newDua: Dua = { id: crypto.randomUUID(), text: p.intention.trim(), category: 'General' };
@@ -773,6 +876,53 @@ export default function ArafahPage() {
       setDuas(updated);
       safeLocalSet(STORAGE_DUAS, updated);
     }
+  }
+
+  async function fetchPrayerTimeByCity(cityName: string) {
+    if (!cityName.trim()) return;
+    setManualLocationLoading(true);
+    try {
+      // Geocode city name via Nominatim
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(cityName)}&format=json&limit=1`
+      );
+      const data = await res.json();
+      if (data?.[0]) {
+        const { lat, lon, display_name } = data[0];
+        const shortCity = display_name.split(',')[0];
+        setMaghribCity(shortCity);
+        if (profile) {
+          const updated = { ...profile, city: shortCity };
+          setProfile(updated);
+          safeLocalSet(STORAGE_PROFILE, updated);
+        }
+        await fetchPrayerTime(parseFloat(lat), parseFloat(lon));
+        setGeoFailed(false);
+        setShowManualLocation(false);
+      }
+    } catch {
+      // Keep defaults
+    } finally {
+      setManualLocationLoading(false);
+    }
+  }
+
+  function toggleTimetableCheck(id: string) {
+    const updated = { ...timetableChecks, [id]: !timetableChecks[id] };
+    setTimetableChecks(updated);
+    safeLocalSet('arafah-timetable-2026', updated);
+  }
+
+  async function saveTimetableImage() {
+    if (!timetableRef.current) return;
+    const { default: html2canvas } = await import('html2canvas');
+    const canvas = await html2canvas(timetableRef.current, {
+      scale: 2,
+    } as Parameters<typeof html2canvas>[1]);
+    const link = document.createElement('a');
+    link.download = `arafah-plan-${profile?.name ?? 'my'}-1447.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
   }
 
   function addDua() {
@@ -1260,11 +1410,54 @@ export default function ArafahPage() {
           >
             Until Arafah Ends
           </h2>
-          <p className="text-center text-[#a3a3a3] text-xs sm:text-sm mb-8">
+          <p className="text-center text-[#a3a3a3] text-xs sm:text-sm mb-3">
             {loadingPrayer
               ? 'Fetching prayer time for your location...'
               : `Counting down for ${name || 'you'} in ${profile?.city || maghribCity} · Maghrib at ${maghribTime}`}
           </p>
+
+          {/* Manual location fallback */}
+          {geoFailed && !loadingPrayer && (
+            <div className="flex flex-col items-center gap-2 mb-6">
+              <p className="text-xs text-[#a3a3a3]">
+                Location not detected — showing Dubai defaults.{' '}
+                <button
+                  onClick={() => setShowManualLocation((v) => !v)}
+                  className="text-[#f97316] underline underline-offset-2 hover:no-underline transition-all"
+                >
+                  Enter your city manually
+                </button>
+              </p>
+              <AnimatePresence>
+                {showManualLocation && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="flex gap-2 w-full max-w-sm"
+                  >
+                    <input
+                      type="text"
+                      value={manualCity}
+                      onChange={(e) => setManualCity(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && fetchPrayerTimeByCity(manualCity)}
+                      placeholder="e.g. London, Karachi, Cairo..."
+                      className="flex-1 px-3 py-2 rounded-xl text-sm text-[#f5f5f5] placeholder-[#3f3f3f] outline-none"
+                      style={{ background: '#141414', border: '1px solid #1f1f1f' }}
+                    />
+                    <button
+                      onClick={() => fetchPrayerTimeByCity(manualCity)}
+                      disabled={manualLocationLoading}
+                      className="px-4 py-2 rounded-xl text-sm font-medium text-black transition-all active:scale-95 disabled:opacity-50"
+                      style={{ background: '#f97316' }}
+                    >
+                      {manualLocationLoading ? '...' : 'Go'}
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          )}
         </FadeUp>
 
         {loadingPrayer ? (
@@ -1616,6 +1809,135 @@ export default function ArafahPage() {
             )}
           </div>
         </FadeUp>
+      </section>
+
+      <OrangeDivider />
+
+      {/* ═══════════════════════════════════════════════════════════════════
+          SECTION 3.5 — INTERACTIVE TIMETABLE CHECKLIST
+      ════════════════════════════════════════════════════════════════════ */}
+      <section className="px-4 py-8 max-w-[1100px] mx-auto">
+        <FadeUp>
+          <h2
+            className="font-cormorant text-center text-2xl sm:text-3xl text-[#f5f5f5] mb-1"
+            style={{ fontFamily: 'Cormorant Garamond, serif' }}
+          >
+            Suggested Timetable
+          </h2>
+          <p className="text-center text-[#a3a3a3] text-sm mb-2">
+            Look through it, see what you&apos;re able to do, then build your own plan below.
+          </p>
+          <div className="flex justify-center mb-8">
+            <button
+              onClick={saveTimetableImage}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs text-[#a3a3a3] hover:text-[#f97316] transition-colors"
+              style={{ border: '1px solid #1f1f1f' }}
+            >
+              <Camera size={14} />
+              Save timetable as image
+            </button>
+          </div>
+        </FadeUp>
+
+        <div ref={timetableRef} className="space-y-4" style={{ background: '#0a0a0a', padding: '4px' }}>
+          {TIMETABLE_STAGES.map((stage, si) => {
+            const checked = stage.items.filter((it) => timetableChecks[it.id]).length;
+            const total = stage.items.length;
+            const allDone = checked === total;
+            return (
+              <FadeUp key={stage.id} delay={si * 0.06}>
+                <div
+                  className="rounded-2xl overflow-hidden"
+                  style={{
+                    background: stage.highlight ? 'rgba(249,115,22,0.05)' : 'rgba(255,255,255,0.02)',
+                    border: stage.highlight
+                      ? '1px solid rgba(249,115,22,0.4)'
+                      : '1px solid rgba(255,255,255,0.06)',
+                    boxShadow: stage.highlight ? '0 0 20px rgba(249,115,22,0.1)' : 'none',
+                  }}
+                >
+                  {/* Stage header */}
+                  <div
+                    className="px-5 pt-4 pb-3"
+                    style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <p
+                          className="text-[10px] font-bold tracking-[0.2em] uppercase mb-1"
+                          style={{ color: stage.color }}
+                        >
+                          {stage.label}
+                        </p>
+                        <p className="text-xs text-[#a3a3a3] mb-1">{stage.date}</p>
+                        <p className="text-base font-semibold text-[#f5f5f5]">{stage.title}</p>
+                        <p className="text-xs text-[#a3a3a3]">{stage.subtitle}</p>
+                      </div>
+                      <div className="shrink-0 text-right">
+                        <p
+                          className="text-lg font-bold"
+                          style={{ color: allDone ? '#4ade80' : stage.color }}
+                        >
+                          {checked} / {total}
+                        </p>
+                        <p className="text-[10px] text-[#a3a3a3]">
+                          {allDone ? '✓ Done' : 'completed'}
+                        </p>
+                      </div>
+                    </div>
+                    {/* Progress bar */}
+                    <div className="mt-3 h-1 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
+                      <motion.div
+                        className="h-full rounded-full"
+                        style={{ background: allDone ? '#4ade80' : stage.color }}
+                        initial={{ width: 0 }}
+                        animate={{ width: `${(checked / total) * 100}%` }}
+                        transition={{ duration: 0.4, ease: 'easeOut' }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Items */}
+                  <div className="px-5 py-3 space-y-2">
+                    {stage.items.map((item) => {
+                      const done = !!timetableChecks[item.id];
+                      return (
+                        <button
+                          key={item.id}
+                          onClick={() => toggleTimetableCheck(item.id)}
+                          className="w-full flex items-center gap-3 text-left rounded-xl px-3 py-2.5 transition-all"
+                          style={{
+                            background: done ? 'rgba(74,222,128,0.05)' : 'transparent',
+                            minHeight: 44,
+                          }}
+                        >
+                          <div
+                            className="shrink-0 w-5 h-5 rounded-full flex items-center justify-center transition-all"
+                            style={{
+                              background: done ? '#4ade80' : 'transparent',
+                              border: done ? 'none' : `1.5px solid rgba(255,255,255,0.2)`,
+                            }}
+                          >
+                            {done && <Check size={11} color="#000" strokeWidth={3} />}
+                          </div>
+                          <p
+                            className="text-sm leading-snug transition-colors"
+                            style={{
+                              color: done ? '#a3a3a3' : '#f5f5f5',
+                              textDecoration: done ? 'line-through' : 'none',
+                            }}
+                          >
+                            {item.text}
+                          </p>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </FadeUp>
+            );
+          })}
+        </div>
       </section>
 
       <OrangeDivider />
