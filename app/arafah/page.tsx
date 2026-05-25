@@ -1882,96 +1882,103 @@ export default function ArafahPage() {
             const total = stage.items.length;
             const allDone = checked === total;
             return (
-              <FadeUp key={stage.id} delay={si * 0.06}>
+              // Plain motion.div with delay — NOT inView-based, so html2canvas captures all stages
+              <motion.div
+                key={stage.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: si * 0.07, ease: [0.22, 1, 0.36, 1] }}
+                className="rounded-2xl overflow-hidden"
+                style={{
+                  background: stage.highlight ? 'rgba(249,115,22,0.05)' : 'rgba(255,255,255,0.02)',
+                  borderLeft: `3px solid ${stage.color}`,
+                  border: stage.highlight
+                    ? `1px solid rgba(249,115,22,0.4)`
+                    : `1px solid rgba(255,255,255,0.07)`,
+                  borderLeftColor: stage.color,
+                  borderLeftWidth: 3,
+                  boxShadow: stage.highlight ? '0 0 20px rgba(249,115,22,0.1)' : 'none',
+                }}
+              >
+                {/* Stage header */}
                 <div
-                  className="rounded-2xl overflow-hidden"
-                  style={{
-                    background: stage.highlight ? 'rgba(249,115,22,0.05)' : 'rgba(255,255,255,0.02)',
-                    border: stage.highlight
-                      ? '1px solid rgba(249,115,22,0.4)'
-                      : '1px solid rgba(255,255,255,0.06)',
-                    boxShadow: stage.highlight ? '0 0 20px rgba(249,115,22,0.1)' : 'none',
-                  }}
+                  className="px-5 pt-4 pb-3"
+                  style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}
                 >
-                  {/* Stage header */}
-                  <div
-                    className="px-5 pt-4 pb-3"
-                    style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}
-                  >
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <p
-                          className="text-[10px] font-bold tracking-[0.2em] uppercase mb-1"
-                          style={{ color: stage.color }}
-                        >
-                          {stage.label}
-                        </p>
-                        <p className="text-xs text-[#a3a3a3] mb-1">{stage.date}</p>
-                        <p className="text-base font-semibold text-[#f5f5f5]">{stage.title}</p>
-                        <p className="text-xs text-[#a3a3a3]">{stage.subtitle}</p>
-                      </div>
-                      <div className="shrink-0 text-right">
-                        <p
-                          className="text-lg font-bold"
-                          style={{ color: allDone ? '#4ade80' : stage.color }}
-                        >
-                          {checked} / {total}
-                        </p>
-                        <p className="text-[10px] text-[#a3a3a3]">
-                          {allDone ? '✓ Done' : 'completed'}
-                        </p>
-                      </div>
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <p
+                        className="text-[10px] font-bold tracking-[0.2em] uppercase mb-1"
+                        style={{ color: stage.color }}
+                      >
+                        {stage.label}
+                      </p>
+                      <p className="text-xs text-[#a3a3a3] mb-1">{stage.date}</p>
+                      <p className="text-base font-semibold text-[#f5f5f5]">{stage.title}</p>
+                      <p className="text-xs text-[#a3a3a3]">{stage.subtitle}</p>
                     </div>
-                    {/* Progress bar */}
-                    <div className="mt-3 h-1 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
-                      <motion.div
-                        className="h-full rounded-full"
-                        style={{ background: allDone ? '#4ade80' : stage.color }}
-                        initial={{ width: 0 }}
-                        animate={{ width: `${(checked / total) * 100}%` }}
-                        transition={{ duration: 0.4, ease: 'easeOut' }}
-                      />
+                    <div className="shrink-0 text-right">
+                      <p
+                        className="text-lg font-bold tabular-nums"
+                        style={{ color: allDone ? '#4ade80' : stage.color }}
+                      >
+                        {checked} / {total}
+                      </p>
+                      <p className="text-[10px] text-[#a3a3a3]">
+                        {allDone ? '✓ Done' : 'completed'}
+                      </p>
                     </div>
                   </div>
-
-                  {/* Items */}
-                  <div className="px-5 py-3 space-y-2">
-                    {stage.items.map((item) => {
-                      const done = !!timetableChecks[item.id];
-                      return (
-                        <button
-                          key={item.id}
-                          onClick={() => toggleTimetableCheck(item.id)}
-                          className="w-full flex items-center gap-3 text-left rounded-xl px-3 py-2.5 transition-all"
-                          style={{
-                            background: done ? 'rgba(74,222,128,0.05)' : 'transparent',
-                            minHeight: 44,
-                          }}
-                        >
-                          <div
-                            className="shrink-0 w-5 h-5 rounded-full flex items-center justify-center transition-all"
-                            style={{
-                              background: done ? '#4ade80' : 'transparent',
-                              border: done ? 'none' : `1.5px solid rgba(255,255,255,0.2)`,
-                            }}
-                          >
-                            {done && <Check size={11} color="#000" strokeWidth={3} />}
-                          </div>
-                          <p
-                            className="text-sm leading-snug transition-colors"
-                            style={{
-                              color: done ? '#a3a3a3' : '#f5f5f5',
-                              textDecoration: done ? 'line-through' : 'none',
-                            }}
-                          >
-                            {item.text}
-                          </p>
-                        </button>
-                      );
-                    })}
+                  {/* Progress bar */}
+                  <div className="mt-3 h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.08)' }}>
+                    <motion.div
+                      className="h-full rounded-full"
+                      style={{ background: allDone ? '#4ade80' : stage.color }}
+                      initial={{ width: 0 }}
+                      animate={{ width: `${(checked / total) * 100}%` }}
+                      transition={{ duration: 0.4, ease: 'easeOut' }}
+                    />
                   </div>
                 </div>
-              </FadeUp>
+
+                {/* Items */}
+                <div className="px-5 py-3 space-y-1">
+                  {stage.items.map((item) => {
+                    const done = !!timetableChecks[item.id];
+                    return (
+                      <button
+                        key={item.id}
+                        onClick={() => toggleTimetableCheck(item.id)}
+                        className="w-full flex items-center gap-3 text-left rounded-xl px-3 py-2.5 transition-all active:scale-[0.99]"
+                        style={{
+                          background: done ? 'rgba(74,222,128,0.06)' : 'transparent',
+                          minHeight: 44,
+                        }}
+                      >
+                        <div
+                          className="shrink-0 w-5 h-5 rounded-full flex items-center justify-center transition-all"
+                          style={{
+                            background: done ? '#4ade80' : 'transparent',
+                            border: done ? 'none' : `1.5px solid rgba(255,255,255,0.35)`,
+                            boxShadow: done ? 'none' : `0 0 0 1px ${stage.color}22`,
+                          }}
+                        >
+                          {done && <Check size={11} color="#000" strokeWidth={3} />}
+                        </div>
+                        <p
+                          className="text-sm leading-snug transition-colors flex-1"
+                          style={{
+                            color: done ? '#6b7280' : '#e5e5e5',
+                            textDecoration: done ? 'line-through' : 'none',
+                          }}
+                        >
+                          {item.text}
+                        </p>
+                      </button>
+                    );
+                  })}
+                </div>
+              </motion.div>
             );
           })}
         </div>
