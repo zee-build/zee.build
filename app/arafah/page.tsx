@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { motion, AnimatePresence, useInView } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   DndContext,
   closestCenter,
@@ -417,14 +417,11 @@ function FadeUp({
   delay?: number;
   className?: string;
 }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: '-60px' });
   return (
     <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 32 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] }}
+      initial={{ opacity: 0, y: 24 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] }}
       className={className}
     >
       {children}
@@ -566,26 +563,14 @@ function TimelineItem({
   side?: 'left' | 'right';
   index?: number;
 }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: '-40px' });
+  const cardStyle = {
+    background: highlight ? 'rgba(249,115,22,0.06)' : 'rgba(255,255,255,0.02)',
+    border: highlight ? '2px solid rgba(249,115,22,0.5)' : '1px solid rgba(255,255,255,0.07)',
+    boxShadow: highlight ? '0 0 24px rgba(249,115,22,0.15)' : 'none',
+  };
 
-  const card = (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, x: side === 'left' ? -30 : 30 }}
-      animate={inView ? { opacity: 1, x: 0 } : {}}
-      transition={{ duration: 0.6, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
-      className={`rounded-xl p-4 flex-1 max-w-[calc(50%-32px)] ${
-        highlight
-          ? 'border-2 shadow-lg'
-          : 'border'
-      }`}
-      style={{
-        background: highlight ? 'rgba(249,115,22,0.06)' : 'rgba(255,255,255,0.02)',
-        border: highlight ? '2px solid rgba(249,115,22,0.5)' : '1px solid rgba(255,255,255,0.06)',
-        boxShadow: highlight ? '0 0 24px rgba(249,115,22,0.15)' : 'none',
-      }}
-    >
+  const cardContent = (
+    <>
       {highlight && (
         <motion.div
           animate={{ opacity: [0.5, 1, 0.5] }}
@@ -596,60 +581,41 @@ function TimelineItem({
         </motion.div>
       )}
       <div className="text-xs text-[#a3a3a3] mb-1">{time}</div>
-      <div className="text-sm font-semibold text-[#f5f5f5] mb-1">
-        {icon} {title}
-      </div>
+      <div className="text-sm font-semibold text-[#f5f5f5] mb-1">{icon} {title}</div>
       <div className="text-xs text-[#a3a3a3] leading-relaxed">{description}</div>
-    </motion.div>
+    </>
   );
 
-  // Mobile: always single column
   return (
     <>
-      {/* Desktop alternating layout */}
+      {/* Desktop alternating */}
       <div className="hidden md:flex items-center gap-4 w-full">
         {side === 'left' ? (
           <>
-            {card}
-            <div
-              className="w-3 h-3 rounded-full shrink-0"
-              style={{ background: highlight ? '#f97316' : '#3f3f3f' }}
-            />
+            <motion.div
+              initial={{ opacity: 0, x: -24 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.55, delay: index * 0.07, ease: [0.22, 1, 0.36, 1] }}
+              className="rounded-xl p-4 flex-1 max-w-[calc(50%-32px)]"
+              style={cardStyle}
+            >
+              {cardContent}
+            </motion.div>
+            <div className="w-3 h-3 rounded-full shrink-0" style={{ background: highlight ? '#f97316' : '#3f3f3f' }} />
             <div className="flex-1" />
           </>
         ) : (
           <>
             <div className="flex-1" />
-            <div
-              className="w-3 h-3 rounded-full shrink-0"
-              style={{ background: highlight ? '#f97316' : '#3f3f3f' }}
-            />
+            <div className="w-3 h-3 rounded-full shrink-0" style={{ background: highlight ? '#f97316' : '#3f3f3f' }} />
             <motion.div
-              ref={ref}
-              initial={{ opacity: 0, x: 30 }}
-              animate={inView ? { opacity: 1, x: 0 } : {}}
-              transition={{ duration: 0.6, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
-              className={`rounded-xl p-4 flex-1 max-w-[calc(50%-32px)]`}
-              style={{
-                background: highlight ? 'rgba(249,115,22,0.06)' : 'rgba(255,255,255,0.02)',
-                border: highlight ? '2px solid rgba(249,115,22,0.5)' : '1px solid rgba(255,255,255,0.06)',
-                boxShadow: highlight ? '0 0 24px rgba(249,115,22,0.15)' : 'none',
-              }}
+              initial={{ opacity: 0, x: 24 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.55, delay: index * 0.07, ease: [0.22, 1, 0.36, 1] }}
+              className="rounded-xl p-4 flex-1 max-w-[calc(50%-32px)]"
+              style={cardStyle}
             >
-              {highlight && (
-                <motion.div
-                  animate={{ opacity: [0.5, 1, 0.5] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                  className="text-xs font-bold tracking-widest text-[#f97316] mb-2 uppercase"
-                >
-                  ⭐ KEY WINDOW
-                </motion.div>
-              )}
-              <div className="text-xs text-[#a3a3a3] mb-1">{time}</div>
-              <div className="text-sm font-semibold text-[#f5f5f5] mb-1">
-                {icon} {title}
-              </div>
-              <div className="text-xs text-[#a3a3a3] leading-relaxed">{description}</div>
+              {cardContent}
             </motion.div>
           </>
         )}
@@ -658,33 +624,17 @@ function TimelineItem({
       {/* Mobile single column */}
       <div className="flex md:hidden items-start gap-3 w-full">
         <div className="flex flex-col items-center">
-          <div
-            className="w-2.5 h-2.5 rounded-full mt-4 shrink-0"
-            style={{ background: highlight ? '#f97316' : '#3f3f3f' }}
-          />
-          <div className="w-px flex-1 mt-1" style={{ background: 'rgba(255,255,255,0.06)' }} />
+          <div className="w-2.5 h-2.5 rounded-full mt-4 shrink-0" style={{ background: highlight ? '#f97316' : '#4f4f4f' }} />
+          <div className="w-px flex-1 mt-1" style={{ background: 'rgba(255,255,255,0.07)' }} />
         </div>
         <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.5, delay: index * 0.06 }}
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, delay: index * 0.06, ease: [0.22, 1, 0.36, 1] }}
           className="flex-1 rounded-xl p-3 mb-3"
-          style={{
-            background: highlight ? 'rgba(249,115,22,0.06)' : 'rgba(255,255,255,0.02)',
-            border: highlight ? '2px solid rgba(249,115,22,0.5)' : '1px solid rgba(255,255,255,0.06)',
-            boxShadow: highlight ? '0 0 16px rgba(249,115,22,0.12)' : 'none',
-          }}
+          style={cardStyle}
         >
-          {highlight && (
-            <div className="text-xs font-bold tracking-widest text-[#f97316] mb-1 uppercase">
-              ⭐ KEY WINDOW
-            </div>
-          )}
-          <div className="text-xs text-[#a3a3a3] mb-0.5">{time}</div>
-          <div className="text-sm font-semibold text-[#f5f5f5] mb-1">
-            {icon} {title}
-          </div>
-          <div className="text-xs text-[#a3a3a3] leading-relaxed">{description}</div>
+          {cardContent}
         </motion.div>
       </div>
     </>
