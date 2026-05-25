@@ -770,29 +770,41 @@ export default function ArafahPage() {
   }, []);
 
   // Geolocation + prayer time fetch after profile set
+  const profileRef = useRef<Profile | null>(null);
+  const geoRequestedRef = useRef(false);
+
   const fetchPrayerTime = useCallback(async (lat: number, lng: number) => {
     setLoadingPrayer(true);
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 7000);
     try {
       const unix = Math.floor(new Date(`${ARAFAH_DATE}T12:00:00Z`).getTime() / 1000);
       const res = await fetch(
-        `https://api.aladhan.com/v1/timings/${unix}?latitude=${lat}&longitude=${lng}&method=2`
+        `https://api.aladhan.com/v1/timings/${unix}?latitude=${lat}&longitude=${lng}&method=2`,
+        { signal: controller.signal }
       );
       const json = await res.json();
       const mg: string = json?.data?.timings?.Maghrib ?? DEFAULT_MAGHRIB;
       setMaghribTime(mg);
       targetRef.current = buildTargetDate(mg);
 
-      // Reverse geocode
+      // Reverse geocode (separate short timeout)
       try {
+        const geoCtrl = new AbortController();
+        const geoTimer = setTimeout(() => geoCtrl.abort(), 5000);
         const geo = await fetch(
-          `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`
+          `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`,
+          { signal: geoCtrl.signal }
         );
+        clearTimeout(geoTimer);
         const geoJson = await geo.json();
         const addr = geoJson?.address;
         const city = addr?.city ?? addr?.town ?? addr?.village ?? addr?.state ?? DEFAULT_CITY;
         setMaghribCity(city);
-        if (profile) {
-          const updated = { ...profile, city: profile.city || city };
+        const cur = profileRef.current;
+        if (cur) {
+          const updated = { ...cur, city: cur.city || city };
+          profileRef.current = updated;
           setProfile(updated);
           safeLocalSet(STORAGE_PROFILE, updated);
         }
@@ -801,24 +813,42 @@ export default function ArafahPage() {
       setMaghribTime(DEFAULT_MAGHRIB);
       targetRef.current = buildTargetDate(DEFAULT_MAGHRIB);
     } finally {
+      clearTimeout(timer);
       setLoadingPrayer(false);
     }
+  }, []); // no profile dependency — uses profileRef instead
+
+  useEffect(() => {
+    profileRef.current = profile;
   }, [profile]);
 
   useEffect(() => {
-    if (!profile) return;
+    if (!profile || geoRequestedRef.current) return;
+    geoRequestedRef.current = true;
     targetRef.current = buildTargetDate(DEFAULT_MAGHRIB);
+
+    // Safety net: clear loading after 12s no matter what
+    const safetyTimer = setTimeout(() => {
+      setLoadingPrayer(false);
+      setGeoFailed(true);
+    }, 12000);
+
     if (typeof navigator !== 'undefined' && navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (pos) => fetchPrayerTime(pos.coords.latitude, pos.coords.longitude),
+        (pos) => {
+          clearTimeout(safetyTimer);
+          fetchPrayerTime(pos.coords.latitude, pos.coords.longitude);
+        },
         () => {
+          clearTimeout(safetyTimer);
           setLoadingPrayer(false);
           setGeoFailed(true);
           targetRef.current = buildTargetDate(DEFAULT_MAGHRIB);
         },
-        { timeout: 8000 }
+        { timeout: 8000, maximumAge: 60000 }
       );
     } else {
+      clearTimeout(safetyTimer);
       setGeoFailed(true);
     }
   }, [profile, fetchPrayerTime]);
@@ -891,8 +921,10 @@ export default function ArafahPage() {
         const { lat, lon, display_name } = data[0];
         const shortCity = display_name.split(',')[0];
         setMaghribCity(shortCity);
-        if (profile) {
-          const updated = { ...profile, city: shortCity };
+        const cur = profileRef.current;
+        if (cur) {
+          const updated = { ...cur, city: shortCity };
+          profileRef.current = updated;
           setProfile(updated);
           safeLocalSet(STORAGE_PROFILE, updated);
         }
@@ -1510,19 +1542,24 @@ export default function ArafahPage() {
           </p>
         </FadeUp>
 
-        {/* Category filter */}
+        {/* Category filter — horizontal scroll on mobile */}
         <FadeUp delay={0.05}>
-          <div className="flex flex-wrap gap-2 justify-center mb-8">
+          <div
+            className="flex gap-2 mb-8 overflow-x-auto pb-2"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          >
+            <style>{`.no-scrollbar::-webkit-scrollbar{display:none}`}</style>
             {CURATED_CATEGORIES.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setDuaFilter(cat)}
-                className="px-3 py-1.5 rounded-full text-xs transition-all"
+                className="px-3 py-1.5 rounded-full text-xs transition-all whitespace-nowrap shrink-0"
                 style={{
                   background: duaFilter === cat ? '#f97316' : 'rgba(255,255,255,0.03)',
                   color: duaFilter === cat ? '#000' : '#a3a3a3',
                   border: duaFilter === cat ? 'none' : '1px solid rgba(255,255,255,0.08)',
                   fontWeight: duaFilter === cat ? 600 : 400,
+                  minHeight: 36,
                 }}
               >
                 {cat}
