@@ -261,6 +261,16 @@ const CURATED_DUAS: CuratedDua[] = [
     note: 'The Prophet ﷺ said: "Whoever recites the last two verses of Surah Al-Baqarah at night, they will suffice him." Recite them today.',
   },
   {
+    id: 'ibrahim-prayer-descendants',
+    title: 'Dua of Ibrahim (AS) — Prayer & Descendants',
+    arabic: 'رَبِّ اجْعَلْنِي مُقِيمَ الصَّلَاةِ وَمِن ذُرِّيَّتِي ۚ رَبَّنَا وَتَقَبَّلْ دُعَاءِ ۞ رَبَّنَا اغْفِرْ لِي وَلِوَالِدَيَّ وَلِلْمُؤْمِنِينَ يَوْمَ يَقُومُ الْحِسَابُ',
+    transliteration: "Rabbi aj'alni muqimas-salati wa min dhurriyyati, Rabbana wa taqabbal du'a. Rabbanaghfir li wa liwalidayya wa lil-mu'minina yawma yaqumul hisab.",
+    translation: 'My Lord, make me an establisher of prayer, and [many] from my descendants. Our Lord, and accept my supplication. Our Lord, forgive me and my parents and the believers the Day the account is established.',
+    source: 'Quran 14:40–41',
+    category: 'Family',
+    note: 'Ibrahim (AS) — the Khalilullah, the intimate friend of Allah — asked for steadfastness in salah for himself FIRST, then for his descendants. Even the greatest prophet did not take his own prayer for granted. The dua carries three requests in one: your own connection to salah, your children\'s connection to salah, and forgiveness for your parents on the Day of Account. On Arafah — the day Ibrahim\'s legacy lives on through every pilgrim at Wuquf — reciting his exact words is a profound act of following the father of the prophets.',
+  },
+  {
     id: 'ibrahim-safety',
     title: 'Dua of Ibrahim (AS) — Safety of Family',
     arabic: 'رَبِّ اجْعَلْ هَٰذَا الْبَلَدَ آمِنًا وَاجْنُبْنِي وَبَنِيَّ أَن نَّعْبُدَ الْأَصْنَامَ',
