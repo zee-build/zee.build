@@ -49,11 +49,21 @@ interface TimeLeft {
 const STORAGE_PROFILE = 'arafah-profile-2026';
 const STORAGE_DUAS = 'arafah-duas-2026';
 const STORAGE_DHIKR = 'arafah-dhikr-2026';
-const ARAFAH_DATE = '2026-05-26';
+const ARAFAH_1447_DATE = '2026-05-26';
+const ARAFAH_1448_DATE = '2027-05-15'; // approximate — exact date subject to moon sighting
+const ARAFAH_1447_MAGHRIB_CUTOFF = new Date('2026-05-26T20:00:00'); // safely after any Maghrib worldwide
 const DEFAULT_MAGHRIB = '19:18';
 const DEFAULT_CITY = 'Dubai';
 const DEFAULT_LAT = 25.2048;
 const DEFAULT_LNG = 55.2708;
+
+// Determine active year based on whether 1447 has passed
+const ARAFAH_PASSED_1447 = typeof window !== 'undefined'
+  ? Date.now() > ARAFAH_1447_MAGHRIB_CUTOFF.getTime()
+  : false;
+const ARAFAH_DATE = ARAFAH_PASSED_1447 ? ARAFAH_1448_DATE : ARAFAH_1447_DATE;
+const ARAFAH_HIJRI_YEAR = ARAFAH_PASSED_1447 ? '1448' : '1447';
+const ARAFAH_DISPLAY_DATE = ARAFAH_PASSED_1447 ? '15 May 2027 (est.)' : '26 May 2026';
 
 const DUA_CATEGORIES = ['Deen', 'Dunya', 'Family', 'Health', 'Ummah', 'General'];
 const INSPIRATION_CHIPS = [
@@ -1248,41 +1258,27 @@ export default function ArafahPage() {
         )}
       </AnimatePresence>
 
-      {/* ── Post-Maghrib overlay ─────────────────────────────────────────── */}
+      {/* ── Post-Arafah banner (non-blocking) ───────────────────────────── */}
       <AnimatePresence>
-        {countdownDone && (
+        {(countdownDone || ARAFAH_PASSED_1447) && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="fixed inset-0 z-[9990] flex flex-col items-center justify-center text-center px-6"
-            style={{ background: 'rgba(0,0,0,0.97)' }}
+            initial={{ opacity: 0, y: -16 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -16 }}
+            transition={{ duration: 0.5 }}
+            className="fixed top-0 left-0 right-0 z-50 flex items-center justify-center gap-3 px-4 py-3 text-center"
+            style={{ background: 'rgba(10,10,10,0.95)', borderBottom: '1px solid rgba(249,115,22,0.25)', backdropFilter: 'blur(12px)' }}
           >
-            <motion.p
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="font-amiri text-5xl sm:text-7xl mb-4"
-              style={{ fontFamily: 'Amiri, serif', color: '#fbbf24', direction: 'rtl' }}
+            <span
+              className="font-amiri text-xl text-[#fbbf24]"
+              style={{ fontFamily: 'Amiri, serif', direction: 'rtl' }}
             >
-              الحمد لله
-            </motion.p>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-              className="font-cormorant text-2xl sm:text-4xl text-[#f5f5f5] italic mb-3"
-              style={{ fontFamily: 'Cormorant Garamond, serif' }}
-            >
-              May Allah accept your du&apos;ā{name ? `, ${name}` : ''}
-            </motion.p>
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 1 }}
-              className="text-[#a3a3a3] text-sm"
-            >
-              Arafah 1447 has passed. May it be your best yet.
-            </motion.p>
+              تَقَبَّلَ اللهُ مِنَّا وَمِنْكُمْ
+            </span>
+            <span className="text-[#a3a3a3] text-xs hidden sm:inline">·</span>
+            <span className="text-[#a3a3a3] text-xs hidden sm:inline">
+              Arafah 1447 has passed. Counting toward 1448.
+            </span>
           </motion.div>
         )}
       </AnimatePresence>
@@ -1292,7 +1288,7 @@ export default function ArafahPage() {
       ════════════════════════════════════════════════════════════════════ */}
       <section
         className="relative flex flex-col items-center justify-center text-center px-4 radial-glow grain-overlay"
-        style={{ minHeight: '100svh' }}
+        style={{ minHeight: '100svh', paddingTop: (countdownDone || ARAFAH_PASSED_1447) ? '52px' : '0' }}
       >
         {/* Top date line */}
         <motion.div
@@ -1303,7 +1299,7 @@ export default function ArafahPage() {
         >
           <div className="h-px w-16" style={{ background: '#f97316' }} />
           <p className="text-[#a3a3a3] text-xs tracking-[0.25em] uppercase">
-            9 Dhul-Hijjah 1447 · 26 May 2026
+            9 Dhul-Hijjah {ARAFAH_HIJRI_YEAR} · {ARAFAH_DISPLAY_DATE}
           </p>
         </motion.div>
 
@@ -1400,7 +1396,7 @@ export default function ArafahPage() {
             className="font-cormorant text-center text-2xl sm:text-3xl text-[#f5f5f5] mb-2"
             style={{ fontFamily: 'Cormorant Garamond, serif' }}
           >
-            Until Arafah Ends
+            {ARAFAH_PASSED_1447 ? `Until Arafah ${ARAFAH_HIJRI_YEAR}` : 'Until Arafah Ends'}
           </h2>
           <p className="text-center text-[#a3a3a3] text-xs sm:text-sm mb-3">
             {loadingPrayer
