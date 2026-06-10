@@ -6,7 +6,7 @@ import type { Match, MatchPlayer, Player } from '@/lib/runitback/types'
 
 export const metadata: Metadata = {
   title: 'Run It Back — Home',
-  description: 'FIFA-style stats hub for the Friday & Tuesday five-a-side crew at Muweilah.',
+  description: 'FIFA-style stats hub for the Friday & Tuesday five-a-side crew.',
 }
 
 export default async function RunItBackHome() {

@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
     .insert({
       date,
       day_of_week,
-      location: location || 'Muweilah',
+      location: location || 'Sharjah',
       team_a_score: team_a_score ?? 0,
       team_b_score: team_b_score ?? 0,
       notes: notes || null,

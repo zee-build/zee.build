@@ -20,7 +20,7 @@ const DAYS: { value: DayOfWeek; label: string }[] = [
 export default function MatchLogForm({ players }: { players: Player[] }) {
   const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10))
   const [dayOfWeek, setDayOfWeek] = useState<DayOfWeek>('Friday')
-  const [location, setLocation] = useState('Muweilah')
+  const [location, setLocation] = useState('Sharjah')
   const [notes, setNotes] = useState('')
   const [roster, setRoster] = useState<RosterRow[]>([])
   const [selectedPlayer, setSelectedPlayer] = useState('')
@@ -63,7 +63,7 @@ export default function MatchLogForm({ players }: { players: Player[] }) {
   const reset = () => {
     setDate(new Date().toISOString().slice(0, 10))
     setDayOfWeek('Friday')
-    setLocation('Muweilah')
+    setLocation('Sharjah')
     setNotes('')
     setRoster([])
     setScoreOverride({ a: null, b: null })

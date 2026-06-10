@@ -22,7 +22,7 @@ const barlow = Barlow({
 
 export const metadata: Metadata = {
   title: 'Run It Back',
-  description: 'Friday & Tuesday five-a-side stats hub — Muweilah, Season 2025',
+  description: 'Friday & Tuesday five-a-side stats hub — Season 2025',
 }
 
 export default function RunItBackLayout({ children }: { children: React.ReactNode }) {
@@ -33,7 +33,7 @@ export default function RunItBackLayout({ children }: { children: React.ReactNod
         <main className="rib-main">{children}</main>
         <footer className="px-4 md:px-8 py-4 text-right" style={{ borderTop: '1px solid var(--border)' }}>
           <span className="rib-heading text-[10px] text-rib-muted" style={{ letterSpacing: '3px' }}>
-            RUN IT BACK · SEASON 2025 · MUWEILAH
+            RUN IT BACK · SEASON 2025
           </span>
         </footer>
         <MusicPlayer />

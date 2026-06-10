@@ -3,7 +3,7 @@ import JoinForm from '@/components/runitback/JoinForm'
 
 export const metadata: Metadata = {
   title: 'Run It Back — Join the Squad',
-  description: 'Register yourself for Friday & Tuesday five-a-side games at Muweilah.',
+  description: 'Register yourself for Friday & Tuesday five-a-side games.',
 }
 
 export default function JoinPage() {
