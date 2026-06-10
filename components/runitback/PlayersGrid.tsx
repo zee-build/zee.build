@@ -82,7 +82,7 @@ export default function PlayersGrid({ stats }: { stats: PlayerStats[] }) {
           <p className="rib-body text-sm">Try a different search or filter.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="flex flex-wrap gap-5 justify-center sm:justify-start">
           {filtered.map((s) => (
             <FifaCard key={s.player.id} stats={s} href={`/runitback/players/${s.player.id}`} />
           ))}

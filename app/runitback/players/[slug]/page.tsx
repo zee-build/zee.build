@@ -59,38 +59,57 @@ export default async function PlayerProfilePage({ params }: PageProps) {
   const { player, stats, matches, headToHead } = data
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <Link href="/runitback/players" className="rib-heading text-xs text-rib-muted inline-flex items-center gap-1.5 mb-6 hover:text-rib-acc">
+    <div className="rib-page max-w-4xl mx-auto">
+      <Link href="/runitback/players" className="rib-heading text-xs text-rib-muted inline-flex items-center gap-1.5 mb-6 hover:text-rib-acc" style={{ letterSpacing: '2px' }}>
         <ArrowLeft size={14} /> BACK TO PLAYERS
       </Link>
 
-      <div className="mb-8">
-        <FifaCard stats={stats} variant="full" />
-      </div>
+      {/* Card + key stats side-by-side on desktop */}
+      <div className="flex flex-col md:flex-row gap-8 mb-8 items-start">
+        <div className="shrink-0 flex justify-center w-full md:w-auto">
+          <FifaCard stats={stats} variant="full" />
+        </div>
 
-      {/* Stats row */}
-      <div className="grid grid-cols-3 sm:grid-cols-6 gap-3 mb-8">
-        {[
-          { label: 'GAMES', value: stats.games },
-          { label: 'GOALS', value: stats.goals },
-          { label: 'ASSISTS', value: stats.assists },
-          { label: 'MOTM', value: stats.motm },
-          { label: 'WIN %', value: `${Math.round(stats.winRate)}%` },
-          { label: 'STREAK', value: stats.streak },
-        ].map((item) => (
-          <div key={item.label} className="rib-tile rounded-lg p-3 text-center">
-            <p className="rib-stat text-2xl">{item.value}</p>
-            <p className="rib-heading text-[10px] text-rib-muted mt-1" style={{ letterSpacing: '1.5px' }}>
-              {item.label}
-            </p>
+        {/* Stats panel */}
+        <div className="flex-1 space-y-4">
+          <div>
+            <h1 className="rib-heading text-4xl text-white leading-none">{player.name}</h1>
+            {player.nickname && <p className="rib-body text-sm mt-1">&ldquo;{player.nickname}&rdquo;</p>}
+            <div className="flex items-center gap-2 mt-2 flex-wrap">
+              {player.position && (
+                <span className="rib-heading text-[10px] px-2 py-0.5 rounded" style={{ letterSpacing: '2px', background: 'color-mix(in srgb, var(--acc) 15%, transparent)', color: 'var(--acc)', border: '1px solid color-mix(in srgb, var(--acc) 30%, transparent)' }}>
+                  {player.position}
+                </span>
+              )}
+              <span className="rib-heading text-[10px] px-2 py-0.5 rounded" style={{ letterSpacing: '2px', background: 'rgba(255,255,255,0.05)', color: 'var(--muted)', border: '1px solid var(--border)' }}>
+                {player.is_regular ? 'REGULAR' : 'GUEST'}
+              </span>
+            </div>
           </div>
-        ))}
-      </div>
 
-      {/* Progress bars */}
-      <div className="rib-tile rounded-lg p-5 mb-8 space-y-4">
-        <StatBar label="GOALS PER GAME" value={stats.goalsPerGame} max={3} suffix="" />
-        <StatBar label="WIN RATE" value={stats.winRate} max={100} />
+          <div className="grid grid-cols-3 gap-2">
+            {[
+              { label: 'GAMES', value: stats.games },
+              { label: 'GOALS', value: stats.goals },
+              { label: 'ASSISTS', value: stats.assists },
+              { label: 'MOTM', value: stats.motm },
+              { label: 'WIN %', value: `${Math.round(stats.winRate)}%` },
+              { label: 'STREAK', value: `${stats.streak}W` },
+            ].map((item) => (
+              <div key={item.label} className="rib-tile rounded-lg p-3 text-center">
+                <p className="rib-stat text-2xl">{item.value}</p>
+                <p className="rib-heading text-[10px] text-rib-muted mt-1" style={{ letterSpacing: '1.5px' }}>
+                  {item.label}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          <div className="rib-tile rounded-lg p-4 space-y-3">
+            <StatBar label="GOALS PER GAME" value={stats.goalsPerGame} max={3} suffix="" />
+            <StatBar label="WIN RATE" value={stats.winRate} max={100} />
+          </div>
+        </div>
       </div>
 
       {/* Match history */}
@@ -142,12 +161,12 @@ export default async function PlayerProfilePage({ params }: PageProps) {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           {headToHead.map((rec) => (
-            <div key={rec.player.id} className="rib-tile rounded-lg px-4 py-3 flex items-center justify-between">
+            <Link key={rec.player.id} href={`/runitback/players/${rec.player.id}`} className="rib-tile rounded-lg px-4 py-3 flex items-center justify-between hover:border-rib-acc transition-colors">
               <span className="rib-heading text-sm">{rec.player.name}</span>
               <span className="rib-stat text-sm">
-                {rec.wins}W - {rec.losses}L - {rec.draws}D
+                {rec.wins}W – {rec.losses}L – {rec.draws}D
               </span>
-            </div>
+            </Link>
           ))}
         </div>
       )}

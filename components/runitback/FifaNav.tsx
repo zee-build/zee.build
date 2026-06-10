@@ -47,7 +47,7 @@ export default function FifaNav() {
           className="rib-body hidden lg:block text-[11px] absolute left-1/2 -translate-x-1/2"
           style={{ letterSpacing: '3px' }}
         >
-          SEASON 2025 · FRI &amp; TUE · MUWEILAH
+          SEASON 2025 · FRIDAY &amp; TUESDAY · MUWEILAH
         </span>
 
         {/* Right side */}

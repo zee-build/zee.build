@@ -11,7 +11,7 @@ export interface Player {
   created_at: string
 }
 
-export type DayOfWeek = 'Friday' | 'Tuesday' | 'Other'
+export type DayOfWeek = 'Friday' | 'Tuesday'
 
 export interface Match {
   id: string

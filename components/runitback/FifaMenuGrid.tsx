@@ -108,7 +108,7 @@ export default function FifaMenuGrid({
             {/* Position badge */}
             {topScorer.player.position && (
               <span
-                className="rib-heading text-[10px] px-2 py-0.5 rounded mb-3 inline-block"
+                className="rib-heading text-[10px] px-2 py-0.5 rounded mb-3 inline-block self-start"
                 style={{
                   letterSpacing: '3px',
                   background: 'color-mix(in srgb, var(--acc) 15%, transparent)',

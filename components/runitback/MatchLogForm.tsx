@@ -12,7 +12,10 @@ interface RosterRow {
   isMotm: boolean
 }
 
-const DAYS: DayOfWeek[] = ['Friday', 'Tuesday', 'Other']
+const DAYS: { value: DayOfWeek; label: string }[] = [
+  { value: 'Friday', label: 'FRIDAY' },
+  { value: 'Tuesday', label: 'TUESDAY' },
+]
 
 export default function MatchLogForm({ players }: { players: Player[] }) {
   const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10))
@@ -151,14 +154,14 @@ export default function MatchLogForm({ players }: { players: Player[] }) {
           <div className="flex gap-2">
             {DAYS.map((day) => (
               <button
-                key={day}
+                key={day.value}
                 type="button"
-                onClick={() => setDayOfWeek(day)}
+                onClick={() => setDayOfWeek(day.value)}
                 className={`flex-1 rib-heading text-xs py-2 rounded-lg border transition-colors ${
-                  dayOfWeek === day ? 'bg-rib-acc/20 border-rib-acc text-rib-acc' : 'border-rib-border text-rib-muted'
+                  dayOfWeek === day.value ? 'bg-rib-acc/20 border-rib-acc text-rib-acc' : 'border-rib-border text-rib-muted'
                 }`}
               >
-                {day.slice(0, 3).toUpperCase()}
+                {day.label}
               </button>
             ))}
           </div>

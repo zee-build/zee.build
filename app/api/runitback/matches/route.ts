@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/runitback/supabase'
 import { isAdminRequest } from '@/lib/runitback/adminAuth'
 
-const VALID_DAYS = ['Friday', 'Tuesday', 'Other']
+const VALID_DAYS = ['Friday', 'Tuesday']
 const VALID_TEAMS = ['A', 'B']
 
 export async function POST(req: NextRequest) {
