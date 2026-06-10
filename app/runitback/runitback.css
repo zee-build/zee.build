@@ -324,3 +324,37 @@
     padding: 32px 32px;
   }
 }
+
+/* ─── HERO TILE ANIMATIONS ──────────────────────────────────── */
+
+/* Slow background glow breathe */
+@keyframes rib-hero-pulse {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50%       { opacity: 1;   transform: scale(1.08); }
+}
+
+/* Diagonal shine sweep */
+@keyframes rib-shine-sweep {
+  0%   { transform: translateX(-120%); }
+  40%  { transform: translateX(-120%); }
+  60%  { transform: translateX(220%); }
+  100% { transform: translateX(220%); }
+}
+
+/* Floating particle rise */
+@keyframes rib-float {
+  0%   { transform: translateY(0)     scale(1);   opacity: var(--p-op, 0.25); }
+  80%  { transform: translateY(-340px) scale(0.6); opacity: var(--p-op, 0.25); }
+  100% { transform: translateY(-360px) scale(0);   opacity: 0; }
+}
+
+/* Expanding ring pulse */
+@keyframes rib-ring-pulse {
+  0%   { transform: scale(1);    opacity: 0.55; }
+  100% { transform: scale(1.9);  opacity: 0; }
+}
+
+/* Conic gradient ring spin */
+@keyframes rib-spin {
+  to { transform: rotate(360deg); }
+}

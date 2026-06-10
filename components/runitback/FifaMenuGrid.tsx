@@ -1,7 +1,6 @@
 import Link from 'next/link'
 import { Users, Swords, Trophy, BarChart3, Lock, TrendingUp } from 'lucide-react'
-import FormBadges from './FormBadges'
-import { getInitials } from '@/lib/runitback/queries'
+import HeroTile from './HeroTile'
 import type { PlayerStats } from '@/lib/runitback/types'
 
 interface FifaMenuGridProps {
@@ -75,125 +74,7 @@ export default function FifaMenuGrid({
     <div className="rib-menu-wrap">
 
       {/* ── LEFT: HERO / TOP SCORER ── */}
-      <Link href="/runitback/leaderboard" className="rib-hero-tile group">
-        {/* Label */}
-        <span className="rib-heading text-[11px] text-rib-acc block mb-6" style={{ letterSpacing: '4px' }}>
-          TOP SCORER — SEASON 2025
-        </span>
-
-        {topScorer ? (
-          <>
-            {/* Avatar */}
-            <div
-              className="flex items-center justify-center rounded-full bg-rib-acc2 text-white rib-heading text-4xl mb-5 overflow-hidden border-4"
-              style={{
-                width: 96,
-                height: 96,
-                borderColor: 'var(--acc)',
-                boxShadow: '0 0 32px color-mix(in srgb, var(--acc) 40%, transparent)',
-              }}
-            >
-              {topScorer.player.avatar_url ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={topScorer.player.avatar_url}
-                  alt={topScorer.player.name}
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                getInitials(topScorer.player.name)
-              )}
-            </div>
-
-            {/* Position badge */}
-            {topScorer.player.position && (
-              <span
-                className="rib-heading text-[10px] px-2 py-0.5 rounded mb-3 inline-block self-start"
-                style={{
-                  letterSpacing: '3px',
-                  background: 'color-mix(in srgb, var(--acc) 15%, transparent)',
-                  color: 'var(--acc)',
-                  border: '1px solid color-mix(in srgb, var(--acc) 30%, transparent)',
-                }}
-              >
-                {topScorer.player.position}
-              </span>
-            )}
-
-            {/* Name */}
-            <h1 className="rib-heading text-4xl sm:text-5xl text-white leading-none mb-1">
-              {topScorer.player.name.toUpperCase()}
-            </h1>
-            {topScorer.player.nickname && (
-              <p className="rib-body text-sm mb-4">&ldquo;{topScorer.player.nickname}&rdquo;</p>
-            )}
-
-            {/* Big stat */}
-            <div className="mt-4 mb-1">
-              <span className="rib-stat" style={{ fontSize: '72px', lineHeight: 1 }}>
-                {topScorer.goals}
-              </span>
-            </div>
-            <p className="rib-heading text-xs text-rib-muted mb-6" style={{ letterSpacing: '3px' }}>
-              GOALS
-            </p>
-
-            {/* Secondary stats row */}
-            <div className="flex gap-5 mb-6">
-              <div>
-                <p className="rib-stat text-xl">{topScorer.assists}</p>
-                <p className="rib-heading text-[9px] text-rib-muted" style={{ letterSpacing: '2px' }}>ASSISTS</p>
-              </div>
-              <div>
-                <p className="rib-stat text-xl">{topScorer.motm}</p>
-                <p className="rib-heading text-[9px] text-rib-muted" style={{ letterSpacing: '2px' }}>MOTM</p>
-              </div>
-              <div>
-                <p className="rib-stat text-xl">{Math.round(topScorer.winRate)}%</p>
-                <p className="rib-heading text-[9px] text-rib-muted" style={{ letterSpacing: '2px' }}>WIN RATE</p>
-              </div>
-            </div>
-
-            {/* Form */}
-            <div className="mt-auto">
-              <p className="rib-heading text-[9px] text-rib-muted mb-2" style={{ letterSpacing: '3px' }}>
-                LAST 5 MATCHES
-              </p>
-              <FormBadges form={topScorer.form} />
-            </div>
-
-            {/* CTA */}
-            <div
-              className="mt-6 inline-flex items-center gap-2 rib-heading text-xs group-hover:gap-3 transition-all"
-              style={{ letterSpacing: '2px', color: 'var(--acc)' }}
-            >
-              VIEW LEADERBOARD →
-            </div>
-          </>
-        ) : (
-          <>
-            <div
-              className="flex items-center justify-center rounded-full rib-heading text-3xl mb-6"
-              style={{
-                width: 96, height: 96,
-                background: 'color-mix(in srgb, var(--acc2) 20%, transparent)',
-                border: '2px dashed var(--border)',
-                color: 'var(--muted)',
-              }}
-            >
-              ?
-            </div>
-            <h1 className="rib-heading text-4xl text-white mb-2">NO DATA YET</h1>
-            <p className="rib-body text-sm">Log your first match to see stats here.</p>
-            <div
-              className="mt-8 inline-flex items-center gap-2 rib-heading text-xs"
-              style={{ letterSpacing: '2px', color: 'var(--acc)' }}
-            >
-              GO TO ADMIN →
-            </div>
-          </>
-        )}
-      </Link>
+      <HeroTile topScorer={topScorer} />
 
       {/* ── RIGHT: 2×3 MENU TILES ── */}
       <div className="rib-menu-tiles">
