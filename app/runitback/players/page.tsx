@@ -21,7 +21,7 @@ export default async function PlayersPage() {
   const stats = buildPlayerStats(players ?? [], matches ?? [], matchPlayers ?? [])
 
   return (
-    <div>
+    <div className="rib-page">
       <h1 className="rib-heading text-3xl mb-6">PLAYERS</h1>
       <PlayersGrid stats={stats} />
     </div>

@@ -66,7 +66,7 @@ export default async function StatsPage() {
     .sort((a, b) => new Date(b.match!.date).getTime() - new Date(a.match!.date).getTime())
 
   return (
-    <div className="space-y-8">
+    <div className="rib-page space-y-8">
       <h1 className="rib-heading text-3xl">STATS</h1>
 
       {allMatches.length === 0 ? (

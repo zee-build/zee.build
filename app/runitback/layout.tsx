@@ -30,10 +30,10 @@ export default function RunItBackLayout({ children }: { children: React.ReactNod
     <div className={`${barlowCondensed.variable} ${barlow.variable} font-barlow`}>
       <ThemeProvider>
         <FifaNav />
-        <main className="px-4 md:px-8 py-6">{children}</main>
-        <footer className="px-4 md:px-8 py-6 text-right">
-          <span className="rib-heading text-xs text-rib-muted" style={{ letterSpacing: '2px' }}>
-            RUN IT BACK · 2025
+        <main className="rib-main">{children}</main>
+        <footer className="px-4 md:px-8 py-4 text-right" style={{ borderTop: '1px solid var(--border)' }}>
+          <span className="rib-heading text-[10px] text-rib-muted" style={{ letterSpacing: '3px' }}>
+            RUN IT BACK · SEASON 2025 · MUWEILAH
           </span>
         </footer>
         <MusicPlayer />

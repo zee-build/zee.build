@@ -21,7 +21,7 @@ export default async function MatchesPage() {
   const matchesWithPlayers = buildMatchesWithPlayers(matches ?? [], matchPlayers ?? [], players ?? [])
 
   return (
-    <div>
+    <div className="rib-page">
       <h1 className="rib-heading text-3xl mb-6">MATCHES</h1>
       <MatchesTimeline matches={matchesWithPlayers} />
     </div>

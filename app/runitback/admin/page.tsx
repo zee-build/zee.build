@@ -23,9 +23,11 @@ export default async function AdminPage() {
   }
 
   return (
-    <PinGate>
-      <AdminPanel players={players ?? []} gamesPlayedById={gamesPlayedById} />
-    </PinGate>
+    <div className="rib-page">
+      <PinGate>
+        <AdminPanel players={players ?? []} gamesPlayedById={gamesPlayedById} />
+      </PinGate>
+    </div>
   )
 }
 
