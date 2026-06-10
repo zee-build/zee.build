@@ -42,7 +42,8 @@ export async function POST(req: NextRequest) {
     .upload(path, await file.arrayBuffer(), { contentType })
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    console.error('[upload] Supabase error:', error)
+    return NextResponse.json({ error: `Storage error: ${error.message}` }, { status: 500 })
   }
 
   const { data } = supabase.storage.from('player-avatars').getPublicUrl(path)
