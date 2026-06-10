@@ -21,10 +21,8 @@ export default function MusicPlayer() {
   const [collapsed, setCollapsed] = useState(true)
   const [hasError, setHasError] = useState(false)
 
-  useEffect(() => {
-    const stored = window.localStorage.getItem(STORAGE_KEY)
-    if (stored === 'open') setCollapsed(false)
-  }, [])
+  // Always start collapsed — user can expand manually
+  // (We still persist the track index preference but not the open/closed state)
 
   // Autoplay on load. Browsers block unmuted autoplay, so start muted and
   // unmute as soon as the visitor interacts with the page.
