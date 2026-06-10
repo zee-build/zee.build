@@ -6,6 +6,7 @@ import { Music, Pause, Play, SkipBack, SkipForward, Volume2, VolumeX, X } from '
 // Add more MP3s to /public/runitback/audio and list them here.
 const TRACKS = [
   { title: 'Love Me Again', artist: 'John Newman', src: '/runitback/audio/john-newman-love-me-again.mp3' },
+  { title: 'Hit It', artist: 'American Authors', src: '/runitback/audio/American Authors - Hit It (Audio).mp3' },
   { title: 'Running', artist: 'David Dallas', src: '/runitback/audio/david-dallas-running.mp3' },
   { title: 'Alive', artist: 'Empire of the Sun', src: '/runitback/audio/empire-of-the-sun-alive.mp3' },
 ]

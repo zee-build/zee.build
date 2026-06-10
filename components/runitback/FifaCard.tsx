@@ -128,38 +128,55 @@ export default function FifaCard({ stats, variant = 'mini', href }: FifaCardProp
       <div
         style={{
           position: 'absolute',
-          top: 38,
-          left: 84,
-          width: 112,
-          height: 120,
+          top: 28,
+          left: 70,
+          width: 130,
+          height: 140,
           overflow: 'hidden',
           display: 'flex',
-          alignItems: 'center',
+          alignItems: 'flex-end',
           justifyContent: 'center',
         }}
       >
         {player.avatar_url ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={player.avatar_url}
-            alt={player.name}
-            style={{ height: 120, width: 112, objectFit: 'cover', objectPosition: 'top center', borderBottomRightRadius: '90px 4px' }}
-          />
+          // Photo: fill the zone, fade bottom edge into card via mask
+          <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={player.avatar_url}
+              alt={player.name}
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                objectPosition: 'top center',
+                // Fade bottom 30% so it blends into the name bar
+                maskImage: 'linear-gradient(to bottom, black 55%, transparent 100%)',
+                WebkitMaskImage: 'linear-gradient(to bottom, black 55%, transparent 100%)',
+              }}
+            />
+          </div>
         ) : (
+          // No photo: show a silhouette with initials
           <div
             style={{
-              width: 90,
-              height: 90,
+              width: 88,
+              height: 88,
               borderRadius: '50%',
-              background: 'rgba(0,0,0,0.25)',
+              background: type === 'motm' || type === 'tots_gold'
+                ? 'rgba(255,255,255,0.12)'
+                : 'rgba(0,0,0,0.18)',
+              border: `2px solid ${type === 'motm' || type === 'tots_gold' ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.2)'}`,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: 28,
-              fontWeight: 800,
-              color: type === 'motm' || type === 'tots_gold' ? '#fff' : 'rgba(0,0,0,0.5)',
-              fontFamily: "'Barlow Condensed', sans-serif",
+              fontSize: 30,
+              fontWeight: 900,
               fontStyle: 'italic',
+              fontFamily: "'Barlow Condensed', 'Open Sans', sans-serif",
+              letterSpacing: 1,
+              color: type === 'motm' || type === 'tots_gold' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.35)',
+              marginBottom: 8,
             }}
           >
             {getInitials(player.name)}
