@@ -58,10 +58,21 @@ const config = {
           graphite: "#1a1a1a",
           neon: "hsl(24, 100%, 60%)",
         },
+        rib: {
+          bg: 'var(--bg)',
+          bg2: 'var(--bg2)',
+          tile: 'var(--tile)',
+          border: 'var(--border)',
+          acc: 'var(--acc)',
+          acc2: 'var(--acc2)',
+          muted: 'var(--muted)',
+        },
       },
       fontFamily: {
         sans: ["var(--font-inter)"],
         mono: ["var(--font-mono)"],
+        condensed: ['var(--font-barlow-condensed)', 'sans-serif'],
+        barlow: ['var(--font-barlow)', 'sans-serif'],
       },
       borderRadius: {
         lg: "var(--radius)",
