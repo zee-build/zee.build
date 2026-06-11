@@ -114,12 +114,17 @@ export function buildPlayerStats(
     if (communityRating !== null) {
       const communityOverall = 60 + ((communityRating - 1) / 9) * 39
       if (games === 0) {
-        overall = Math.round(communityOverall)
+        // Players who haven't played this season are capped — peer opinion
+        // alone can't carry someone past a regular who's shown up.
+        overall = Math.round(Math.min(communityOverall, 70))
       } else {
         const weight = Math.min(0.8, 0.3 + communityRatingCount * 0.15)
         overall = Math.round(statsOverall * (1 - weight) + communityOverall * weight)
       }
     }
+
+    // Award-eligible: must have played at least half of this season's matches.
+    const awardsEligible = matches.length > 0 && games >= matches.length * 0.5
 
     // Current streak: consecutive wins counting back from the most recent match.
     let streak = 0
@@ -156,6 +161,7 @@ export function buildPlayerStats(
       communityRating,
       communityRatingCount,
       attributeRatings,
+      awardsEligible,
       seasonAward: null as PlayerStats['seasonAward'],
       weeklyAward: null as PlayerStats['weeklyAward'],
     }
@@ -163,8 +169,9 @@ export function buildPlayerStats(
 
   // Assign one-of-a-kind season award cards: TOTY (Team of the Year) goes to
   // the player with the highest overall this season, Hero goes to the top
-  // scorer (a different player, if there is one).
-  const eligible = stats.filter((s) => s.games > 0)
+  // scorer (a different player, if there is one). Only players who've played
+  // at least half of this season's matches are eligible.
+  const eligible = stats.filter((s) => s.awardsEligible)
   if (eligible.length > 0) {
     const topOverall = eligible.reduce((best, s) => (s.overall > best.overall ? s : best))
     topOverall.seasonAward = 'toty'

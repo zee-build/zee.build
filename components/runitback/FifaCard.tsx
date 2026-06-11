@@ -52,7 +52,7 @@ function cardType(stats: PlayerStats): string {
   // Players with 3+ MOTM awards get the special orange MOTM card
   if (stats.motm >= 3) return 'motm'
   // Top-tier players (5+ goals, gold rating) get TOTS gold
-  if (stats.overall >= 88 && stats.goals >= 5) return 'tots_gold'
+  if (stats.overall >= 88 && stats.goals >= 5 && stats.awardsEligible) return 'tots_gold'
   return tierForRating(stats.overall) // 'gold' | 'silver' | 'bronze'
 }
 

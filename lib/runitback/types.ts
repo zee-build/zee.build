@@ -59,6 +59,7 @@ export interface PlayerStats {
   communityRating: number | null
   communityRatingCount: number
   attributeRatings: Record<RatingAttribute, number> | null
+  awardsEligible: boolean
   seasonAward: 'toty' | 'hero' | null
   weeklyAward: 'potw' | null
 }
