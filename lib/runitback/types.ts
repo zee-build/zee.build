@@ -60,6 +60,7 @@ export interface PlayerStats {
   communityRatingCount: number
   attributeRatings: Record<RatingAttribute, number> | null
   seasonAward: 'toty' | 'hero' | null
+  weeklyAward: 'potw' | null
 }
 
 export interface MatchWithPlayers extends Match {

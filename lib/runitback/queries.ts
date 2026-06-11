@@ -14,6 +14,14 @@ function resultFor(mp: MatchPlayer, match: Match): MatchResult {
   return 'L'
 }
 
+/** Monday-of-week key (YYYY-MM-DD) for grouping matches into calendar weeks. */
+function weekKey(dateStr: string): string {
+  const d = new Date(dateStr)
+  const day = (d.getUTCDay() + 6) % 7 // 0 = Monday ... 6 = Sunday
+  d.setUTCDate(d.getUTCDate() - day)
+  return d.toISOString().slice(0, 10)
+}
+
 /** Scale a 0-100-ish raw rating to the 60-99 FIFA card range. */
 function scaleOverall(raw: number): number {
   const clamped = Math.max(0, Math.min(100, raw))
@@ -102,7 +110,7 @@ export function buildPlayerStats(
       if (games === 0) {
         overall = Math.round(communityOverall)
       } else {
-        const weight = Math.min(0.4, communityRatingCount * 0.08)
+        const weight = Math.min(0.6, communityRatingCount * 0.15)
         overall = Math.round(statsOverall * (1 - weight) + communityOverall * weight)
       }
     }
@@ -143,6 +151,7 @@ export function buildPlayerStats(
       communityRatingCount,
       attributeRatings,
       seasonAward: null as PlayerStats['seasonAward'],
+      weeklyAward: null as PlayerStats['weeklyAward'],
     }
   })
 
@@ -158,6 +167,46 @@ export function buildPlayerStats(
     if (scorers.length > 0) {
       const topScorer = scorers.reduce((best, s) => (s.goals > best.goals ? s : best))
       topScorer.seasonAward = 'hero'
+    }
+  }
+
+  // Player of the Week: best individual performance in the most recently
+  // played calendar week (Mon-Sun), scored by goals/assists/MOTM/result.
+  if (matches.length > 0) {
+    const latestWeek = matches.reduce(
+      (latest, m) => (weekKey(m.date) > latest ? weekKey(m.date) : latest),
+      ''
+    )
+    const weekMatchIds = new Set(
+      matches.filter((m) => weekKey(m.date) === latestWeek).map((m) => m.id)
+    )
+
+    const weeklyScores = new Map<string, number>()
+    for (const mp of matchPlayers) {
+      if (!weekMatchIds.has(mp.match_id)) continue
+      const match = matchById.get(mp.match_id)
+      if (!match) continue
+      const result = resultFor(mp, match)
+      const score =
+        mp.goals * 3 +
+        mp.assists * 2 +
+        (mp.is_motm ? 5 : 0) +
+        (result === 'W' ? 3 : result === 'D' ? 1 : 0)
+      weeklyScores.set(mp.player_id, (weeklyScores.get(mp.player_id) ?? 0) + score)
+    }
+
+    let bestPlayerId: string | null = null
+    let bestScore = 0
+    for (const [playerId, score] of weeklyScores) {
+      if (score > bestScore) {
+        bestScore = score
+        bestPlayerId = playerId
+      }
+    }
+
+    if (bestPlayerId) {
+      const winner = stats.find((s) => s.player.id === bestPlayerId)
+      if (winner) winner.weeklyAward = 'potw'
     }
   }
 
