@@ -7,6 +7,7 @@ import { buildHeadToHead, buildMatchesWithPlayers, buildPlayerStats, getInitials
 import { CURRENT_SEASON, RATING_ATTRIBUTES, TRAITS } from '@/lib/runitback/config'
 import FifaCard from '@/components/runitback/FifaCard'
 import StatBar from '@/components/runitback/StatBar'
+import RatingHistoryChart, { type RatingHistoryPoint } from '@/components/runitback/RatingHistoryChart'
 import type { Match, MatchPlayer, PeerRating, Player } from '@/lib/runitback/types'
 
 interface PageProps {
@@ -50,7 +51,25 @@ async function getData(id: string) {
       attrs: r,
     }))
 
-  return { player, stats, matches: matchesWithPlayers, headToHead, receivedRatings }
+  const ratingsByMatch = new Map<string, { sum: number; count: number; date: string; dayOfWeek: typeof allMatches[number]['day_of_week'] }>()
+  for (const r of receivedRatings) {
+    if (!r.match) continue
+    const avgAttr = RATING_ATTRIBUTES.reduce((sum, a) => sum + r.attrs[a.key], 0) / RATING_ATTRIBUTES.length
+    const entry = ratingsByMatch.get(r.match.id) ?? { sum: 0, count: 0, date: r.match.date, dayOfWeek: r.match.day_of_week }
+    entry.sum += avgAttr
+    entry.count += 1
+    ratingsByMatch.set(r.match.id, entry)
+  }
+  const ratingHistory: RatingHistoryPoint[] = Array.from(ratingsByMatch.entries())
+    .map(([matchId, { sum, count, date, dayOfWeek }]) => ({
+      matchId,
+      date,
+      dayOfWeek,
+      avg: sum / count,
+    }))
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+
+  return { player, stats, matches: matchesWithPlayers, headToHead, receivedRatings, ratingHistory }
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -68,7 +87,7 @@ export default async function PlayerProfilePage({ params }: PageProps) {
   const data = await getData(slug)
   if (!data) notFound()
 
-  const { player, stats, matches, headToHead, receivedRatings } = data
+  const { player, stats, matches, headToHead, receivedRatings, ratingHistory } = data
 
   return (
     <div className="rib-page max-w-4xl mx-auto">
@@ -202,6 +221,7 @@ export default async function PlayerProfilePage({ params }: PageProps) {
 
       {/* Peer ratings — public so the squad can keep each other honest */}
       <h2 className="rib-heading text-xl mb-3">PEER RATINGS — {CURRENT_SEASON}</h2>
+      {ratingHistory.length > 1 && <div className="mb-4"><RatingHistoryChart data={ratingHistory} /></div>}
       {receivedRatings.length === 0 ? (
         <p className="rib-body text-sm">No teammates have rated {player.name.split(' ')[0]} yet.</p>
       ) : (
