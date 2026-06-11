@@ -119,14 +119,14 @@ export default function HeroTile({ topScorer }: { topScorer: PlayerStats | null 
       ))}
 
       {/* ── Content — z-index above decorations ── */}
-      <div style={{ position: 'relative', zIndex: 2, height: '100%', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ position: 'relative', zIndex: 2, height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
 
         {/* Label */}
         <span
-          className="rib-heading text-[11px] text-rib-acc block mb-6"
-          style={{ letterSpacing: '4px', opacity: visible ? 1 : 0, transform: visible ? 'none' : 'translateY(-8px)', transition: 'opacity 0.5s, transform 0.5s' }}
+          className="rib-heading text-lg sm:text-2xl text-rib-acc block mb-6"
+          style={{ letterSpacing: '5px', opacity: visible ? 1 : 0, transform: visible ? 'none' : 'translateY(-8px)', transition: 'opacity 0.5s, transform 0.5s' }}
         >
-          TOP SCORER — SEASON 2025
+          TOP SCORER<br />SEASON 2025
         </span>
 
         {topScorer ? (
@@ -189,7 +189,7 @@ export default function HeroTile({ topScorer }: { topScorer: PlayerStats | null 
             </p>
 
             {/* Secondary stats — staggered fade in */}
-            <div className="flex gap-5 mb-6">
+            <div className="flex justify-center gap-5 mb-6">
               {[
                 { label: 'ASSISTS', value: topScorer.assists },
                 { label: 'MOTM', value: topScorer.motm },
@@ -212,8 +212,9 @@ export default function HeroTile({ topScorer }: { topScorer: PlayerStats | null 
             {/* Divider */}
             <div
               style={{
+                width: '100%',
                 height: 1,
-                background: 'linear-gradient(to right, var(--acc), var(--acc2), transparent)',
+                background: 'linear-gradient(to right, transparent, var(--acc), var(--acc2), transparent)',
                 marginBottom: 16,
                 opacity: visible ? 0.4 : 0,
                 transition: 'opacity 0.8s 0.5s',
@@ -222,7 +223,7 @@ export default function HeroTile({ topScorer }: { topScorer: PlayerStats | null 
 
             {/* Form badges */}
             <div
-              className="mt-auto"
+              className="mt-auto flex flex-col items-center"
               style={{
                 opacity: visible ? 1 : 0,
                 transition: 'opacity 0.6s 0.6s',
@@ -248,7 +249,7 @@ export default function HeroTile({ topScorer }: { topScorer: PlayerStats | null 
           </>
         ) : (
           /* ── Empty state ── */
-          <div style={{ opacity: visible ? 1 : 0, transition: 'opacity 0.6s 0.2s' }}>
+          <div className="flex flex-col items-center" style={{ opacity: visible ? 1 : 0, transition: 'opacity 0.6s 0.2s' }}>
             <div
               className="flex items-center justify-center rounded-full rib-heading text-3xl mb-6"
               style={{
