@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/runitback/supabase'
 import { readSession } from '@/lib/runitback/playerAuth'
-import { getClub } from '@/lib/runitback/config'
+import { getClub, getCountry } from '@/lib/runitback/config'
 import { PUBLIC_PLAYER_COLUMNS } from '@/lib/runitback/queries'
 
 const VALID_POSITIONS = ['GK', 'CB', 'RB', 'LB', 'CM', 'CAM', 'ST', 'LW', 'RW']
@@ -28,6 +28,12 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid club.' }, { status: 400 })
     }
     update.favorite_team = body.favorite_team || null
+  }
+  if ('country' in body) {
+    if (body.country && !getCountry(body.country)) {
+      return NextResponse.json({ error: 'Invalid country.' }, { status: 400 })
+    }
+    update.country = body.country || null
   }
 
   const supabase = createServiceClient()

@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import PhotoUpload from './PhotoUpload'
-import { CLUBS } from '@/lib/runitback/config'
+import { CLUBS, COUNTRIES } from '@/lib/runitback/config'
 import type { Player, Position } from '@/lib/runitback/types'
 
 const POSITIONS: Position[] = ['GK', 'CB', 'RB', 'LB', 'CM', 'CAM', 'ST', 'LW', 'RW']
@@ -14,6 +14,7 @@ export default function ProfileForm({ player }: { player: Player }) {
   const [position, setPosition] = useState<Position>((player.position as Position) ?? 'CM')
   const [avatarUrl, setAvatarUrl] = useState<string | null>(player.avatar_url)
   const [favoriteTeam, setFavoriteTeam] = useState(player.favorite_team ?? '')
+  const [country, setCountry] = useState(player.country ?? '')
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
   const [submitting, setSubmitting] = useState(false)
@@ -32,6 +33,7 @@ export default function ProfileForm({ player }: { player: Player }) {
           position,
           avatar_url: avatarUrl,
           favorite_team: favoriteTeam || null,
+          country: country || null,
         }),
       })
       const data = await res.json()
@@ -117,6 +119,24 @@ export default function ProfileForm({ player }: { player: Player }) {
           {CLUBS.map((club) => (
             <option key={club.id} value={club.id}>
               {club.name}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div>
+        <label className="rib-heading text-xs text-rib-muted block mb-1.5" style={{ letterSpacing: '1.5px' }}>
+          COUNTRY
+        </label>
+        <select
+          value={country}
+          onChange={(e) => setCountry(e.target.value)}
+          className="w-full bg-rib-bg2 border border-rib-border rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-rib-acc"
+        >
+          <option value="">No flag</option>
+          {COUNTRIES.map((c) => (
+            <option key={c.code} value={c.code}>
+              {c.flag} {c.name}
             </option>
           ))}
         </select>

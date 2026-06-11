@@ -10,6 +10,7 @@ export interface Player {
   registered_via_link: boolean
   username: string | null
   favorite_team: string | null
+  country: string | null
   created_at: string
 }
 

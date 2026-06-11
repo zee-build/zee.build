@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { getInitials } from '@/lib/runitback/queries'
 import PhotoUpload from './PhotoUpload'
+import { COUNTRIES } from '@/lib/runitback/config'
 import type { Position } from '@/lib/runitback/types'
 
 const POSITIONS: Position[] = ['GK', 'CB', 'RB', 'LB', 'CM', 'CAM', 'ST', 'LW', 'RW']
@@ -11,6 +12,7 @@ export default function JoinForm() {
   const [name, setName] = useState('')
   const [nickname, setNickname] = useState('')
   const [position, setPosition] = useState<Position>('CM')
+  const [country, setCountry] = useState('')
   const [isRegular, setIsRegular] = useState(true)
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
   const [username, setUsername] = useState('')
@@ -43,6 +45,7 @@ export default function JoinForm() {
           name: name.trim(),
           nickname: nickname.trim() || null,
           position,
+          country: country || null,
           is_regular: isRegular,
           avatar_url: avatarUrl,
           username: username.trim(),
@@ -138,6 +141,24 @@ export default function JoinForm() {
             {POSITIONS.map((pos) => (
               <option key={pos} value={pos}>
                 {pos}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="rib-heading text-xs text-rib-muted block mb-1.5" style={{ letterSpacing: '1.5px' }}>
+            COUNTRY (OPTIONAL)
+          </label>
+          <select
+            value={country}
+            onChange={(e) => setCountry(e.target.value)}
+            className="w-full bg-rib-bg2 border border-rib-border rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-rib-acc"
+          >
+            <option value="">No flag</option>
+            {COUNTRIES.map((c) => (
+              <option key={c.code} value={c.code}>
+                {c.flag} {c.name}
               </option>
             ))}
           </select>

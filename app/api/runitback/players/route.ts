@@ -3,6 +3,7 @@ import { createClient, createServiceClient } from '@/lib/runitback/supabase'
 import { isAdminRequest } from '@/lib/runitback/adminAuth'
 import { checkRateLimit } from '@/lib/runitback/rateLimit'
 import { hashPassword } from '@/lib/runitback/playerAuth'
+import { getCountry } from '@/lib/runitback/config'
 import { PUBLIC_PLAYER_COLUMNS } from '@/lib/runitback/queries'
 
 const VALID_POSITIONS = ['GK', 'CB', 'RB', 'LB', 'CM', 'CAM', 'ST', 'LW', 'RW']
@@ -10,7 +11,7 @@ const USERNAME_RE = /^[a-zA-Z0-9_.]{3,20}$/
 
 export async function POST(req: NextRequest) {
   const body = await req.json()
-  const { name, nickname, position, is_regular, avatar_url, username, password } = body
+  const { name, nickname, position, is_regular, avatar_url, username, password, country } = body
 
   if (typeof name !== 'string' || name.trim().length < 2) {
     return NextResponse.json({ error: 'Name must be at least 2 characters.' }, { status: 400 })
@@ -18,6 +19,10 @@ export async function POST(req: NextRequest) {
 
   if (position && !VALID_POSITIONS.includes(position)) {
     return NextResponse.json({ error: 'Invalid position.' }, { status: 400 })
+  }
+
+  if (country && !getCountry(country)) {
+    return NextResponse.json({ error: 'Invalid country.' }, { status: 400 })
   }
 
   const admin = isAdminRequest(req)
@@ -83,6 +88,7 @@ export async function POST(req: NextRequest) {
       position: position || null,
       is_regular: is_regular ?? true,
       avatar_url: avatar_url || null,
+      country: country || null,
       registered_via_link: !admin,
       ...(passwordHash ? { username, password_hash: passwordHash } : {}),
     })

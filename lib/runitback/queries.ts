@@ -3,7 +3,7 @@ import { CURRENT_SEASON } from './config'
 
 /** Columns safe to return to the browser — excludes password_hash. */
 export const PUBLIC_PLAYER_COLUMNS =
-  'id, name, nickname, position, avatar_url, is_regular, registered_via_link, username, favorite_team, created_at'
+  'id, name, nickname, position, avatar_url, is_regular, registered_via_link, username, favorite_team, country, created_at'
 
 /** Determine a player's result (W/L/D) for a given match. */
 function resultFor(mp: MatchPlayer, match: Match): MatchResult {

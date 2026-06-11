@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import type { PlayerStats } from '@/lib/runitback/types'
 import { getInitials, tierForRating } from '@/lib/runitback/queries'
-import { getClub } from '@/lib/runitback/config'
+import { getClub, getCountry } from '@/lib/runitback/config'
 
 /**
  * Uses the real FIFA 16 card PNGs from thomasrye/fut-cards as the
@@ -59,6 +59,7 @@ export default function FifaCard({ stats, variant = 'mini', href }: FifaCardProp
   const bgSrc = CARD_BG[type] ?? CARD_BG.bronze
   const color = TIER_COLOR[type] ?? '#000'
   const club = getClub(player.favorite_team)
+  const country = getCountry(player.country)
 
   // Display size — mini for grid, full for profile
   const displayW = variant === 'full' ? 202 : 160
@@ -111,7 +112,7 @@ export default function FifaCard({ stats, variant = 'mini', href }: FifaCardProp
         {overall}
       </div>
 
-      {/* ── CLUB BADGE (top-right) ── */}
+      {/* ── CLUB BADGE — right empty space above the player picture ── */}
       {club && (
         // eslint-disable-next-line @next/next/no-img-element
         <img
@@ -120,11 +121,12 @@ export default function FifaCard({ stats, variant = 'mini', href }: FifaCardProp
           title={club.name}
           style={{
             position: 'absolute',
-            top: 14,
-            right: 14,
-            width: 26,
-            height: 26,
+            top: 12,
+            right: 12,
+            width: 34,
+            height: 34,
             objectFit: 'contain',
+            filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.35))',
           }}
         />
       )}
@@ -252,6 +254,23 @@ export default function FifaCard({ stats, variant = 'mini', href }: FifaCardProp
           </div>
         )
       })}
+
+      {/* ── COUNTRY FLAG — bottom center ── */}
+      {country && (
+        <div
+          title={country.name}
+          style={{
+            position: 'absolute',
+            bottom: 8,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            fontSize: 18,
+            lineHeight: 1,
+          }}
+        >
+          {country.flag}
+        </div>
+      )}
 
       {/* ── REGULAR / GUEST badge — bottom of card ── */}
       <div
