@@ -113,7 +113,7 @@ export default function FifaCard({ stats, variant = 'mini', href, onClick }: Fif
         {overall}
       </div>
 
-      {/* ── CLUB BADGE — right empty space above the player picture ── */}
+      {/* ── CLUB BADGE — empty space to the left of the player picture ── */}
       {club && (
         // eslint-disable-next-line @next/next/no-img-element
         <img
@@ -122,10 +122,10 @@ export default function FifaCard({ stats, variant = 'mini', href, onClick }: Fif
           title={club.name}
           style={{
             position: 'absolute',
-            top: 12,
-            right: 12,
-            width: 34,
-            height: 34,
+            top: 76,
+            left: 14,
+            width: 48,
+            height: 48,
             objectFit: 'contain',
             filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.35))',
           }}
@@ -258,19 +258,22 @@ export default function FifaCard({ stats, variant = 'mini', href, onClick }: Fif
 
       {/* ── COUNTRY FLAG — bottom center ── */}
       {country && (
-        <div
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={`https://flagcdn.com/w40/${country.code.toLowerCase()}.png`}
+          alt={country.name}
           title={country.name}
           style={{
             position: 'absolute',
-            bottom: 8,
+            bottom: 10,
             left: '50%',
             transform: 'translateX(-50%)',
-            fontSize: 18,
-            lineHeight: 1,
+            width: 22,
+            height: 'auto',
+            borderRadius: 2,
+            boxShadow: '0 1px 2px rgba(0,0,0,0.35)',
           }}
-        >
-          {country.flag}
-        </div>
+        />
       )}
 
       {/* ── REGULAR / GUEST badge — bottom of card ── */}
