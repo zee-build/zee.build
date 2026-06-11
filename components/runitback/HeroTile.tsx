@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 import FormBadges from './FormBadges'
 import FifaCard from './FifaCard'
+import { SEASON_LABEL } from '@/lib/runitback/config'
 import type { PlayerStats } from '@/lib/runitback/types'
 
 /* ── Animated counter hook ──────────────────────────────────── */
@@ -126,7 +127,7 @@ export default function HeroTile({ topScorer }: { topScorer: PlayerStats | null 
           className="rib-heading text-lg sm:text-2xl text-rib-acc block mb-6"
           style={{ letterSpacing: '5px', opacity: visible ? 1 : 0, transform: visible ? 'none' : 'translateY(-8px)', transition: 'opacity 0.5s, transform 0.5s' }}
         >
-          TOP SCORER<br />SEASON 2025
+          TOP SCORER<br />{SEASON_LABEL}
         </span>
 
         {topScorer ? (
