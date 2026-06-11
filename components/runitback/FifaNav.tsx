@@ -138,18 +138,34 @@ export default function FifaNav() {
             )
           })}
 
-          {/* Mobile-only theme toggle */}
-          <button
-            onClick={toggleTheme}
-            className="rib-heading text-[10px] sm:hidden self-start mt-1 mb-3 px-3 py-1 rounded-sm border"
-            style={{
-              letterSpacing: '2px',
-              borderColor: 'var(--border)',
-              color: 'var(--muted)',
-            }}
-          >
-            {theme === 'volta' ? '⚡ VOLTA' : '🎮 CAREER'}
-          </button>
+          {/* Mobile-only login / profile + theme toggle */}
+          <div className="sm:hidden flex items-center gap-2 mt-1 mb-3">
+            {player !== undefined && (
+              <Link
+                href={player ? '/runitback/profile' : '/runitback/login'}
+                onClick={() => setOpen(false)}
+                className="rib-heading text-[10px] px-3 py-1 rounded-sm border"
+                style={{
+                  letterSpacing: '2px',
+                  borderColor: 'var(--border)',
+                  color: 'var(--muted)',
+                }}
+              >
+                {player ? (player.nickname || player.name).toUpperCase() : 'LOGIN'}
+              </Link>
+            )}
+            <button
+              onClick={toggleTheme}
+              className="rib-heading text-[10px] px-3 py-1 rounded-sm border"
+              style={{
+                letterSpacing: '2px',
+                borderColor: 'var(--border)',
+                color: 'var(--muted)',
+              }}
+            >
+              {theme === 'volta' ? '⚡ VOLTA' : '🎮 CAREER'}
+            </button>
+          </div>
         </div>
       </nav>
     </header>
