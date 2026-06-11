@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import { adminFetch } from '@/lib/runitback/admin'
-import type { DayOfWeek, Player, Team } from '@/lib/runitback/types'
+import type { DayOfWeek, MatchWithPlayers, Player, Team } from '@/lib/runitback/types'
 
 interface RosterRow {
   playerId: string
@@ -17,16 +17,33 @@ const DAYS: { value: DayOfWeek; label: string }[] = [
   { value: 'Tuesday', label: 'TUESDAY' },
 ]
 
-export default function MatchLogForm({ players }: { players: Player[] }) {
-  const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10))
-  const [dayOfWeek, setDayOfWeek] = useState<DayOfWeek>('Friday')
-  const [location, setLocation] = useState('Sharjah')
-  const [notes, setNotes] = useState('')
-  const [roster, setRoster] = useState<RosterRow[]>([])
+interface MatchLogFormProps {
+  players: Player[]
+  match?: MatchWithPlayers
+  onSaved?: () => void
+  onCancel?: () => void
+}
+
+export default function MatchLogForm({ players, match, onSaved, onCancel }: MatchLogFormProps) {
+  const isEditing = !!match
+  const [date, setDate] = useState(() => match?.date ?? new Date().toISOString().slice(0, 10))
+  const [dayOfWeek, setDayOfWeek] = useState<DayOfWeek>(match?.day_of_week ?? 'Friday')
+  const [location, setLocation] = useState(match?.location ?? 'Sharjah')
+  const [notes, setNotes] = useState(match?.notes ?? '')
+  const [roster, setRoster] = useState<RosterRow[]>(
+    () =>
+      match?.players.map((mp) => ({
+        playerId: mp.player_id,
+        team: mp.team,
+        goals: mp.goals,
+        assists: mp.assists,
+        isMotm: mp.is_motm,
+      })) ?? []
+  )
   const [selectedPlayer, setSelectedPlayer] = useState('')
   const [scoreOverride, setScoreOverride] = useState<{ a: number | null; b: number | null }>({
-    a: null,
-    b: null,
+    a: match?.team_a_score ?? null,
+    b: match?.team_b_score ?? null,
   })
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -80,8 +97,9 @@ export default function MatchLogForm({ players }: { players: Player[] }) {
 
     setSubmitting(true)
     try {
-      const res = await adminFetch('/api/runitback/matches', {
-        method: 'POST',
+      const url = isEditing ? `/api/runitback/matches/${match.id}` : '/api/runitback/matches'
+      const res = await adminFetch(url, {
+        method: isEditing ? 'PATCH' : 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           date,
@@ -106,7 +124,11 @@ export default function MatchLogForm({ players }: { players: Player[] }) {
         return
       }
 
-      setSuccess(true)
+      if (isEditing) {
+        onSaved?.()
+      } else {
+        setSuccess(true)
+      }
     } catch {
       setError('Something went wrong.')
     } finally {
@@ -309,14 +331,26 @@ export default function MatchLogForm({ players }: { players: Player[] }) {
 
       {error && <p className="rib-body text-red-400 text-sm">{error}</p>}
 
-      <button
-        type="submit"
-        disabled={submitting}
-        className="rib-heading text-sm px-6 py-3 rounded-lg bg-rib-acc text-rib-bg disabled:opacity-50"
-        style={{ letterSpacing: '2px' }}
-      >
-        {submitting ? 'SAVING...' : 'SUBMIT MATCH'}
-      </button>
+      <div className="flex gap-3">
+        <button
+          type="submit"
+          disabled={submitting}
+          className="rib-heading text-sm px-6 py-3 rounded-lg bg-rib-acc text-rib-bg disabled:opacity-50"
+          style={{ letterSpacing: '2px' }}
+        >
+          {submitting ? 'SAVING...' : isEditing ? 'SAVE CHANGES' : 'SUBMIT MATCH'}
+        </button>
+        {isEditing && (
+          <button
+            type="button"
+            onClick={onCancel}
+            className="rib-heading text-sm px-6 py-3 rounded-lg border border-rib-border text-rib-muted hover:text-white"
+            style={{ letterSpacing: '2px' }}
+          >
+            CANCEL
+          </button>
+        )}
+      </div>
     </form>
   )
 }
