@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 import FormBadges from './FormBadges'
-import { getInitials } from '@/lib/runitback/queries'
+import FifaCard from './FifaCard'
 import type { PlayerStats } from '@/lib/runitback/types'
 
 /* ── Animated counter hook ──────────────────────────────────── */
@@ -131,100 +131,21 @@ export default function HeroTile({ topScorer }: { topScorer: PlayerStats | null 
 
         {topScorer ? (
           <>
-            {/* Avatar with ring pulse */}
+            {/* Player card — floats in and bobs gently */}
             <div
+              className="rib-hero-card"
               style={{
-                position: 'relative',
-                width: 100,
-                height: 100,
                 marginBottom: 20,
                 opacity: visible ? 1 : 0,
-                transform: visible ? 'none' : 'scale(0.8)',
+                transform: visible ? 'none' : 'scale(0.8) translateY(12px)',
                 transition: 'opacity 0.6s 0.1s, transform 0.6s 0.1s',
               }}
             >
-              {/* Pulse rings */}
-              {[0, 1, 2].map((i) => (
-                <span
-                  key={i}
-                  aria-hidden
-                  style={{
-                    position: 'absolute',
-                    inset: -(i * 8 + 4),
-                    borderRadius: '50%',
-                    border: '1px solid var(--acc)',
-                    opacity: 0,
-                    animation: `rib-ring-pulse 3s ${i * 0.8}s ease-out infinite`,
-                    pointerEvents: 'none',
-                  }}
-                />
-              ))}
-
-              {/* Glowing border */}
-              <div
-                style={{
-                  position: 'absolute', inset: -3, borderRadius: '50%',
-                  background: 'conic-gradient(var(--acc), var(--acc2), var(--acc))',
-                  animation: 'rib-spin 4s linear infinite',
-                  zIndex: 0,
-                }}
-              />
-              {/* Avatar inner */}
-              <div
-                style={{
-                  position: 'absolute', inset: 2, borderRadius: '50%',
-                  overflow: 'hidden', zIndex: 1,
-                  background: 'var(--bg2)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                }}
-              >
-                {topScorer.player.avatar_url ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={topScorer.player.avatar_url}
-                    alt={topScorer.player.name}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                  />
-                ) : (
-                  <span className="rib-heading text-3xl" style={{ color: 'var(--acc)' }}>
-                    {getInitials(topScorer.player.name)}
-                  </span>
-                )}
+              <div className="rib-hero-card-float">
+                <div className="rib-hero-card-glow" aria-hidden />
+                <FifaCard stats={topScorer} variant="full" />
               </div>
             </div>
-
-            {/* Position badge */}
-            {topScorer.player.position && (
-              <span
-                className="rib-heading text-[10px] px-2 py-0.5 rounded mb-3 self-start"
-                style={{
-                  letterSpacing: '3px',
-                  background: 'color-mix(in srgb, var(--acc) 15%, transparent)',
-                  color: 'var(--acc)',
-                  border: '1px solid color-mix(in srgb, var(--acc) 30%, transparent)',
-                  opacity: visible ? 1 : 0,
-                  transform: visible ? 'none' : 'translateX(-10px)',
-                  transition: 'opacity 0.5s 0.2s, transform 0.5s 0.2s',
-                }}
-              >
-                {topScorer.player.position}
-              </span>
-            )}
-
-            {/* Name — slides in from left */}
-            <h1
-              className="rib-heading text-4xl sm:text-5xl text-white leading-none mb-1"
-              style={{
-                opacity: visible ? 1 : 0,
-                transform: visible ? 'none' : 'translateX(-20px)',
-                transition: 'opacity 0.55s 0.25s, transform 0.55s 0.25s',
-              }}
-            >
-              {topScorer.player.name.toUpperCase()}
-            </h1>
-            {topScorer.player.nickname && (
-              <p className="rib-body text-sm mb-4">&ldquo;{topScorer.player.nickname}&rdquo;</p>
-            )}
 
             {/* Big goals counter — animated number */}
             <div

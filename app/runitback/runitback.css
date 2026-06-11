@@ -358,3 +358,42 @@
 @keyframes rib-spin {
   to { transform: rotate(360deg); }
 }
+
+/* ─── HERO PLAYER CARD ──────────────────────────────────────── */
+.rib-hero-card {
+  position: relative;
+  width: fit-content;
+}
+
+/* Gentle perpetual bob + sway */
+.rib-hero-card-float {
+  position: relative;
+  animation: rib-card-float 5s ease-in-out infinite;
+  transition: transform 0.4s ease;
+}
+
+.rib-hero-card:hover .rib-hero-card-float {
+  transform: scale(1.04) rotate(-1deg);
+}
+
+@keyframes rib-card-float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50%      { transform: translateY(-10px) rotate(0.6deg); }
+}
+
+/* Soft glow pulse behind the card */
+.rib-hero-card-glow {
+  position: absolute;
+  inset: -20px;
+  z-index: -1;
+  border-radius: 24px;
+  background: radial-gradient(ellipse at center, color-mix(in srgb, var(--acc) 35%, transparent), transparent 70%);
+  filter: blur(24px);
+  animation: rib-card-glow 5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes rib-card-glow {
+  0%, 100% { opacity: 0.35; transform: scale(0.95); }
+  50%      { opacity: 0.7;  transform: scale(1.08); }
+}
