@@ -110,7 +110,7 @@ export function buildPlayerStats(
       if (games === 0) {
         overall = Math.round(communityOverall)
       } else {
-        const weight = Math.min(0.6, communityRatingCount * 0.15)
+        const weight = Math.min(0.8, 0.3 + communityRatingCount * 0.15)
         overall = Math.round(statsOverall * (1 - weight) + communityOverall * weight)
       }
     }
