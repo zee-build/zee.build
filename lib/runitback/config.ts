@@ -1,6 +1,18 @@
+import type { RatingAttribute } from './types'
+
 // Season is derived from the current year so labels never need manual updates.
 export const CURRENT_SEASON = new Date().getFullYear()
 export const SEASON_LABEL = `SEASON ${CURRENT_SEASON}`
+
+// Skill attributes teammates rate each other on (1-10), shown FIFA-style.
+export const RATING_ATTRIBUTES: { key: RatingAttribute; label: string }[] = [
+  { key: 'pace', label: 'PACE' },
+  { key: 'shooting', label: 'SHOOTING' },
+  { key: 'passing', label: 'PASSING' },
+  { key: 'dribbling', label: 'DRIBBLING' },
+  { key: 'defending', label: 'DEFENDING' },
+  { key: 'physical', label: 'PHYSICAL' },
+]
 
 export interface Club {
   id: string

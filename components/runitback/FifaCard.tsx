@@ -46,6 +46,7 @@ interface FifaCardProps {
   stats: PlayerStats
   variant?: 'mini' | 'full'
   href?: string
+  onClick?: () => void
 }
 
 // The native PNG size is 202 × 316.
@@ -53,7 +54,7 @@ interface FifaCardProps {
 const NATIVE_W = 202
 const NATIVE_H = 316
 
-export default function FifaCard({ stats, variant = 'mini', href }: FifaCardProps) {
+export default function FifaCard({ stats, variant = 'mini', href, onClick }: FifaCardProps) {
   const { player, overall } = stats
   const type = cardType(stats)
   const bgSrc = CARD_BG[type] ?? CARD_BG.bronze
@@ -91,7 +92,7 @@ export default function FifaCard({ stats, variant = 'mini', href }: FifaCardProp
         transform: `scale(${scale})`,
         transformOrigin: 'top left',
         flexShrink: 0,
-        cursor: href ? 'pointer' : 'default',
+        cursor: href || onClick ? 'pointer' : 'default',
         userSelect: 'none',
       }}
     >
@@ -315,5 +316,19 @@ export default function FifaCard({ stats, variant = 'mini', href }: FifaCardProp
       </Link>
     )
   }
+
+  if (onClick) {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        className="block transition-transform hover:scale-105 hover:-translate-y-1"
+        style={{ width: displayW, height: Math.round(NATIVE_H * scale) }}
+      >
+        {card}
+      </button>
+    )
+  }
+
   return wrapper
 }

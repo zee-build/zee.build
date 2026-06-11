@@ -69,6 +69,13 @@ export interface PeerRating {
   season: number
   rater_id: string
   ratee_id: string
-  rating: number
+  pace: number
+  shooting: number
+  passing: number
+  dribbling: number
+  defending: number
+  physical: number
   created_at: string
 }
+
+export type RatingAttribute = 'pace' | 'shooting' | 'passing' | 'dribbling' | 'defending' | 'physical'

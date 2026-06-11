@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/runitback/supabase'
 import { isAdminRequest } from '@/lib/runitback/adminAuth'
-import { CURRENT_SEASON } from '@/lib/runitback/config'
+import { CURRENT_SEASON, RATING_ATTRIBUTES } from '@/lib/runitback/config'
 
 export async function GET(req: NextRequest) {
   if (!isAdminRequest(req)) {
@@ -30,19 +30,29 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const { id, rating } = await req.json()
+  const body = await req.json()
+  const { id } = body
 
   if (typeof id !== 'string') {
     return NextResponse.json({ error: 'Invalid rating id.' }, { status: 400 })
   }
-  if (typeof rating !== 'number' || !Number.isInteger(rating) || rating < 1 || rating > 10) {
-    return NextResponse.json({ error: 'Rating must be a whole number between 1 and 10.' }, { status: 400 })
+
+  const updates: Record<string, number> = {}
+  for (const { key } of RATING_ATTRIBUTES) {
+    const value = body[key]
+    if (typeof value !== 'number' || !Number.isInteger(value) || value < 1 || value > 10) {
+      return NextResponse.json(
+        { error: `${key} must be a whole number between 1 and 10.` },
+        { status: 400 }
+      )
+    }
+    updates[key] = value
   }
 
   const supabase = createServiceClient()
   const { data, error } = await supabase
     .from('peer_ratings')
-    .update({ rating })
+    .update(updates)
     .eq('id', id)
     .select('*')
     .single()

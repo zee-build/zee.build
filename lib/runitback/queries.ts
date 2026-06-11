@@ -40,8 +40,9 @@ export function buildPlayerStats(
   const ratingTotals = new Map<string, { sum: number; count: number }>()
   for (const r of ratings) {
     if (r.season !== CURRENT_SEASON) continue
+    const avgAttr = (r.pace + r.shooting + r.passing + r.dribbling + r.defending + r.physical) / 6
     const entry = ratingTotals.get(r.ratee_id) ?? { sum: 0, count: 0 }
-    entry.sum += r.rating
+    entry.sum += avgAttr
     entry.count += 1
     ratingTotals.set(r.ratee_id, entry)
   }
