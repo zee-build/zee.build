@@ -58,6 +58,7 @@ export interface PlayerStats {
   goalsPerGame: number
   communityRating: number | null
   communityRatingCount: number
+  attributeRatings: Record<RatingAttribute, number> | null
 }
 
 export interface MatchWithPlayers extends Match {

@@ -1,6 +1,8 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
+import { RotateCw } from 'lucide-react'
 import type { PlayerStats } from '@/lib/runitback/types'
 import { getInitials, tierForRating } from '@/lib/runitback/queries'
 import { getClub, getCountry } from '@/lib/runitback/config'
@@ -49,6 +51,11 @@ interface FifaCardProps {
   onClick?: () => void
 }
 
+interface StatAttr {
+  label: string
+  value: number | string
+}
+
 // The native PNG size is 202 × 316.
 // We'll render at that exact size and scale via CSS transform.
 const NATIVE_W = 202
@@ -61,13 +68,14 @@ export default function FifaCard({ stats, variant = 'mini', href, onClick }: Fif
   const color = TIER_COLOR[type] ?? '#000'
   const club = getClub(player.favorite_team)
   const country = getCountry(player.country)
+  const [flipped, setFlipped] = useState(false)
 
   // Display size — mini for grid, full for profile
   const displayW = variant === 'full' ? 202 : 160
   const scale = displayW / NATIVE_W
 
-  // Six stats displayed on the card (3 left, 3 right) — same as real FUT
-  const attrs = [
+  // Front face: match-stat attributes (3 left, 3 right) — same as real FUT
+  const statAttrs: StatAttr[] = [
     { label: 'GOL', value: stats.goals },
     { label: 'ASS', value: stats.assists },
     { label: 'MOT', value: stats.motm },
@@ -76,12 +84,55 @@ export default function FifaCard({ stats, variant = 'mini', href, onClick }: Fif
     { label: 'STR', value: stats.streak },
   ]
 
-  const card = (
+  // Back face: teammate-rated skill attributes
+  const ratings = stats.attributeRatings
+  const skillAttrs: StatAttr[] = [
+    { label: 'PAC', value: ratings?.pace ?? '—' },
+    { label: 'SHO', value: ratings?.shooting ?? '—' },
+    { label: 'PAS', value: ratings?.passing ?? '—' },
+    { label: 'DRI', value: ratings?.dribbling ?? '—' },
+    { label: 'DEF', value: ratings?.defending ?? '—' },
+    { label: 'PHY', value: ratings?.physical ?? '—' },
+  ]
+
+  const renderAttrGrid = (attrs: StatAttr[]) =>
+    attrs.map((attr, i) => {
+      const col = i < 3 ? 0 : 1
+      const row = i % 3
+      // Positions from fut-cards.css large card attr layout
+      const left = col === 0 ? 28 : 114
+      const tops = [188, 214, 240]
+      const top = tops[row]
+      return (
+        <div
+          key={attr.label}
+          style={{
+            position: 'absolute',
+            top,
+            left,
+            width: 95,
+            fontSize: 18,
+            textAlign: 'left',
+            display: 'flex',
+            alignItems: 'baseline',
+            gap: 5,
+            color,
+          }}
+        >
+          <span style={{ fontWeight: 700, minWidth: 28 }}>{attr.value}</span>
+          <span style={{ fontSize: 10, opacity: 0.75, letterSpacing: 1 }}>{attr.label}</span>
+        </div>
+      )
+    })
+
+  const renderFace = (attrs: StatAttr[]) => (
     <div
       style={{
-        position: 'relative',
+        position: 'absolute',
+        inset: 0,
         width: NATIVE_W,
         height: NATIVE_H,
+        backfaceVisibility: 'hidden',
         backgroundImage: `url(${bgSrc})`,
         backgroundRepeat: 'no-repeat',
         backgroundSize: '100% 100%',
@@ -89,11 +140,6 @@ export default function FifaCard({ stats, variant = 'mini', href, onClick }: Fif
         fontWeight: 700,
         textTransform: 'uppercase',
         color,
-        transform: `scale(${scale})`,
-        transformOrigin: 'top left',
-        flexShrink: 0,
-        cursor: href || onClick ? 'pointer' : 'default',
-        userSelect: 'none',
       }}
     >
       {/* ── RATING (top-left) — matches .fut16.card-large .playercard-rating ── */}
@@ -227,34 +273,7 @@ export default function FifaCard({ stats, variant = 'mini', href, onClick }: Fif
       </div>
 
       {/* ── 6 STAT ATTRIBUTES (3 left, 3 right) ── */}
-      {attrs.map((attr, i) => {
-        const col = i < 3 ? 0 : 1
-        const row = i % 3
-        // Positions from fut-cards.css large card attr layout
-        const left = col === 0 ? 28 : 114
-        const tops = [188, 214, 240]
-        const top = tops[row]
-        return (
-          <div
-            key={attr.label}
-            style={{
-              position: 'absolute',
-              top,
-              left,
-              width: 95,
-              fontSize: 18,
-              textAlign: 'left',
-              display: 'flex',
-              alignItems: 'baseline',
-              gap: 5,
-              color,
-            }}
-          >
-            <span style={{ fontWeight: 700, minWidth: 28 }}>{attr.value}</span>
-            <span style={{ fontSize: 10, opacity: 0.75, letterSpacing: 1 }}>{attr.label}</span>
-          </div>
-        )
-      })}
+      {renderAttrGrid(attrs)}
 
       {/* ── COUNTRY FLAG — bottom center ── */}
       {country && (
@@ -296,17 +315,70 @@ export default function FifaCard({ stats, variant = 'mini', href, onClick }: Fif
     </div>
   )
 
-  // Wrapper div accounts for the scale transform (preserves layout space)
-  const wrapper = (
+  const card = (
     <div
       style={{
-        width: displayW,
-        height: Math.round(NATIVE_H * scale),
         position: 'relative',
+        width: NATIVE_W,
+        height: NATIVE_H,
+        perspective: 1000,
+        transform: `scale(${scale})`,
+        transformOrigin: 'top left',
         flexShrink: 0,
+        cursor: href || onClick ? 'pointer' : 'default',
+        userSelect: 'none',
       }}
     >
-      {card}
+      <div
+        style={{
+          position: 'relative',
+          width: '100%',
+          height: '100%',
+          transformStyle: 'preserve-3d',
+          transition: 'transform 0.6s',
+          transform: flipped ? 'rotateY(180deg)' : 'none',
+        }}
+      >
+        {renderFace(statAttrs)}
+        <div style={{ position: 'absolute', inset: 0, transform: 'rotateY(180deg)', backfaceVisibility: 'hidden' }}>
+          {renderFace(skillAttrs)}
+        </div>
+      </div>
+
+      {/* ── FLIP BUTTON — toggles match stats vs. teammate-rated attributes ── */}
+      <div
+        role="button"
+        tabIndex={0}
+        title="Flip card"
+        onClick={(e) => {
+          e.preventDefault()
+          e.stopPropagation()
+          setFlipped((f) => !f)
+        }}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault()
+            e.stopPropagation()
+            setFlipped((f) => !f)
+          }
+        }}
+        style={{
+          position: 'absolute',
+          top: 10,
+          right: 10,
+          width: 24,
+          height: 24,
+          borderRadius: '50%',
+          background: 'rgba(0,0,0,0.35)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          cursor: 'pointer',
+          zIndex: 2,
+        }}
+      >
+        <RotateCw size={13} color="#fff" />
+      </div>
     </div>
   )
 
@@ -335,5 +407,16 @@ export default function FifaCard({ stats, variant = 'mini', href, onClick }: Fif
     )
   }
 
-  return wrapper
+  return (
+    <div
+      style={{
+        width: displayW,
+        height: Math.round(NATIVE_H * scale),
+        position: 'relative',
+        flexShrink: 0,
+      }}
+    >
+      {card}
+    </div>
+  )
 }

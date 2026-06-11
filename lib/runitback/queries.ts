@@ -1,5 +1,5 @@
-import type { Match, MatchPlayer, MatchResult, MatchWithPlayers, PeerRating, Player, PlayerStats } from './types'
-import { CURRENT_SEASON } from './config'
+import type { Match, MatchPlayer, MatchResult, MatchWithPlayers, PeerRating, Player, PlayerStats, RatingAttribute } from './types'
+import { CURRENT_SEASON, RATING_ATTRIBUTES } from './config'
 
 /** Columns safe to return to the browser — excludes password_hash. */
 export const PUBLIC_PLAYER_COLUMNS =
@@ -36,14 +36,22 @@ export function buildPlayerStats(
   )
   const matchOrder = new Map(sortedMatches.map((m, i) => [m.id, i]))
 
-  // Average community rating per player for the current season.
-  const ratingTotals = new Map<string, { sum: number; count: number }>()
+  // Average community rating (overall + per-attribute) per player for the current season.
+  const ratingTotals = new Map<
+    string,
+    { sum: number; count: number; attrSum: Record<RatingAttribute, number> }
+  >()
   for (const r of ratings) {
     if (r.season !== CURRENT_SEASON) continue
     const avgAttr = (r.pace + r.shooting + r.passing + r.dribbling + r.defending + r.physical) / 6
-    const entry = ratingTotals.get(r.ratee_id) ?? { sum: 0, count: 0 }
+    const entry = ratingTotals.get(r.ratee_id) ?? {
+      sum: 0,
+      count: 0,
+      attrSum: { pace: 0, shooting: 0, passing: 0, dribbling: 0, defending: 0, physical: 0 },
+    }
     entry.sum += avgAttr
     entry.count += 1
+    for (const { key } of RATING_ATTRIBUTES) entry.attrSum[key] += r[key]
     ratingTotals.set(r.ratee_id, entry)
   }
 
@@ -108,6 +116,15 @@ export function buildPlayerStats(
 
     const form = results.slice(-5)
 
+    let attributeRatings: Record<RatingAttribute, number> | null = null
+    if (ratingEntry) {
+      attributeRatings = {} as Record<RatingAttribute, number>
+      for (const { key } of RATING_ATTRIBUTES) {
+        const avg = ratingEntry.attrSum[key] / ratingEntry.count
+        attributeRatings[key] = Math.round(60 + ((avg - 1) / 9) * 39)
+      }
+    }
+
     return {
       player,
       games,
@@ -124,6 +141,7 @@ export function buildPlayerStats(
       goalsPerGame,
       communityRating,
       communityRatingCount,
+      attributeRatings,
     }
   })
 }
