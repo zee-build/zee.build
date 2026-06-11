@@ -4,6 +4,7 @@ import { isAdminRequest } from '@/lib/runitback/adminAuth'
 import { PUBLIC_PLAYER_COLUMNS } from '@/lib/runitback/queries'
 
 const VALID_POSITIONS = ['GK', 'CB', 'RB', 'LB', 'CM', 'CAM', 'ST', 'LW', 'RW']
+const VALID_ROLES = ['player', 'mod', 'admin']
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   if (!isAdminRequest(req)) {
@@ -29,6 +30,12 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   }
   if (typeof body.is_regular === 'boolean') update.is_regular = body.is_regular
   if ('avatar_url' in body) update.avatar_url = body.avatar_url || null
+  if ('role' in body) {
+    if (!VALID_ROLES.includes(body.role)) {
+      return NextResponse.json({ error: 'Invalid role.' }, { status: 400 })
+    }
+    update.role = body.role
+  }
 
   const supabase = createServiceClient()
   const { data, error } = await supabase

@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/runitback/supabase'
-import { isAdminRequest } from '@/lib/runitback/adminAuth'
+import { isModRequest } from '@/lib/runitback/adminAuth'
 
 const VALID_DAYS = ['Friday', 'Tuesday']
 const VALID_TEAMS = ['A', 'B']
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  if (!isAdminRequest(req)) {
+  if (!(await isModRequest(req))) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
@@ -73,7 +73,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 }
 
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  if (!isAdminRequest(req)) {
+  if (!(await isModRequest(req))) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 

@@ -3,9 +3,10 @@
 import { useState } from 'react'
 import { adminFetch } from '@/lib/runitback/admin'
 import PhotoUpload from './PhotoUpload'
-import type { Player, Position } from '@/lib/runitback/types'
+import type { Player, PlayerRole, Position } from '@/lib/runitback/types'
 
 const POSITIONS: Position[] = ['GK', 'CB', 'RB', 'LB', 'CM', 'CAM', 'ST', 'LW', 'RW']
+const ROLES: PlayerRole[] = ['player', 'mod', 'admin']
 
 interface PlayerFormProps {
   player?: Player
@@ -19,6 +20,7 @@ export default function PlayerForm({ player, onSaved, onCancel }: PlayerFormProp
   const [position, setPosition] = useState<Position>((player?.position as Position) ?? 'CM')
   const [isRegular, setIsRegular] = useState(player?.is_regular ?? true)
   const [avatarUrl, setAvatarUrl] = useState<string | null>(player?.avatar_url ?? null)
+  const [role, setRole] = useState<PlayerRole>(player?.role ?? 'player')
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
@@ -41,6 +43,7 @@ export default function PlayerForm({ player, onSaved, onCancel }: PlayerFormProp
         position,
         is_regular: isRegular,
         avatar_url: avatarUrl,
+        ...(isEdit ? { role } : {}),
       }
 
       const res = await adminFetch(
@@ -114,6 +117,24 @@ export default function PlayerForm({ player, onSaved, onCancel }: PlayerFormProp
             GUEST
           </button>
         </div>
+        {isEdit && (
+          <div>
+            <label className="rib-heading text-xs text-rib-muted block mb-1.5" style={{ letterSpacing: '1.5px' }}>
+              ROLE
+            </label>
+            <select
+              value={role}
+              onChange={(e) => setRole(e.target.value as PlayerRole)}
+              className="w-full bg-rib-bg2 border border-rib-border rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-rib-acc"
+            >
+              {ROLES.map((r) => (
+                <option key={r} value={r}>
+                  {r.toUpperCase()}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
       </div>
 
       {error && <p className="rib-body text-red-400 text-xs">{error}</p>}

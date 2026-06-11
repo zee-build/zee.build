@@ -3,7 +3,7 @@ import { CURRENT_SEASON, RATING_ATTRIBUTES } from './config'
 
 /** Columns safe to return to the browser — excludes password_hash. */
 export const PUBLIC_PLAYER_COLUMNS =
-  'id, name, nickname, position, avatar_url, is_regular, registered_via_link, username, favorite_team, country, created_at'
+  'id, name, nickname, position, avatar_url, is_regular, registered_via_link, username, favorite_team, country, role, created_at'
 
 /** Determine a player's result (W/L/D) for a given match. */
 function resultFor(mp: MatchPlayer, match: Match): MatchResult {
@@ -226,18 +226,45 @@ export function buildPlayerStats(
   return stats
 }
 
-/** Players (excluding self) that `playerId` hasn't rated yet this season. */
-export function getPendingRatingTargets(
+export interface PendingMatchRating {
+  match: Match
+  teammates: Player[]
+}
+
+/**
+ * For each match `playerId` played in, the other players from that match
+ * they haven't rated yet. Only matches from the current season are considered.
+ */
+export function getPendingMatchRatings(
   playerId: string,
+  matches: Match[],
+  matchPlayers: MatchPlayer[],
   players: Player[],
   ratings: PeerRating[]
-): Player[] {
-  const ratedIds = new Set(
+): PendingMatchRating[] {
+  const playerById = new Map(players.map((p) => [p.id, p]))
+  const ratedPairs = new Set(
     ratings
-      .filter((r) => r.season === CURRENT_SEASON && r.rater_id === playerId)
-      .map((r) => r.ratee_id)
+      .filter((r) => r.rater_id === playerId && r.match_id)
+      .map((r) => `${r.match_id}:${r.ratee_id}`)
   )
-  return players.filter((p) => p.id !== playerId && !ratedIds.has(p.id))
+
+  const pending: PendingMatchRating[] = []
+  for (const match of matches) {
+    if (new Date(match.date).getFullYear() !== CURRENT_SEASON) continue
+    const roster = matchPlayers.filter((mp) => mp.match_id === match.id)
+    const playedInMatch = roster.some((mp) => mp.player_id === playerId)
+    if (!playedInMatch) continue
+
+    const teammates = roster
+      .filter((mp) => mp.player_id !== playerId && !ratedPairs.has(`${match.id}:${mp.player_id}`))
+      .map((mp) => playerById.get(mp.player_id))
+      .filter((p): p is Player => Boolean(p))
+
+    if (teammates.length > 0) pending.push({ match, teammates })
+  }
+
+  return pending.sort((a, b) => new Date(b.match.date).getTime() - new Date(a.match.date).getTime())
 }
 
 /** Pull together matches with their roster of players for display. */

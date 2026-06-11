@@ -41,10 +41,12 @@ async function getData(id: string) {
   const headToHead = buildHeadToHead(id, allPlayers, allMatches, allMatchPlayers)
 
   const playerById = new Map(allPlayers.map((p) => [p.id, p]))
+  const matchByIdForRatings = new Map(allMatches.map((m) => [m.id, m]))
   const receivedRatings = (ratings ?? [])
     .filter((r) => r.ratee_id === id)
     .map((r) => ({
       rater: playerById.get(r.rater_id) ?? null,
+      match: r.match_id ? matchByIdForRatings.get(r.match_id) ?? null : null,
       attrs: r,
     }))
 
@@ -191,6 +193,7 @@ export default async function PlayerProfilePage({ params }: PageProps) {
             <thead>
               <tr className="border-b border-rib-border">
                 <th className="rib-heading text-xs text-rib-muted text-left px-4 py-2" style={{ letterSpacing: '1.5px' }}>RATED BY</th>
+                <th className="rib-heading text-xs text-rib-muted text-left px-4 py-2" style={{ letterSpacing: '1.5px' }}>MATCH</th>
                 {RATING_ATTRIBUTES.map((a) => (
                   <th key={a.key} className="rib-heading text-xs text-rib-muted text-center px-3 py-2" style={{ letterSpacing: '1.5px' }}>
                     {a.label.slice(0, 3)}
@@ -200,7 +203,7 @@ export default async function PlayerProfilePage({ params }: PageProps) {
               </tr>
             </thead>
             <tbody>
-              {receivedRatings.map(({ rater, attrs }) => {
+              {receivedRatings.map(({ rater, match, attrs }) => {
                 const avg = RATING_ATTRIBUTES.reduce((sum, a) => sum + attrs[a.key], 0) / RATING_ATTRIBUTES.length
                 return (
                   <tr key={attrs.id} className="border-b border-rib-border last:border-0">
@@ -212,6 +215,11 @@ export default async function PlayerProfilePage({ params }: PageProps) {
                       ) : (
                         <span className="rib-heading text-xs text-rib-muted" style={{ letterSpacing: '1.5px' }}>UNKNOWN</span>
                       )}
+                    </td>
+                    <td className="rib-body text-xs px-4 py-3">
+                      {match
+                        ? new Date(match.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })
+                        : '—'}
                     </td>
                     {RATING_ATTRIBUTES.map((a) => (
                       <td key={a.key} className="rib-stat text-sm text-center px-3 py-3">{attrs[a.key]}</td>

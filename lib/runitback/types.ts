@@ -1,5 +1,7 @@
 export type Position = 'GK' | 'CB' | 'RB' | 'LB' | 'CM' | 'CAM' | 'ST' | 'LW' | 'RW'
 
+export type PlayerRole = 'player' | 'mod' | 'admin'
+
 export interface Player {
   id: string
   name: string
@@ -11,6 +13,7 @@ export interface Player {
   username: string | null
   favorite_team: string | null
   country: string | null
+  role: PlayerRole
   created_at: string
 }
 
@@ -71,6 +74,7 @@ export interface MatchWithPlayers extends Match {
 export interface PeerRating {
   id: string
   season: number
+  match_id: string | null
   rater_id: string
   ratee_id: string
   pace: number

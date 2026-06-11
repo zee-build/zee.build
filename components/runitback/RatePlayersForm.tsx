@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { Loader2, X } from 'lucide-react'
 import FifaCard from './FifaCard'
 import { RATING_ATTRIBUTES } from '@/lib/runitback/config'
-import type { PlayerStats, RatingAttribute } from '@/lib/runitback/types'
+import type { DayOfWeek, PlayerStats, RatingAttribute } from '@/lib/runitback/types'
 
 const DEFAULT_VALUES: Record<RatingAttribute, number> = {
   pace: 5,
@@ -15,10 +15,22 @@ const DEFAULT_VALUES: Record<RatingAttribute, number> = {
   physical: 5,
 }
 
+interface PendingMatch {
+  matchId: string
+  date: string
+  dayOfWeek: DayOfWeek
+  teammates: PlayerStats[]
+}
+
+interface SelectedRating {
+  matchId: string
+  player: PlayerStats
+}
+
 export default function RatePlayersForm() {
   const [season, setSeason] = useState<number | null>(null)
-  const [stats, setStats] = useState<PlayerStats[] | null>(null)
-  const [selected, setSelected] = useState<PlayerStats | null>(null)
+  const [pending, setPending] = useState<PendingMatch[] | null>(null)
+  const [selected, setSelected] = useState<SelectedRating | null>(null)
   const [values, setValues] = useState<Record<RatingAttribute, number>>(DEFAULT_VALUES)
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -28,15 +40,15 @@ export default function RatePlayersForm() {
       .then((res) => res.json())
       .then((data) => {
         setSeason(data.season)
-        setStats(data.stats ?? [])
+        setPending(data.pending ?? [])
       })
       .catch(() => setError('Could not load players to rate.'))
   }, [])
 
-  const openRating = (player: PlayerStats) => {
+  const openRating = (matchId: string, player: PlayerStats) => {
     setError('')
     setValues(DEFAULT_VALUES)
-    setSelected(player)
+    setSelected({ matchId, player })
   }
 
   const handleSubmit = async () => {
@@ -47,15 +59,23 @@ export default function RatePlayersForm() {
       const res = await fetch('/api/runitback/ratings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ratee_id: selected.player.id, ...values }),
+        body: JSON.stringify({ match_id: selected.matchId, ratee_id: selected.player.player.id, ...values }),
       })
       const data = await res.json()
       if (!res.ok) {
         setError(data.error ?? 'Something went wrong.')
         return
       }
-      const ratedId = selected.player.id
-      setStats((prev) => (prev ? prev.filter((s) => s.player.id !== ratedId) : prev))
+      const { matchId, player } = selected
+      setPending((prev) =>
+        (prev ?? [])
+          .map((m) =>
+            m.matchId === matchId
+              ? { ...m, teammates: m.teammates.filter((s) => s.player.id !== player.player.id) }
+              : m
+          )
+          .filter((m) => m.teammates.length > 0)
+      )
       setSelected(null)
     } catch {
       setError('Something went wrong.')
@@ -64,7 +84,7 @@ export default function RatePlayersForm() {
     }
   }
 
-  if (stats === null) {
+  if (pending === null) {
     return (
       <div className="flex items-center justify-center min-h-[40vh]">
         <Loader2 className="animate-spin text-rib-muted" size={28} />
@@ -72,12 +92,12 @@ export default function RatePlayersForm() {
     )
   }
 
-  if (stats.length === 0) {
+  if (pending.length === 0) {
     return (
       <div className="rib-tile rounded-xl p-12 text-center max-w-md mx-auto">
         <p className="rib-heading text-xl mb-2">ALL CAUGHT UP</p>
         <p className="rib-body text-sm">
-          You&apos;ve rated the whole squad for {season ? `SEASON ${season}` : 'this season'}.
+          You&apos;ve rated your teammates from every match this {season ? `SEASON ${season}` : 'season'}.
         </p>
       </div>
     )
@@ -87,13 +107,28 @@ export default function RatePlayersForm() {
     <div className="max-w-3xl mx-auto px-4">
       <h1 className="rib-heading text-2xl mb-1 text-center">RATE THE SQUAD</h1>
       <p className="rib-body text-sm mb-6 text-center">
-        Tap a teammate&apos;s card and rate their attributes — once per player, per season.
+        Rate the teammates you played alongside, match by match — once per player, per match.
       </p>
       {error && !selected && <p className="rib-body text-red-400 text-sm text-center mb-4">{error}</p>}
 
-      <div className="flex flex-wrap justify-center gap-4">
-        {stats.map((s) => (
-          <FifaCard key={s.player.id} stats={s} variant="mini" onClick={() => openRating(s)} />
+      <div className="space-y-8">
+        {pending.map((match) => (
+          <div key={match.matchId}>
+            <h2 className="rib-heading text-sm text-rib-muted mb-3" style={{ letterSpacing: '2px' }}>
+              {new Date(match.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })} ·{' '}
+              {match.dayOfWeek.toUpperCase()}
+            </h2>
+            <div className="flex flex-wrap gap-4">
+              {match.teammates.map((s) => (
+                <FifaCard
+                  key={s.player.id}
+                  stats={s}
+                  variant="mini"
+                  onClick={() => openRating(match.matchId, s)}
+                />
+              ))}
+            </div>
+          </div>
         ))}
       </div>
 
@@ -120,7 +155,7 @@ export default function RatePlayersForm() {
               RATE
             </p>
             <h2 className="rib-heading text-xl mb-4">
-              {selected.player.nickname || selected.player.name}
+              {selected.player.player.nickname || selected.player.player.name}
             </h2>
 
             <div className="space-y-4">

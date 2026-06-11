@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/runitback/supabase'
-import { buildPlayerStats, getPendingRatingTargets, PUBLIC_PLAYER_COLUMNS } from '@/lib/runitback/queries'
+import { buildPlayerStats, getPendingMatchRatings, PUBLIC_PLAYER_COLUMNS } from '@/lib/runitback/queries'
 import { readSessionToken, SESSION_COOKIE_NAME } from '@/lib/runitback/playerAuth'
 import { CURRENT_SEASON } from '@/lib/runitback/config'
 import FifaMenuGrid from '@/components/runitback/FifaMenuGrid'
@@ -38,8 +38,14 @@ export default async function RunItBackHome() {
   const lastMatch = allMatches[0] ?? null
   const totalGoals = stats.reduce((sum, s) => sum + s.goals, 0)
 
+  const me = playerId ? allPlayers.find((p) => p.id === playerId) ?? null : null
+  const isMod = me?.role === 'mod' || me?.role === 'admin'
+
   const pendingCount = playerId
-    ? getPendingRatingTargets(playerId, allPlayers, allRatings).length
+    ? getPendingMatchRatings(playerId, allMatches, allMatchPlayers, allPlayers, allRatings).reduce(
+        (sum, p) => sum + p.teammates.length,
+        0
+      )
     : 0
 
   return (
@@ -53,6 +59,7 @@ export default async function RunItBackHome() {
       topStreak={topStreakStat ? { player: topStreakStat } : null}
       totalGoals={totalGoals}
       pendingRatings={pendingCount}
+      isMod={isMod}
     />
     </>
   )
