@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { getInitials } from '@/lib/runitback/queries'
 import PhotoUpload from './PhotoUpload'
 import { COUNTRIES } from '@/lib/runitback/config'
@@ -9,6 +10,7 @@ import type { Position } from '@/lib/runitback/types'
 const POSITIONS: Position[] = ['GK', 'CB', 'RB', 'LB', 'CM', 'CAM', 'ST', 'LW', 'RW']
 
 export default function JoinForm() {
+  const [step, setStep] = useState<'choice' | 'form'>('choice')
   const [name, setName] = useState('')
   const [nickname, setNickname] = useState('')
   const [position, setPosition] = useState<Position>('CM')
@@ -66,6 +68,42 @@ export default function JoinForm() {
     } finally {
       setSubmitting(false)
     }
+  }
+
+  if (step === 'choice') {
+    return (
+      <div className="rib-tile rounded-xl p-8 max-w-md w-full">
+        <h1 className="rib-heading text-2xl mb-1">JOIN RUN IT BACK</h1>
+        <p className="rib-body text-sm mb-6">
+          Were you already part of the squad before logins existed?
+        </p>
+
+        <div className="space-y-3">
+          <button
+            type="button"
+            onClick={() => setStep('form')}
+            className="w-full rib-heading text-sm py-3 rounded-lg bg-rib-acc text-rib-bg"
+            style={{ letterSpacing: '2px' }}
+          >
+            NEW PLAYER — JOIN THE SQUAD
+          </button>
+          <Link
+            href="/runitback/register"
+            className="block text-center w-full rib-heading text-sm py-3 rounded-lg border border-rib-border text-white"
+            style={{ letterSpacing: '2px' }}
+          >
+            EXISTING PLAYER — LINK MY CARD
+          </Link>
+        </div>
+
+        <p className="rib-body text-xs text-center mt-4">
+          Already have an account?{' '}
+          <Link href="/runitback/login" className="text-rib-acc">
+            Sign in
+          </Link>
+        </p>
+      </div>
+    )
   }
 
   if (success) {
@@ -247,6 +285,14 @@ export default function JoinForm() {
           style={{ letterSpacing: '2px' }}
         >
           {submitting ? 'JOINING...' : 'JOIN THE SQUAD'}
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setStep('choice')}
+          className="w-full rib-body text-xs text-rib-muted text-center"
+        >
+          ← Back
         </button>
       </div>
     </form>
