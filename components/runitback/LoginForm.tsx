@@ -10,6 +10,7 @@ export default function LoginForm() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const [pendingCount, setPendingCount] = useState<number | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -26,6 +27,20 @@ export default function LoginForm() {
         setError(data.error ?? 'Something went wrong.')
         return
       }
+
+      // Check whether this player has teammates left to rate this season.
+      try {
+        const ratingsRes = await fetch('/api/runitback/ratings')
+        const ratingsData = await ratingsRes.json()
+        const count = ratingsData.stats?.length ?? 0
+        if (count > 0) {
+          setPendingCount(count)
+          return
+        }
+      } catch {
+        // If the check fails, fall through to the normal redirect.
+      }
+
       router.push('/runitback/profile')
       router.refresh()
     } catch {
@@ -33,6 +48,43 @@ export default function LoginForm() {
     } finally {
       setSubmitting(false)
     }
+  }
+
+  if (pendingCount !== null) {
+    return (
+      <div className="rib-tile rounded-xl p-8 max-w-md w-full text-center">
+        <h1 className="rib-heading text-2xl mb-1">RATE THE SQUAD</h1>
+        <p className="rib-body text-sm mb-6">
+          You have {pendingCount} teammate{pendingCount === 1 ? '' : 's'} to rate for this season.
+          Your votes shape everyone&apos;s card ratings.
+        </p>
+
+        <div className="space-y-3">
+          <button
+            type="button"
+            onClick={() => {
+              router.push('/runitback/rate')
+              router.refresh()
+            }}
+            className="w-full rib-heading text-sm py-3 rounded-lg bg-rib-acc text-rib-bg"
+            style={{ letterSpacing: '2px' }}
+          >
+            RATE NOW
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              router.push('/runitback/profile')
+              router.refresh()
+            }}
+            className="w-full rib-heading text-sm py-3 rounded-lg border border-rib-border text-white"
+            style={{ letterSpacing: '2px' }}
+          >
+            MAYBE LATER
+          </button>
+        </div>
+      </div>
+    )
   }
 
   return (
