@@ -24,6 +24,8 @@ const CARD_BG: Record<string, string> = {
   bronze: '/runitback/cards/fifa16/large-rare-bronze.png',
   motm:   '/runitback/cards/fifa16/large-motm.png',
   tots_gold: '/runitback/cards/fifa16/large-tots-gold.png',
+  toty:   '/runitback/cards/fifa16/large-toty.png',
+  hero:   '/runitback/cards/fifa16/large-hero.png',
 }
 
 // ── Per-tier text colours (from fut-cards.css) ──────────────────────
@@ -33,12 +35,18 @@ const TIER_COLOR: Record<string, string> = {
   bronze:    '#000',
   motm:      '#fff',
   tots_gold: '#ebd56d',
+  toty:      '#d2ebfa',
+  hero:      '#26042f',
 }
 
 // ── Determine which card type to use ────────────────────────────────
 function cardType(stats: PlayerStats): string {
+  // Best overall player of the season gets the one-of-a-kind TOTY card
+  if (stats.seasonAward === 'toty') return 'toty'
   // Players with 3+ MOTM awards get the special orange MOTM card
   if (stats.motm >= 3) return 'motm'
+  // Season's top scorer (besides the TOTY player) gets the Hero card
+  if (stats.seasonAward === 'hero') return 'hero'
   // Top-tier players (5+ goals, gold rating) get TOTS gold
   if (stats.overall >= 88 && stats.goals >= 5) return 'tots_gold'
   return tierForRating(stats.overall) // 'gold' | 'silver' | 'bronze'

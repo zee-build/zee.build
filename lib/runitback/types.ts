@@ -59,6 +59,7 @@ export interface PlayerStats {
   communityRating: number | null
   communityRatingCount: number
   attributeRatings: Record<RatingAttribute, number> | null
+  seasonAward: 'toty' | 'hero' | null
 }
 
 export interface MatchWithPlayers extends Match {

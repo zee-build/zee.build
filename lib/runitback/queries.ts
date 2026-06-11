@@ -55,7 +55,7 @@ export function buildPlayerStats(
     ratingTotals.set(r.ratee_id, entry)
   }
 
-  return players.map((player) => {
+  const stats = players.map((player) => {
     const entries = matchPlayers
       .filter((mp) => mp.player_id === player.id && matchById.has(mp.match_id))
       .sort((a, b) => (matchOrder.get(a.match_id) ?? 0) - (matchOrder.get(b.match_id) ?? 0))
@@ -142,8 +142,26 @@ export function buildPlayerStats(
       communityRating,
       communityRatingCount,
       attributeRatings,
+      seasonAward: null as PlayerStats['seasonAward'],
     }
   })
+
+  // Assign one-of-a-kind season award cards: TOTY (Team of the Year) goes to
+  // the player with the highest overall this season, Hero goes to the top
+  // scorer (a different player, if there is one).
+  const eligible = stats.filter((s) => s.games > 0)
+  if (eligible.length > 0) {
+    const topOverall = eligible.reduce((best, s) => (s.overall > best.overall ? s : best))
+    topOverall.seasonAward = 'toty'
+
+    const scorers = eligible.filter((s) => s.goals > 0 && s.player.id !== topOverall.player.id)
+    if (scorers.length > 0) {
+      const topScorer = scorers.reduce((best, s) => (s.goals > best.goals ? s : best))
+      topScorer.seasonAward = 'hero'
+    }
+  }
+
+  return stats
 }
 
 /** Players (excluding self) that `playerId` hasn't rated yet this season. */

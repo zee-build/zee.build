@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import { Barlow, Barlow_Condensed } from 'next/font/google'
 import ThemeProvider from '@/components/runitback/ThemeProvider'
 import FifaNav from '@/components/runitback/FifaNav'
-import MusicPlayer from '@/components/runitback/MusicPlayer'
 import { SEASON_LABEL } from '@/lib/runitback/config'
 import './runitback.css'
 
@@ -37,7 +36,6 @@ export default function RunItBackLayout({ children }: { children: React.ReactNod
             RUN IT BACK · {SEASON_LABEL}
           </span>
         </footer>
-        <MusicPlayer />
       </ThemeProvider>
     </div>
   )
