@@ -5,6 +5,7 @@ import { buildPlayerStats, getPendingRatingTargets, PUBLIC_PLAYER_COLUMNS } from
 import { readSessionToken, SESSION_COOKIE_NAME } from '@/lib/runitback/playerAuth'
 import { CURRENT_SEASON } from '@/lib/runitback/config'
 import FifaMenuGrid from '@/components/runitback/FifaMenuGrid'
+import WelcomeSplash from '@/components/runitback/WelcomeSplash'
 import type { Match, MatchPlayer, PeerRating, Player } from '@/lib/runitback/types'
 
 export const metadata: Metadata = {
@@ -42,6 +43,8 @@ export default async function RunItBackHome() {
     : 0
 
   return (
+    <>
+    <WelcomeSplash />
     <FifaMenuGrid
       topScorer={topScorer && topScorer.goals > 0 ? topScorer : null}
       playerCount={allPlayers.length}
@@ -51,6 +54,7 @@ export default async function RunItBackHome() {
       totalGoals={totalGoals}
       pendingRatings={pendingCount}
     />
+    </>
   )
 }
 

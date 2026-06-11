@@ -3,8 +3,8 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ArrowLeft, Star } from 'lucide-react'
 import { createClient } from '@/lib/runitback/supabase'
-import { buildHeadToHead, buildMatchesWithPlayers, buildPlayerStats, PUBLIC_PLAYER_COLUMNS } from '@/lib/runitback/queries'
-import { CURRENT_SEASON } from '@/lib/runitback/config'
+import { buildHeadToHead, buildMatchesWithPlayers, buildPlayerStats, getInitials, PUBLIC_PLAYER_COLUMNS } from '@/lib/runitback/queries'
+import { CURRENT_SEASON, RATING_ATTRIBUTES } from '@/lib/runitback/config'
 import FifaCard from '@/components/runitback/FifaCard'
 import StatBar from '@/components/runitback/StatBar'
 import type { Match, MatchPlayer, PeerRating, Player } from '@/lib/runitback/types'
@@ -40,7 +40,15 @@ async function getData(id: string) {
 
   const headToHead = buildHeadToHead(id, allPlayers, allMatches, allMatchPlayers)
 
-  return { player, stats, matches: matchesWithPlayers, headToHead }
+  const playerById = new Map(allPlayers.map((p) => [p.id, p]))
+  const receivedRatings = (ratings ?? [])
+    .filter((r) => r.ratee_id === id)
+    .map((r) => ({
+      rater: playerById.get(r.rater_id) ?? null,
+      attrs: r,
+    }))
+
+  return { player, stats, matches: matchesWithPlayers, headToHead, receivedRatings }
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -58,7 +66,7 @@ export default async function PlayerProfilePage({ params }: PageProps) {
   const data = await getData(slug)
   if (!data) notFound()
 
-  const { player, stats, matches, headToHead } = data
+  const { player, stats, matches, headToHead, receivedRatings } = data
 
   return (
     <div className="rib-page max-w-4xl mx-auto">
@@ -161,7 +169,7 @@ export default async function PlayerProfilePage({ params }: PageProps) {
       {headToHead.length === 0 ? (
         <p className="rib-body text-sm">No head-to-head record yet.</p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-8">
           {headToHead.map((rec) => (
             <Link key={rec.player.id} href={`/runitback/players/${rec.player.id}`} className="rib-tile rounded-lg px-4 py-3 flex items-center justify-between hover:border-rib-acc transition-colors">
               <span className="rib-heading text-sm">{rec.player.name}</span>
@@ -170,6 +178,50 @@ export default async function PlayerProfilePage({ params }: PageProps) {
               </span>
             </Link>
           ))}
+        </div>
+      )}
+
+      {/* Peer ratings — public so the squad can keep each other honest */}
+      <h2 className="rib-heading text-xl mb-3">PEER RATINGS — {CURRENT_SEASON}</h2>
+      {receivedRatings.length === 0 ? (
+        <p className="rib-body text-sm">No teammates have rated {player.name.split(' ')[0]} yet.</p>
+      ) : (
+        <div className="rib-tile rounded-lg overflow-hidden">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-rib-border">
+                <th className="rib-heading text-xs text-rib-muted text-left px-4 py-2" style={{ letterSpacing: '1.5px' }}>RATED BY</th>
+                {RATING_ATTRIBUTES.map((a) => (
+                  <th key={a.key} className="rib-heading text-xs text-rib-muted text-center px-3 py-2" style={{ letterSpacing: '1.5px' }}>
+                    {a.label.slice(0, 3)}
+                  </th>
+                ))}
+                <th className="rib-heading text-xs text-rib-muted text-center px-4 py-2" style={{ letterSpacing: '1.5px' }}>AVG</th>
+              </tr>
+            </thead>
+            <tbody>
+              {receivedRatings.map(({ rater, attrs }) => {
+                const avg = RATING_ATTRIBUTES.reduce((sum, a) => sum + attrs[a.key], 0) / RATING_ATTRIBUTES.length
+                return (
+                  <tr key={attrs.id} className="border-b border-rib-border last:border-0">
+                    <td className="px-4 py-3">
+                      {rater ? (
+                        <Link href={`/runitback/players/${rater.id}`} className="rib-heading text-xs hover:text-rib-acc inline-flex items-center gap-2" style={{ letterSpacing: '1.5px' }}>
+                          {getInitials(rater.name)} · {rater.name}
+                        </Link>
+                      ) : (
+                        <span className="rib-heading text-xs text-rib-muted" style={{ letterSpacing: '1.5px' }}>UNKNOWN</span>
+                      )}
+                    </td>
+                    {RATING_ATTRIBUTES.map((a) => (
+                      <td key={a.key} className="rib-stat text-sm text-center px-3 py-3">{attrs[a.key]}</td>
+                    ))}
+                    <td className="rib-stat text-sm text-center px-4 py-3 text-rib-acc">{avg.toFixed(1)}</td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
         </div>
       )}
     </div>
