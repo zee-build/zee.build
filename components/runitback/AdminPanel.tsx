@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation'
 import { adminFetch } from '@/lib/runitback/admin'
 import MatchLogForm from './MatchLogForm'
 import PlayerForm from './PlayerForm'
+import AdminRatingsPanel from './AdminRatingsPanel'
 import type { Player } from '@/lib/runitback/types'
 
 interface AdminPanelProps {
@@ -116,6 +117,12 @@ export default function AdminPanel({ players, gamesPlayedById }: AdminPanelProps
             </div>
           ))}
         </div>
+      </section>
+
+      {/* Peer ratings log */}
+      <section className="rib-tile rounded-xl p-5">
+        <h2 className="rib-heading text-xl mb-4">PEER RATINGS</h2>
+        <AdminRatingsPanel />
       </section>
 
       {/* Share registration link */}

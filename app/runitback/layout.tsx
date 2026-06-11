@@ -3,6 +3,7 @@ import { Barlow, Barlow_Condensed } from 'next/font/google'
 import ThemeProvider from '@/components/runitback/ThemeProvider'
 import FifaNav from '@/components/runitback/FifaNav'
 import MusicPlayer from '@/components/runitback/MusicPlayer'
+import { SEASON_LABEL } from '@/lib/runitback/config'
 import './runitback.css'
 
 const barlowCondensed = Barlow_Condensed({
@@ -22,7 +23,7 @@ const barlow = Barlow({
 
 export const metadata: Metadata = {
   title: 'Run It Back',
-  description: 'Friday & Tuesday five-a-side stats hub — Season 2025',
+  description: `Friday & Tuesday five-a-side stats hub — ${SEASON_LABEL}`,
 }
 
 export default function RunItBackLayout({ children }: { children: React.ReactNode }) {
@@ -33,7 +34,7 @@ export default function RunItBackLayout({ children }: { children: React.ReactNod
         <main className="rib-main">{children}</main>
         <footer className="px-4 md:px-8 py-4 text-right" style={{ borderTop: '1px solid var(--border)' }}>
           <span className="rib-heading text-[10px] text-rib-muted" style={{ letterSpacing: '3px' }}>
-            RUN IT BACK · SEASON 2025
+            RUN IT BACK · {SEASON_LABEL}
           </span>
         </footer>
         <MusicPlayer />

@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import type { PlayerStats } from '@/lib/runitback/types'
 import { getInitials, tierForRating } from '@/lib/runitback/queries'
+import { getClub } from '@/lib/runitback/config'
 
 /**
  * Uses the real FIFA 16 card PNGs from thomasrye/fut-cards as the
@@ -57,6 +58,7 @@ export default function FifaCard({ stats, variant = 'mini', href }: FifaCardProp
   const type = cardType(stats)
   const bgSrc = CARD_BG[type] ?? CARD_BG.bronze
   const color = TIER_COLOR[type] ?? '#000'
+  const club = getClub(player.favorite_team)
 
   // Display size — mini for grid, full for profile
   const displayW = variant === 'full' ? 202 : 160
@@ -108,6 +110,24 @@ export default function FifaCard({ stats, variant = 'mini', href }: FifaCardProp
       >
         {overall}
       </div>
+
+      {/* ── CLUB BADGE (top-right) ── */}
+      {club && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={`/runitback/badges/${club.file}`}
+          alt={club.name}
+          title={club.name}
+          style={{
+            position: 'absolute',
+            top: 14,
+            right: 14,
+            width: 26,
+            height: 26,
+            objectFit: 'contain',
+          }}
+        />
+      )}
 
       {/* ── POSITION — matches .fut16.card-large .playercard-position ── */}
       <div

@@ -1,4 +1,9 @@
-import type { Match, MatchPlayer, MatchResult, MatchWithPlayers, Player, PlayerStats } from './types'
+import type { Match, MatchPlayer, MatchResult, MatchWithPlayers, PeerRating, Player, PlayerStats } from './types'
+import { CURRENT_SEASON } from './config'
+
+/** Columns safe to return to the browser — excludes password_hash. */
+export const PUBLIC_PLAYER_COLUMNS =
+  'id, name, nickname, position, avatar_url, is_regular, registered_via_link, username, favorite_team, created_at'
 
 /** Determine a player's result (W/L/D) for a given match. */
 function resultFor(mp: MatchPlayer, match: Match): MatchResult {
@@ -22,13 +27,24 @@ function scaleOverall(raw: number): number {
 export function buildPlayerStats(
   players: Player[],
   matches: Match[],
-  matchPlayers: MatchPlayer[]
+  matchPlayers: MatchPlayer[],
+  ratings: PeerRating[] = []
 ): PlayerStats[] {
   const matchById = new Map(matches.map((m) => [m.id, m]))
   const sortedMatches = [...matches].sort(
     (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
   )
   const matchOrder = new Map(sortedMatches.map((m, i) => [m.id, i]))
+
+  // Average community rating per player for the current season.
+  const ratingTotals = new Map<string, { sum: number; count: number }>()
+  for (const r of ratings) {
+    if (r.season !== CURRENT_SEASON) continue
+    const entry = ratingTotals.get(r.ratee_id) ?? { sum: 0, count: 0 }
+    entry.sum += r.rating
+    entry.count += 1
+    ratingTotals.set(r.ratee_id, entry)
+  }
 
   return players.map((player) => {
     const entries = matchPlayers
@@ -64,7 +80,23 @@ export function buildPlayerStats(
     // Weighted blend of per-90-style metrics, normalized to 0-100, then scaled to 60-99.
     const raw =
       goalsPerGame * 30 + (motmRate / 100) * 25 + (winRate / 100) * 25 + (gamesFactor / 100) * 20
-    const overall = games > 0 ? scaleOverall(raw) : 60
+    const statsOverall = games > 0 ? scaleOverall(raw) : 60
+
+    // Blend in the squad's community rating (1-10 -> 60-99 scale), weighted
+    // by how many teammates have rated this player (caps at 40%).
+    const ratingEntry = ratingTotals.get(player.id)
+    const communityRating = ratingEntry ? ratingEntry.sum / ratingEntry.count : null
+    const communityRatingCount = ratingEntry?.count ?? 0
+    let overall = statsOverall
+    if (communityRating !== null) {
+      const communityOverall = 60 + ((communityRating - 1) / 9) * 39
+      if (games === 0) {
+        overall = Math.round(communityOverall)
+      } else {
+        const weight = Math.min(0.4, communityRatingCount * 0.08)
+        overall = Math.round(statsOverall * (1 - weight) + communityOverall * weight)
+      }
+    }
 
     // Current streak: consecutive wins counting back from the most recent match.
     let streak = 0
@@ -89,8 +121,24 @@ export function buildPlayerStats(
       form,
       overall,
       goalsPerGame,
+      communityRating,
+      communityRatingCount,
     }
   })
+}
+
+/** Players (excluding self) that `playerId` hasn't rated yet this season. */
+export function getPendingRatingTargets(
+  playerId: string,
+  players: Player[],
+  ratings: PeerRating[]
+): Player[] {
+  const ratedIds = new Set(
+    ratings
+      .filter((r) => r.season === CURRENT_SEASON && r.rater_id === playerId)
+      .map((r) => r.ratee_id)
+  )
+  return players.filter((p) => p.id !== playerId && !ratedIds.has(p.id))
 }
 
 /** Pull together matches with their roster of players for display. */

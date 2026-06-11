@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { createClient } from '@/lib/runitback/supabase'
+import { PUBLIC_PLAYER_COLUMNS } from '@/lib/runitback/queries'
 import PinGate from '@/components/runitback/PinGate'
 import AdminPanel from '@/components/runitback/AdminPanel'
 import type { MatchPlayer, Player } from '@/lib/runitback/types'
@@ -13,7 +14,7 @@ export default async function AdminPage() {
   const supabase = createClient()
 
   const [{ data: players }, { data: matchPlayers }] = await Promise.all([
-    supabase.from('players').select('*').order('name').returns<Player[]>(),
+    supabase.from('players').select(PUBLIC_PLAYER_COLUMNS).order('name').returns<Player[]>(),
     supabase.from('match_players').select('*').returns<MatchPlayer[]>(),
   ])
 

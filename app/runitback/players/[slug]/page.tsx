@@ -3,10 +3,11 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ArrowLeft, Star } from 'lucide-react'
 import { createClient } from '@/lib/runitback/supabase'
-import { buildHeadToHead, buildMatchesWithPlayers, buildPlayerStats } from '@/lib/runitback/queries'
+import { buildHeadToHead, buildMatchesWithPlayers, buildPlayerStats, PUBLIC_PLAYER_COLUMNS } from '@/lib/runitback/queries'
+import { CURRENT_SEASON } from '@/lib/runitback/config'
 import FifaCard from '@/components/runitback/FifaCard'
 import StatBar from '@/components/runitback/StatBar'
-import type { Match, MatchPlayer, Player } from '@/lib/runitback/types'
+import type { Match, MatchPlayer, PeerRating, Player } from '@/lib/runitback/types'
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -15,10 +16,11 @@ interface PageProps {
 async function getData(id: string) {
   const supabase = createClient()
 
-  const [{ data: players }, { data: matches }, { data: matchPlayers }] = await Promise.all([
-    supabase.from('players').select('*').returns<Player[]>(),
+  const [{ data: players }, { data: matches }, { data: matchPlayers }, { data: ratings }] = await Promise.all([
+    supabase.from('players').select(PUBLIC_PLAYER_COLUMNS).returns<Player[]>(),
     supabase.from('matches').select('*').returns<Match[]>(),
     supabase.from('match_players').select('*').returns<MatchPlayer[]>(),
+    supabase.from('peer_ratings').select('*').eq('season', CURRENT_SEASON).returns<PeerRating[]>(),
   ])
 
   const allPlayers = players ?? []
@@ -28,7 +30,7 @@ async function getData(id: string) {
   const player = allPlayers.find((p) => p.id === id)
   if (!player) return null
 
-  const stats = buildPlayerStats(allPlayers, allMatches, allMatchPlayers).find(
+  const stats = buildPlayerStats(allPlayers, allMatches, allMatchPlayers, ratings ?? []).find(
     (s) => s.player.id === id
   )!
 
