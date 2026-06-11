@@ -91,12 +91,18 @@ export function buildPlayerStats(
     const games = entries.length
     const winRate = games > 0 ? (wins / games) * 100 : 0
     const goalsPerGame = games > 0 ? goals / games : 0
+    const assistsPerGame = games > 0 ? assists / games : 0
     const motmRate = games > 0 ? (motm / games) * 100 : 0
     const gamesFactor = Math.min((games / 20) * 100, 100)
 
     // Weighted blend of per-90-style metrics, normalized to 0-100, then scaled to 60-99.
+    // Goals and assists carry equal weight so passers are rewarded as much as scorers.
     const raw =
-      goalsPerGame * 30 + (motmRate / 100) * 25 + (winRate / 100) * 25 + (gamesFactor / 100) * 20
+      goalsPerGame * 15 +
+      assistsPerGame * 15 +
+      (motmRate / 100) * 25 +
+      (winRate / 100) * 25 +
+      (gamesFactor / 100) * 20
     const statsOverall = games > 0 ? scaleOverall(raw) : 60
 
     // Blend in the squad's community rating (1-10 -> 60-99 scale), weighted
