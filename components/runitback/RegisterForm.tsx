@@ -6,6 +6,7 @@ import Link from 'next/link'
 
 export default function RegisterForm() {
   const router = useRouter()
+  const [step, setStep] = useState<'choice' | 'form'>('choice')
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
@@ -41,11 +42,47 @@ export default function RegisterForm() {
     }
   }
 
+  if (step === 'choice') {
+    return (
+      <div className="rib-tile rounded-xl p-8 max-w-md w-full">
+        <h1 className="rib-heading text-2xl mb-1">CREATE ACCOUNT</h1>
+        <p className="rib-body text-sm mb-6">
+          Were you already part of the squad before logins existed?
+        </p>
+
+        <div className="space-y-3">
+          <button
+            type="button"
+            onClick={() => setStep('form')}
+            className="w-full rib-heading text-sm py-3 rounded-lg bg-rib-acc text-rib-bg"
+            style={{ letterSpacing: '2px' }}
+          >
+            EXISTING PLAYER — LINK MY CARD
+          </button>
+          <Link
+            href="/runitback/join"
+            className="block text-center w-full rib-heading text-sm py-3 rounded-lg border border-rib-border text-white"
+            style={{ letterSpacing: '2px' }}
+          >
+            NEW PLAYER — JOIN THE SQUAD
+          </Link>
+        </div>
+
+        <p className="rib-body text-xs text-center mt-4">
+          Already have an account?{' '}
+          <Link href="/runitback/login" className="text-rib-acc">
+            Sign in
+          </Link>
+        </p>
+      </div>
+    )
+  }
+
   return (
     <form onSubmit={handleSubmit} className="rib-tile rounded-xl p-8 max-w-md w-full">
       <h1 className="rib-heading text-2xl mb-1">CREATE ACCOUNT</h1>
       <p className="rib-body text-sm mb-6">
-        Pick a username and password — next you&apos;ll link this account to your player card.
+        Pick a username and password — next you&apos;ll link this account to your existing player card.
       </p>
 
       <div className="space-y-4">
@@ -106,6 +143,14 @@ export default function RegisterForm() {
           style={{ letterSpacing: '2px' }}
         >
           {submitting ? 'CREATING...' : 'CONTINUE'}
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setStep('choice')}
+          className="w-full rib-body text-xs text-rib-muted text-center"
+        >
+          ← Back
         </button>
 
         <p className="rib-body text-xs text-center">
