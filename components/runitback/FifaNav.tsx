@@ -2,9 +2,11 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Menu, X } from 'lucide-react'
 import { useRibTheme } from './ThemeProvider'
+import { SEASON_LABEL } from '@/lib/runitback/config'
+import type { Player } from '@/lib/runitback/types'
 
 const TABS = [
   { label: 'HOME',        href: '/runitback' },
@@ -19,6 +21,14 @@ export default function FifaNav() {
   const pathname = usePathname()
   const { theme, toggleTheme } = useRibTheme()
   const [open, setOpen] = useState(false)
+  const [player, setPlayer] = useState<Player | null | undefined>(undefined)
+
+  useEffect(() => {
+    fetch('/api/runitback/auth/me')
+      .then((res) => res.json())
+      .then((data) => setPlayer(data.player ?? null))
+      .catch(() => setPlayer(null))
+  }, [])
 
   const isActive = (href: string) =>
     href === '/runitback' ? pathname === href : pathname?.startsWith(href)
@@ -47,11 +57,26 @@ export default function FifaNav() {
           className="rib-body hidden lg:block text-[11px] absolute left-1/2 -translate-x-1/2"
           style={{ letterSpacing: '3px' }}
         >
-          SEASON 2025 · FRIDAY &amp; TUESDAY
+          {SEASON_LABEL} · FRIDAY &amp; TUESDAY
         </span>
 
         {/* Right side */}
         <div className="flex items-center gap-3">
+          {/* Login / Profile */}
+          {player !== undefined && (
+            <Link
+              href={player ? '/runitback/profile' : '/runitback/login'}
+              className="rib-heading text-[10px] px-3 py-1 rounded-sm border transition-colors hidden sm:block"
+              style={{
+                letterSpacing: '2px',
+                borderColor: 'var(--border)',
+                color: 'var(--muted)',
+              }}
+            >
+              {player ? (player.nickname || player.name).toUpperCase() : 'LOGIN'}
+            </Link>
+          )}
+
           {/* Theme toggle */}
           <button
             onClick={toggleTheme}

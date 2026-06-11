@@ -13,6 +13,9 @@ export default function JoinForm() {
   const [position, setPosition] = useState<Position>('CM')
   const [isRegular, setIsRegular] = useState(true)
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [confirm, setConfirm] = useState('')
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [success, setSuccess] = useState(false)
@@ -23,6 +26,11 @@ export default function JoinForm() {
 
     if (name.trim().length < 2) {
       setError('Name must be at least 2 characters.')
+      return
+    }
+
+    if (password !== confirm) {
+      setError('Passwords do not match.')
       return
     }
 
@@ -37,6 +45,8 @@ export default function JoinForm() {
           position,
           is_regular: isRegular,
           avatar_url: avatarUrl,
+          username: username.trim(),
+          password,
         }),
       })
 
@@ -157,6 +167,54 @@ export default function JoinForm() {
               GUEST
             </button>
           </div>
+        </div>
+
+        <div>
+          <label className="rib-heading text-xs text-rib-muted block mb-1.5" style={{ letterSpacing: '1.5px' }}>
+            USERNAME
+          </label>
+          <input
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+            minLength={3}
+            maxLength={20}
+            className="w-full bg-rib-bg2 border border-rib-border rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-rib-acc"
+            placeholder="3-20 characters"
+            autoComplete="username"
+          />
+        </div>
+
+        <div>
+          <label className="rib-heading text-xs text-rib-muted block mb-1.5" style={{ letterSpacing: '1.5px' }}>
+            PASSWORD
+          </label>
+          <input
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            type="password"
+            required
+            minLength={6}
+            className="w-full bg-rib-bg2 border border-rib-border rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-rib-acc"
+            placeholder="At least 6 characters"
+            autoComplete="new-password"
+          />
+        </div>
+
+        <div>
+          <label className="rib-heading text-xs text-rib-muted block mb-1.5" style={{ letterSpacing: '1.5px' }}>
+            CONFIRM PASSWORD
+          </label>
+          <input
+            value={confirm}
+            onChange={(e) => setConfirm(e.target.value)}
+            type="password"
+            required
+            minLength={6}
+            className="w-full bg-rib-bg2 border border-rib-border rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-rib-acc"
+            placeholder="Repeat your password"
+            autoComplete="new-password"
+          />
         </div>
 
         {error && <p className="rib-body text-red-400 text-sm">{error}</p>}

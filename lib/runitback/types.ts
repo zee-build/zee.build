@@ -8,6 +8,8 @@ export interface Player {
   avatar_url: string | null
   is_regular: boolean
   registered_via_link: boolean
+  username: string | null
+  favorite_team: string | null
   created_at: string
 }
 
@@ -53,8 +55,19 @@ export interface PlayerStats {
   form: MatchResult[]
   overall: number
   goalsPerGame: number
+  communityRating: number | null
+  communityRatingCount: number
 }
 
 export interface MatchWithPlayers extends Match {
   players: (MatchPlayer & { player: Player })[]
+}
+
+export interface PeerRating {
+  id: string
+  season: number
+  rater_id: string
+  ratee_id: string
+  rating: number
+  created_at: string
 }

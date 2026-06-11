@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Users, Swords, Trophy, BarChart3, Lock, TrendingUp } from 'lucide-react'
+import { Users, Swords, Trophy, BarChart3, Lock, TrendingUp, Star } from 'lucide-react'
 import HeroTile from './HeroTile'
 import type { PlayerStats } from '@/lib/runitback/types'
 
@@ -10,6 +10,7 @@ interface FifaMenuGridProps {
   lastResult: { a: number; b: number } | null
   topStreak: { player: PlayerStats } | null
   totalGoals: number
+  pendingRatings?: number
 }
 
 function MenuTile({
@@ -69,6 +70,7 @@ export default function FifaMenuGrid({
   lastResult,
   topStreak,
   totalGoals,
+  pendingRatings = 0,
 }: FifaMenuGridProps) {
   return (
     <div className="rib-menu-wrap">
@@ -142,6 +144,18 @@ export default function FifaMenuGrid({
           admin
           icon={<Lock size={56} />}
         />
+
+        {pendingRatings > 0 && (
+          <MenuTile
+            href="/runitback/rate"
+            label="SQUAD VOTE"
+            title="RATE THE SQUAD"
+            sub="Rate your teammates"
+            stat={pendingRatings}
+            statLabel="TO RATE"
+            icon={<Star size={56} />}
+          />
+        )}
       </div>
     </div>
   )
