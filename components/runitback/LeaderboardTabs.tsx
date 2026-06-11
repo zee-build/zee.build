@@ -42,7 +42,7 @@ export default function LeaderboardTabs({ stats, totalMatches }: { stats: Player
   return (
     <div>
       <Podium
-        entries={ranked.slice(0, 3).map((s) => ({ player: s.player, value: valueFor(s, tab) }))}
+        entries={ranked.slice(0, 3).map((s) => ({ stat: s, value: valueFor(s, tab) }))}
         unit={activeTab.unit}
       />
 
