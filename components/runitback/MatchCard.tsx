@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { Star } from 'lucide-react'
 import type { MatchWithPlayers } from '@/lib/runitback/types'
 
@@ -20,7 +21,7 @@ export default function MatchCard({ match }: { match: MatchWithPlayers }) {
   const scorers = formatScorers(match.players)
 
   return (
-    <div className="rib-tile rounded-lg p-5">
+    <Link href={`/runitback/matches/${match.id}`} className="rib-tile rounded-lg p-5 block hover:border-rib-acc transition-colors">
       <div className="flex flex-wrap items-center gap-3 mb-3">
         <div className="rib-heading text-sm bg-rib-bg2 border border-rib-border rounded px-3 py-1">
           {date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
@@ -56,6 +57,6 @@ export default function MatchCard({ match }: { match: MatchWithPlayers }) {
       )}
 
       {match.notes && <p className="rib-body text-xs text-center mt-2 italic">{match.notes}</p>}
-    </div>
+    </Link>
   )
 }
