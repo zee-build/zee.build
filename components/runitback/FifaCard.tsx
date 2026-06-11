@@ -265,13 +265,15 @@ export default function FifaCard({ stats, variant = 'mini', href, onClick }: Fif
           title={country.name}
           style={{
             position: 'absolute',
-            bottom: 10,
+            bottom: 14,
             left: '50%',
             transform: 'translateX(-50%)',
-            width: 22,
-            height: 'auto',
+            width: 20,
+            height: 14,
+            objectFit: 'cover',
             borderRadius: 2,
-            boxShadow: '0 1px 2px rgba(0,0,0,0.35)',
+            border: '1px solid rgba(255,255,255,0.5)',
+            boxShadow: '0 1px 2px rgba(0,0,0,0.3)',
           }}
         />
       )}
