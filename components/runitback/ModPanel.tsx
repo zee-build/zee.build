@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { Trash2, Pencil } from 'lucide-react'
+import Link from 'next/link'
+import { Trash2, Pencil, Users } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { adminFetch } from '@/lib/runitback/admin'
 import MatchLogForm from './MatchLogForm'
@@ -30,7 +31,16 @@ export default function ModPanel({ players, matches }: ModPanelProps) {
 
   return (
     <div className="space-y-10 max-w-4xl mx-auto">
-      <h1 className="rib-heading text-3xl">MOD</h1>
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <h1 className="rib-heading text-3xl">MOD</h1>
+        <Link
+          href="/runitback/mod/teams"
+          className="rib-heading text-xs px-4 py-2.5 rounded-lg border border-rib-acc text-rib-acc flex items-center gap-1.5"
+          style={{ letterSpacing: '1.5px' }}
+        >
+          <Users size={14} /> TEAM PICKER
+        </Link>
+      </div>
 
       {/* Log new match */}
       <section className="rib-tile rounded-xl p-5">

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { adminFetch } from '@/lib/runitback/admin'
 import PhotoUpload from './PhotoUpload'
+import { TRAITS } from '@/lib/runitback/config'
 import type { Player, PlayerRole, Position } from '@/lib/runitback/types'
 
 const POSITIONS: Position[] = ['GK', 'CB', 'RB', 'LB', 'CM', 'CAM', 'ST', 'LW', 'RW']
@@ -21,6 +22,7 @@ export default function PlayerForm({ player, onSaved, onCancel }: PlayerFormProp
   const [isRegular, setIsRegular] = useState(player?.is_regular ?? true)
   const [avatarUrl, setAvatarUrl] = useState<string | null>(player?.avatar_url ?? null)
   const [role, setRole] = useState<PlayerRole>(player?.role ?? 'player')
+  const [traits, setTraits] = useState<string[]>(player?.traits ?? [])
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
@@ -43,7 +45,7 @@ export default function PlayerForm({ player, onSaved, onCancel }: PlayerFormProp
         position,
         is_regular: isRegular,
         avatar_url: avatarUrl,
-        ...(isEdit ? { role } : {}),
+        ...(isEdit ? { role, traits } : {}),
       }
 
       const res = await adminFetch(
@@ -136,6 +138,36 @@ export default function PlayerForm({ player, onSaved, onCancel }: PlayerFormProp
           </div>
         )}
       </div>
+
+      {isEdit && (
+        <div>
+          <label className="rib-heading text-xs text-rib-muted block mb-1.5" style={{ letterSpacing: '1.5px' }}>
+            TRAITS
+          </label>
+          <div className="flex flex-wrap gap-1.5">
+            {TRAITS.map((t) => {
+              const active = traits.includes(t.id)
+              return (
+                <button
+                  key={t.id}
+                  type="button"
+                  onClick={() =>
+                    setTraits((prev) =>
+                      active ? prev.filter((id) => id !== t.id) : [...prev, t.id]
+                    )
+                  }
+                  className={`rib-heading text-[10px] px-2 py-1 rounded border transition-colors ${
+                    active ? 'bg-rib-acc/20 border-rib-acc text-rib-acc' : 'border-rib-border text-rib-muted'
+                  }`}
+                  style={{ letterSpacing: '1.5px' }}
+                >
+                  {t.label}
+                </button>
+              )
+            })}
+          </div>
+        </div>
+      )}
 
       {error && <p className="rib-body text-red-400 text-xs">{error}</p>}
 

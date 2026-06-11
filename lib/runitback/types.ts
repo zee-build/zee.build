@@ -14,6 +14,7 @@ export interface Player {
   favorite_team: string | null
   country: string | null
   role: PlayerRole
+  traits: string[]
   created_at: string
 }
 
@@ -87,3 +88,12 @@ export interface PeerRating {
 }
 
 export type RatingAttribute = 'pace' | 'shooting' | 'passing' | 'dribbling' | 'defending' | 'physical'
+
+export interface WeeklyTeamPlayer {
+  id: string
+  match_date: string
+  team: Team
+  player_id: string
+  is_gk: boolean
+  created_at: string
+}

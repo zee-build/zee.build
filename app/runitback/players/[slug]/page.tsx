@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation'
 import { ArrowLeft, Star } from 'lucide-react'
 import { createClient } from '@/lib/runitback/supabase'
 import { buildHeadToHead, buildMatchesWithPlayers, buildPlayerStats, getInitials, PUBLIC_PLAYER_COLUMNS } from '@/lib/runitback/queries'
-import { CURRENT_SEASON, RATING_ATTRIBUTES } from '@/lib/runitback/config'
+import { CURRENT_SEASON, RATING_ATTRIBUTES, TRAITS } from '@/lib/runitback/config'
 import FifaCard from '@/components/runitback/FifaCard'
 import StatBar from '@/components/runitback/StatBar'
 import type { Match, MatchPlayer, PeerRating, Player } from '@/lib/runitback/types'
@@ -97,6 +97,23 @@ export default async function PlayerProfilePage({ params }: PageProps) {
                 {player.is_regular ? 'REGULAR' : 'GUEST'}
               </span>
             </div>
+            {player.traits.length > 0 && (
+              <div className="flex items-center gap-1.5 mt-2 flex-wrap">
+                {player.traits.map((id) => {
+                  const trait = TRAITS.find((t) => t.id === id)
+                  if (!trait) return null
+                  return (
+                    <span
+                      key={id}
+                      className="rib-heading text-[10px] px-2 py-0.5 rounded"
+                      style={{ letterSpacing: '1.5px', background: 'rgba(232,197,71,0.12)', color: '#e8c547', border: '1px solid rgba(232,197,71,0.3)' }}
+                    >
+                      {trait.label}
+                    </span>
+                  )
+                })}
+              </div>
+            )}
           </div>
 
           <div className="grid grid-cols-3 gap-2">

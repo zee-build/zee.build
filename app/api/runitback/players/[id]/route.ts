@@ -2,9 +2,11 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/runitback/supabase'
 import { isAdminRequest } from '@/lib/runitback/adminAuth'
 import { PUBLIC_PLAYER_COLUMNS } from '@/lib/runitback/queries'
+import { TRAITS } from '@/lib/runitback/config'
 
 const VALID_POSITIONS = ['GK', 'CB', 'RB', 'LB', 'CM', 'CAM', 'ST', 'LW', 'RW']
 const VALID_ROLES = ['player', 'mod', 'admin']
+const VALID_TRAITS = TRAITS.map((t) => t.id)
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   if (!isAdminRequest(req)) {
@@ -35,6 +37,12 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       return NextResponse.json({ error: 'Invalid role.' }, { status: 400 })
     }
     update.role = body.role
+  }
+  if ('traits' in body) {
+    if (!Array.isArray(body.traits) || body.traits.some((t: unknown) => typeof t !== 'string' || !VALID_TRAITS.includes(t))) {
+      return NextResponse.json({ error: 'Invalid traits.' }, { status: 400 })
+    }
+    update.traits = body.traits
   }
 
   const supabase = createServiceClient()

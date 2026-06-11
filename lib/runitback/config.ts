@@ -14,6 +14,29 @@ export const RATING_ATTRIBUTES: { key: RatingAttribute; label: string }[] = [
   { key: 'physical', label: 'PHYSICAL' },
 ]
 
+// FIFA-style trait badges players can be tagged with (separate from the
+// 6 teammate-rated attributes above).
+export const TRAITS: { id: string; label: string }[] = [
+  { id: 'finisher', label: 'FINISHER' },
+  { id: 'engine', label: 'ENGINE' },
+  { id: 'speedster', label: 'SPEEDSTER' },
+  { id: 'playmaker', label: 'PLAYMAKER' },
+  { id: 'aerial-threat', label: 'AERIAL THREAT' },
+  { id: 'tackler', label: 'TACKLER' },
+  { id: 'distributor', label: 'DISTRIBUTOR' },
+  { id: 'leader', label: 'LEADER' },
+  { id: 'wall', label: 'WALL' },
+  { id: 'showboat', label: 'SHOWBOAT' },
+  { id: 'workhorse', label: 'WORKHORSE' },
+  { id: 'sniper', label: 'SNIPER' },
+  { id: 'clutch', label: 'CLUTCH' },
+  { id: 'enforcer', label: 'ENFORCER' },
+]
+
+export function getTrait(id: string) {
+  return TRAITS.find((t) => t.id === id)
+}
+
 export interface Club {
   id: string
   name: string
