@@ -1,8 +1,9 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { Loader2, Shuffle, RefreshCw, Star, ChevronDown } from 'lucide-react'
+import { Loader2, Shuffle, RefreshCw, Star, Share2 } from 'lucide-react'
 import { adminFetch } from '@/lib/runitback/admin'
+import TeamExportSheet from './TeamExportSheet'
 import type { PlayerStats, PlayerTier, Team, WeeklyTeamPlayer } from '@/lib/runitback/types'
 
 interface TeamPickerPanelProps {
@@ -67,6 +68,7 @@ export default function TeamPickerPanel({ stats }: TeamPickerPanelProps) {
   const [message, setMessage] = useState('')
 
   // GK rotation
+  const [showExport, setShowExport] = useState(false)
   const [gkRotationOn, setGkRotationOn] = useState(false)
   const [duration, setDuration] = useState(60)
   const [intervalMins, setIntervalMins] = useState(10)
@@ -456,6 +458,16 @@ export default function TeamPickerPanel({ stats }: TeamPickerPanelProps) {
           >
             {saving ? 'SAVING...' : 'SAVE LINEUP'}
           </button>
+          {hasTeams && (
+            <button
+              type="button"
+              onClick={() => setShowExport(true)}
+              className="rib-heading text-xs px-4 py-2.5 rounded-lg bg-rib-acc/10 border border-rib-acc/40 text-rib-acc hover:bg-rib-acc/20 flex items-center gap-1.5 transition-colors"
+              style={{ letterSpacing: '1.5px' }}
+            >
+              <Share2 size={13} /> EXPORT
+            </button>
+          )}
         </div>
         {message && <span className="rib-body text-xs text-rib-muted self-center">{message}</span>}
       </div>
@@ -581,6 +593,22 @@ export default function TeamPickerPanel({ stats }: TeamPickerPanelProps) {
             )
           })}
         </div>
+      )}
+
+      {/* ── Export modal ── */}
+      {showExport && (
+        <TeamExportSheet
+          date={date}
+          formatLabel={format.label}
+          teamA={teamA}
+          teamB={teamB}
+          subIds={subIds}
+          gkIds={gkIds}
+          rotationA={gkRotationOn ? rotationA : null}
+          rotationB={gkRotationOn ? rotationB : null}
+          statsById={statsById}
+          onClose={() => setShowExport(false)}
+        />
       )}
 
       {/* ── GK Rotation ── */}
