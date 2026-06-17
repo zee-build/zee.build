@@ -551,7 +551,34 @@
   50%      { opacity: 1; }
 }
 
-/* Exit wipe — sweeps a panel across the screen as it fades out */
+/* ── Mobile: scrollable table wrapper ─────────────────────────────── */
+.rib-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ── Export sheet: responsive grids ────────────────────────────────── */
+.rib-export-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.rib-export-gk-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 520px) {
+  .rib-export-grid {
+    grid-template-columns: 1fr;
+  }
+  .rib-export-gk-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Exit wipe — sweeps a panel across the screen as it fades out ── */
 .rib-splash-wipe {
   position: absolute;
   inset: 0;

@@ -65,12 +65,9 @@ export default function TeamExportSheet({
     setDownloading(true)
     try {
       const html2canvas = (await import('html2canvas')).default
-      const canvas = await html2canvas(sheetRef.current, {
-        background: '#07071a',
-        scale: 2,
-        useCORS: true,
-        logging: false,
-      })
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const opts: any = { background: '#07071a', scale: 2, useCORS: true, logging: false }
+      const canvas = await html2canvas(sheetRef.current, opts)
       const link = document.createElement('a')
       link.download = `runitback-lineup-${date}.png`
       link.href = canvas.toDataURL('image/png')
@@ -118,11 +115,11 @@ export default function TeamExportSheet({
       <div className="w-full max-w-2xl flex flex-col gap-3 max-h-[90vh]">
 
         {/* Action bar */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-2 flex-wrap">
           <p className="rib-heading text-xs text-rib-muted" style={{ letterSpacing: '2px' }}>
             EXPORT LINEUP
           </p>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap justify-end">
             <button
               onClick={handleCopy}
               className="rib-heading text-xs px-3 py-2 rounded-lg border border-rib-border text-rib-muted hover:text-white flex items-center gap-1.5 transition-colors"
@@ -225,13 +222,7 @@ export default function TeamExportSheet({
           </div>
 
           {/* Teams */}
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: 0,
-            }}
-          >
+          <div className="rib-export-grid">
             {[
               { label: 'TEAM A', starters: startersA, subs: subsA, color: '#3b82f6', border: '#1e3a8a' },
               { label: 'TEAM B', starters: startersB, subs: subsB, color: '#ef4444', border: '#7f1d1d' },
@@ -403,7 +394,7 @@ export default function TeamExportSheet({
                   GK Rotation
                 </p>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: rotationA && rotationB ? '1fr 1fr' : '1fr', gap: 16 }}>
+              <div className={rotationA && rotationB ? 'rib-export-gk-grid' : ''} style={rotationA && rotationB ? undefined : { display: 'grid', gap: 16 }}>
                 {[
                   { label: 'TEAM A', schedule: rotationA, color: '#3b82f6' },
                   { label: 'TEAM B', schedule: rotationB, color: '#ef4444' },

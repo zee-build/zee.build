@@ -179,7 +179,7 @@ export default function AdminRatingsPanel() {
                     )}
                   </div>
                   {editingId === r.id && (
-                    <div className="grid grid-cols-3 gap-2 mt-2 pl-1">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2 pl-1">
                       {RATING_ATTRIBUTES.map(({ key, label }) => (
                         <label key={key} className="flex items-center gap-1.5 text-xs">
                           <span className="rib-body text-rib-muted w-16">{label}</span>

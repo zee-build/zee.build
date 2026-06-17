@@ -148,6 +148,7 @@ export default async function MatchDetailPage({ params }: PageProps) {
         <p className="rib-body text-sm">No teammates have rated each other for this match yet.</p>
       ) : (
         <div className="rib-tile rounded-lg overflow-hidden">
+          <div className="rib-table-wrap">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-rib-border">
@@ -193,6 +194,7 @@ export default async function MatchDetailPage({ params }: PageProps) {
               })}
             </tbody>
           </table>
+          </div>
         </div>
       )}
     </div>

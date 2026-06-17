@@ -166,6 +166,7 @@ export default async function PlayerProfilePage({ params }: PageProps) {
         <p className="rib-body text-sm mb-8">No matches played yet.</p>
       ) : (
         <div className="rib-tile rounded-lg overflow-hidden mb-8">
+          <div className="rib-table-wrap">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-rib-border">
@@ -199,6 +200,7 @@ export default async function PlayerProfilePage({ params }: PageProps) {
               })}
             </tbody>
           </table>
+          </div>
         </div>
       )}
 
@@ -226,6 +228,7 @@ export default async function PlayerProfilePage({ params }: PageProps) {
         <p className="rib-body text-sm">No teammates have rated {player.name.split(' ')[0]} yet.</p>
       ) : (
         <div className="rib-tile rounded-lg overflow-hidden">
+          <div className="rib-table-wrap">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-rib-border">
@@ -267,6 +270,7 @@ export default async function PlayerProfilePage({ params }: PageProps) {
               })}
             </tbody>
           </table>
+          </div>
         </div>
       )}
     </div>
