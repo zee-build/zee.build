@@ -142,16 +142,17 @@ export function buildPlayerStats(
     const benchAssists = 0.4
 
     if (isDefender) {
-      wGoals = 8;  wAssists = 10; wMotm = 10; wWins = 30; wGames = 7
-      wCleanSheets = 20; wDefPeer = 15
+      // Wins alone ≠ good defending — clean sheet + DEF peer anchor are the real metrics
+      wGoals = 8;  wAssists = 10; wMotm = 10; wWins = 15; wGames = 7
+      wCleanSheets = 25; wDefPeer = 20
     } else if (isMidfielder) {
-      wGoals = 28; wAssists = 30; wMotm = 18; wWins = 16; wGames = 8
+      wGoals = 32; wAssists = 30; wMotm = 16; wWins = 14; wGames = 8
       wCleanSheets = 0;  wDefPeer = 0
     } else if (isAttacker) {
-      wGoals = 32; wAssists = 28; wMotm = 16; wWins = 16; wGames = 8
+      wGoals = 35; wAssists = 27; wMotm = 14; wWins = 16; wGames = 8
       wCleanSheets = 0;  wDefPeer = 0
     } else {
-      wGoals = 28; wAssists = 26; wMotm = 18; wWins = 18; wGames = 10
+      wGoals = 30; wAssists = 26; wMotm = 16; wWins = 18; wGames = 10
       wCleanSheets = 0;  wDefPeer = 0
     }
 
@@ -189,7 +190,7 @@ export function buildPlayerStats(
       if (games === 0) {
         overall = Math.round(Math.min(communityOverall, 75))
       } else {
-        const weight = Math.min(0.5, communityRatingCount * 0.10)
+        const weight = Math.min(0.55, communityRatingCount * 0.11)
         overall = Math.round(statsOverall * (1 - weight) + communityOverall * weight)
       }
     }
