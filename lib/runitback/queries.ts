@@ -94,40 +94,66 @@ export function buildPlayerStats(
     const assistsPerGame = games > 0 ? assists / games : 0
     const motmRate = games > 0 ? (motm / games) * 100 : 0
 
-    // ── Stats component (0-100 → 60-99 FIFA scale) ───────────────────
-    // Each metric is normalised against a realistic 5-a-side elite benchmark
-    // so early-season spikes (e.g. 2 goals in game 1) can't inflate the score.
+    // ── Position-aware stats weights (all roles sum to 100 pts) ──────
     //
-    //  Goals   35 pts  — highest weight: hardest to score, most decisive
-    //  MOTM    25 pts  — in-game peer vote, strong quality signal
-    //  Assists 15 pts  — creative contribution
-    //  Win %   15 pts  — team impact
-    //  Games   10 pts  — reliability / sample size (caps at 12 games)
+    // Defenders  — wins are their primary contribution (clean sheets = wins)
+    // Midfielders — assists are their currency; they link play
+    // Attackers   — goals first, assists close behind
+    // No position — balanced across all metrics
     //
-    // Elite benchmarks for 5-a-side: ~0.7 g/game, ~0.45 a/game
-    const goalsFactor   = Math.min(goalsPerGame   / 0.7,  1.0)
-    const assistsFactor = Math.min(assistsPerGame  / 0.45, 1.0)
+    // Assists ≈ Goals (slightly less) for all roles to reward team play.
+    //
+    // Benchmarks are realistic 5-a-side elite rates so early-season
+    // spikes (e.g. a hat-trick in game 1) don't inflate the score.
+    const pos = player.position ?? ''
+    const isDefender = ['GK', 'CB', 'RB', 'LB'].includes(pos)
+    const isMidfielder = ['CM', 'CAM'].includes(pos)
+    const isAttacker = ['ST', 'LW', 'RW'].includes(pos)
+
+    let wGoals: number, wAssists: number, wMotm: number, wWins: number, wGames: number
+    let benchGoals: number, benchAssists: number
+
+    if (isDefender) {
+      // Wins dominate — that IS their job
+      wGoals = 8;  wAssists = 12; wMotm = 20; wWins = 50; wGames = 10
+      benchGoals = 0.2; benchAssists = 0.25
+    } else if (isMidfielder) {
+      // Assists lead, goals close, wins matter
+      wGoals = 22; wAssists = 26; wMotm = 20; wWins = 22; wGames = 10
+      benchGoals = 0.5; benchAssists = 0.6
+    } else if (isAttacker) {
+      // Goals first, assists close behind — punishes selfishness
+      wGoals = 35; wAssists = 28; wMotm = 18; wWins = 10; wGames = 9
+      benchGoals = 0.8; benchAssists = 0.4
+    } else {
+      // Balanced (no position set / guests)
+      wGoals = 28; wAssists = 22; wMotm = 20; wWins = 20; wGames = 10
+      benchGoals = 0.65; benchAssists = 0.45
+    }
+
+    const goalsFactor   = Math.min(goalsPerGame   / benchGoals,   1.0)
+    const assistsFactor = Math.min(assistsPerGame  / benchAssists, 1.0)
     const motmFactor    = motmRate / 100
     const winFactor     = winRate  / 100
     const expFactor     = Math.min(games / 12, 1.0)
 
     const raw =
-      goalsFactor   * 35 +
-      assistsFactor * 15 +
-      motmFactor    * 25 +
-      winFactor     * 15 +
-      expFactor     * 10
+      goalsFactor   * wGoals   +
+      assistsFactor * wAssists +
+      motmFactor    * wMotm    +
+      winFactor     * wWins    +
+      expFactor     * wGames
 
     const statsOverall = games > 0 ? scaleOverall(raw) : 60
 
     // ── Peer rating blend ─────────────────────────────────────────────
-    // Performance always contributes at least 40% so match output is never
-    // drowned out. Community weight grows as more teammates vote (caps at 60%).
+    // Performance always contributes ≥40% so match output is never
+    // drowned out by peer opinion. Community weight grows per vote, caps at 60%.
     //
-    //  0 ratings → 100% stats
-    //  1 rating  →  12% community / 88% stats
-    //  3 ratings →  36% community / 64% stats
-    //  5+ ratings → 60% community / 40% stats  ← max
+    //  0 votes → 100% stats
+    //  1 vote  →  88% stats / 12% community
+    //  3 votes →  64% stats / 36% community
+    //  5 votes →  40% stats / 60% community  ← max
     const ratingEntry = ratingTotals.get(player.id)
     const communityRating = ratingEntry ? ratingEntry.sum / ratingEntry.count : null
     const communityRatingCount = ratingEntry?.count ?? 0
