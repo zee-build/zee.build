@@ -294,9 +294,14 @@ export function getPendingMatchRatings(
       .map((r) => `${r.match_id}:${r.ratee_id}`)
   )
 
+  // Only open rating for matches within the last 7 days so old sessions don't pile up.
+  const cutoff = new Date()
+  cutoff.setUTCDate(cutoff.getUTCDate() - 7)
+
   const pending: PendingMatchRating[] = []
   for (const match of matches) {
     if (new Date(match.date).getFullYear() !== CURRENT_SEASON) continue
+    if (new Date(match.date) < cutoff) continue
     const roster = matchPlayers.filter((mp) => mp.match_id === match.id)
     const playedInMatch = roster.some((mp) => mp.player_id === playerId)
     if (!playedInMatch) continue
