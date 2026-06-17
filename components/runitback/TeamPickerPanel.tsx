@@ -317,7 +317,7 @@ export default function TeamPickerPanel({ stats }: TeamPickerPanelProps) {
       >
         <span className="rib-stat text-sm w-7 text-center text-rib-acc">{s.overall}</span>
         <div className="flex-1 min-w-0">
-          <p className="rib-heading text-xs truncate">{s.player.nickname || s.player.name}</p>
+          <p className="rib-heading text-xs truncate">{s.player.name}</p>
           <p className="rib-body text-[10px] text-rib-muted">{s.player.position ?? '—'}</p>
         </div>
         {inTeam && (
@@ -552,7 +552,7 @@ export default function TeamPickerPanel({ stats }: TeamPickerPanelProps) {
                     const s = statsById.get(id)
                     return (
                       <div key={id} className="flex justify-between items-center px-4 py-1.5">
-                        <span className="rib-heading text-xs">{s?.player.nickname || s?.player.name}</span>
+                        <span className="rib-heading text-xs">{s?.player.name}</span>
                         <span className="rib-body text-xs text-rib-muted flex items-center gap-2">
                           {gkIds.has(id) && <span style={{ color: '#e8c547' }}>GK</span>}
                           {s?.player.position}
@@ -571,7 +571,7 @@ export default function TeamPickerPanel({ stats }: TeamPickerPanelProps) {
                     const s = statsById.get(id)
                     return (
                       <div key={id} className="flex justify-between items-center px-4 py-1.5 opacity-60">
-                        <span className="rib-heading text-xs">{s?.player.nickname || s?.player.name}</span>
+                        <span className="rib-heading text-xs">{s?.player.name}</span>
                         <span className="rib-body text-xs text-rib-muted">{s?.player.position}</span>
                       </div>
                     )
@@ -664,7 +664,7 @@ export default function TeamPickerPanel({ stats }: TeamPickerPanelProps) {
                                 {slot.start}&apos;–{slot.end}&apos;
                               </span>
                               <span className="rib-heading text-xs">
-                                {s?.player.nickname || s?.player.name}
+                                {s?.player.name}
                               </span>
                             </div>
                           )

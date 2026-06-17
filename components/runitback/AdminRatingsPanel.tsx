@@ -65,7 +65,7 @@ export default function AdminRatingsPanel() {
 
   const nameFor = (id: string) => {
     const p = players.find((pl) => pl.id === id)
-    return p ? p.nickname || p.name : 'Unknown'
+    return p ? p.name : 'Unknown'
   }
 
   const handleSave = async (id: string) => {

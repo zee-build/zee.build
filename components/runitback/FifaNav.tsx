@@ -73,7 +73,7 @@ export default function FifaNav() {
                 color: 'var(--muted)',
               }}
             >
-              {player ? (player.nickname || player.name).toUpperCase() : 'LOGIN'}
+              {player ? (player.name).toUpperCase() : 'LOGIN'}
             </Link>
           )}
 
@@ -151,7 +151,7 @@ export default function FifaNav() {
                   color: 'var(--muted)',
                 }}
               >
-                {player ? (player.nickname || player.name).toUpperCase() : 'LOGIN'}
+                {player ? (player.name).toUpperCase() : 'LOGIN'}
               </Link>
             )}
             <button

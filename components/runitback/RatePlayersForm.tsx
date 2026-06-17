@@ -155,7 +155,7 @@ export default function RatePlayersForm() {
               RATE
             </p>
             <h2 className="rib-heading text-xl mb-4">
-              {selected.player.player.nickname || selected.player.player.name}
+              {selected.player.player.name}
             </h2>
 
             <div className="space-y-4">
