@@ -105,15 +105,21 @@ export function buildPlayerStats(
       (gamesFactor / 100) * 20
     const statsOverall = games > 0 ? scaleOverall(raw) : 60
 
-    // Overall is purely peer-rating based once any teammate has rated this player.
-    // This keeps the number stable across new matches — only teammate votes move it.
-    // Falls back to stats-based only when no peer ratings exist yet.
+    // Blend match performance with the community peer rating.
+    // Weight of community rating grows with vote count, capping at 80%.
+    // Until rated, overall is purely stats-based.
     const ratingEntry = ratingTotals.get(player.id)
     const communityRating = ratingEntry ? ratingEntry.sum / ratingEntry.count : null
     const communityRatingCount = ratingEntry?.count ?? 0
     let overall = statsOverall
     if (communityRating !== null) {
-      overall = Math.round(60 + ((communityRating - 1) / 9) * 39)
+      const communityOverall = 60 + ((communityRating - 1) / 9) * 39
+      if (games === 0) {
+        overall = Math.round(Math.min(communityOverall, 70))
+      } else {
+        const weight = Math.min(0.8, 0.3 + communityRatingCount * 0.15)
+        overall = Math.round(statsOverall * (1 - weight) + communityOverall * weight)
+      }
     }
 
     // Award-eligible: must have played at least half of this season's matches.
