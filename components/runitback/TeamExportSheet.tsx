@@ -66,7 +66,7 @@ export default function TeamExportSheet({
     try {
       const html2canvas = (await import('html2canvas')).default
       const canvas = await html2canvas(sheetRef.current, {
-        backgroundColor: '#07071a',
+        background: '#07071a',
         scale: 2,
         useCORS: true,
         logging: false,
