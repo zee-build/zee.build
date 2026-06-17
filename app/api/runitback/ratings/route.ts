@@ -44,6 +44,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
+  // Check voter is not suspended
+  const supabase = createServiceClient()
+  const { data: voter } = await supabase
+    .from('players')
+    .select('can_vote')
+    .eq('id', playerId)
+    .single<{ can_vote: boolean }>()
+  if (voter?.can_vote === false) {
+    return NextResponse.json({ error: 'Your voting rights have been suspended.' }, { status: 403 })
+  }
+
   const body = await req.json()
   const { match_id, ratee_id } = body
 
@@ -65,8 +76,6 @@ export async function POST(req: NextRequest) {
     }
     attrs[key] = value
   }
-
-  const supabase = createServiceClient()
 
   const { data: roster } = await supabase
     .from('match_players')

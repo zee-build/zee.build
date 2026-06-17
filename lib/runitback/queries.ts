@@ -3,7 +3,7 @@ import { CURRENT_SEASON, RATING_ATTRIBUTES } from './config'
 
 /** Columns safe to return to the browser — excludes password_hash. */
 export const PUBLIC_PLAYER_COLUMNS =
-  'id, name, nickname, position, avatar_url, is_regular, registered_via_link, username, favorite_team, country, role, traits, created_at'
+  'id, name, nickname, position, avatar_url, is_regular, registered_via_link, username, favorite_team, country, role, traits, can_vote, created_at'
 
 /** Determine a player's result (W/L/D) for a given match. */
 function resultFor(mp: MatchPlayer, match: Match): MatchResult {
@@ -98,77 +98,96 @@ export function buildPlayerStats(
     const assistsPerGame = games > 0 ? assists / games : 0
     const motmRate = games > 0 ? (motm / games) * 100 : 0
 
-    // ── Position-aware stats weights (all roles sum to 100 pts) ──────
-    //
-    // Defenders  — wins are their primary contribution (clean sheets = wins)
-    // Midfielders — assists are their currency; they link play
-    // Attackers   — goals first, assists close behind
-    // No position — balanced across all metrics
-    //
-    // Assists ≈ Goals (slightly less) for all roles to reward team play.
-    //
-    // Benchmarks are realistic 5-a-side elite rates so early-season
-    // spikes (e.g. a hat-trick in game 1) don't inflate the score.
+    // ── Peer rating data (needed early for defender DEF anchor) ──────
+    const ratingEntry = ratingTotals.get(player.id)
+    const communityRating = ratingEntry ? ratingEntry.sum / ratingEntry.count : null
+    const communityRatingCount = ratingEntry?.count ?? 0
+
+    // ── Position flags ────────────────────────────────────────────────
     const pos = player.position ?? ''
     const isDefender = ['GK', 'CB', 'RB', 'LB'].includes(pos)
     const isMidfielder = ['CM', 'CAM'].includes(pos)
     const isAttacker = ['ST', 'LW', 'RW'].includes(pos)
 
+    // ── Clean sheets (defenders only) ─────────────────────────────────
+    // A clean sheet = team conceded 0 in that match.
+    let cleanSheets = 0
+    for (const mp of entries) {
+      const match = matchById.get(mp.match_id)!
+      const conceded = mp.team === 'A' ? match.team_b_score : match.team_a_score
+      if (conceded === 0) cleanSheets += 1
+    }
+    const cleanSheetRate = games > 0 ? cleanSheets / games : 0
+
+    // ── DEF peer attribute anchor (defenders only) ────────────────────
+    // Peer DEF ratings are permanent records — they don't fluctuate when
+    // new matches are played, so they act as a stable floor for defenders.
+    const defPeerFactor = (isDefender && ratingEntry && ratingEntry.count > 0)
+      ? (ratingEntry.attrSum.defending / ratingEntry.count - 1) / 9
+      : 0
+
+    // ── Position-aware weights ────────────────────────────────────────
+    // Defenders : wins + clean sheets + DEF peer anchor = primary metrics
+    // Midfielders: goals ≈ assists, wins matter, playmaking rewarded
+    // Attackers  : goals first, assists close (punishes selfishness)
+    // No position: balanced across everything
     let wGoals: number, wAssists: number, wMotm: number, wWins: number, wGames: number
+    let wCleanSheets: number, wDefPeer: number
     let benchGoals: number, benchAssists: number
 
     if (isDefender) {
-      // Wins dominate — that IS their job
-      wGoals = 8;  wAssists = 12; wMotm = 20; wWins = 50; wGames = 10
+      wGoals = 5;  wAssists = 8;  wMotm = 10; wWins = 35; wGames = 7
+      wCleanSheets = 20; wDefPeer = 15
       benchGoals = 0.2; benchAssists = 0.25
     } else if (isMidfielder) {
-      // Assists lead, goals close, wins matter
-      wGoals = 22; wAssists = 26; wMotm = 20; wWins = 22; wGames = 10
+      wGoals = 25; wAssists = 27; wMotm = 18; wWins = 20; wGames = 10
+      wCleanSheets = 0;  wDefPeer = 0
       benchGoals = 0.5; benchAssists = 0.6
     } else if (isAttacker) {
-      // Goals first, assists close behind — punishes selfishness
-      wGoals = 35; wAssists = 28; wMotm = 18; wWins = 10; wGames = 9
+      wGoals = 36; wAssists = 28; wMotm = 15; wWins = 12; wGames = 9
+      wCleanSheets = 0;  wDefPeer = 0
       benchGoals = 0.8; benchAssists = 0.4
     } else {
-      // Balanced (no position set / guests)
-      wGoals = 28; wAssists = 22; wMotm = 20; wWins = 20; wGames = 10
+      wGoals = 28; wAssists = 22; wMotm = 18; wWins = 22; wGames = 10
+      wCleanSheets = 0;  wDefPeer = 0
       benchGoals = 0.65; benchAssists = 0.45
     }
 
-    const goalsFactor   = Math.min(goalsPerGame   / benchGoals,   1.0)
-    const assistsFactor = Math.min(assistsPerGame  / benchAssists, 1.0)
+    const goalsFactor   = benchGoals   > 0 ? Math.min(goalsPerGame   / benchGoals,   1.0) : 0
+    const assistsFactor = benchAssists > 0 ? Math.min(assistsPerGame  / benchAssists, 1.0) : 0
     const motmFactor    = motmRate / 100
     const winFactor     = winRate  / 100
-    // Ramp over first 6 games so early-season stats aren't too deflated.
+    // Full weight after 6 games — early season stays grounded.
     const expFactor     = Math.min(games / 6, 1.0)
 
     const raw =
-      goalsFactor   * wGoals   +
-      assistsFactor * wAssists +
-      motmFactor    * wMotm    +
-      winFactor     * wWins    +
-      expFactor     * wGames
+      goalsFactor    * wGoals       +
+      assistsFactor  * wAssists     +
+      motmFactor     * wMotm        +
+      winFactor      * wWins        +
+      expFactor      * wGames       +
+      cleanSheetRate * wCleanSheets +
+      defPeerFactor  * wDefPeer
 
     const statsOverall = games > 0 ? scaleOverall(raw) : 60
 
-    // ── Peer rating blend ─────────────────────────────────────────────
-    // Match performance always contributes ≥70%. Community is a soft
-    // modifier capped at 30% so it can nudge but never overrule stats.
+    // ── Community blend ───────────────────────────────────────────────
+    // Stats and community go hand in hand — 50/50 at 5+ votes.
+    // With fewer votes, stats still dominate so thin samples don't skew.
     //
     //  0 votes → 100% stats
-    //  1 vote  →  94% stats /  6% community
-    //  3 votes →  82% stats / 18% community
-    //  5 votes →  70% stats / 30% community  ← max
-    const ratingEntry = ratingTotals.get(player.id)
-    const communityRating = ratingEntry ? ratingEntry.sum / ratingEntry.count : null
-    const communityRatingCount = ratingEntry?.count ?? 0
+    //  1 vote  →  90% stats / 10% community
+    //  3 votes →  70% stats / 30% community
+    //  5 votes →  50% stats / 50% community  ← cap
+    //
+    // 0-game players: show community rating only (capped at 75).
     let overall = statsOverall
     if (communityRating !== null) {
       const communityOverall = 60 + ((communityRating - 1) / 9) * 39
       if (games === 0) {
-        overall = Math.round(Math.min(communityOverall, 72))
+        overall = Math.round(Math.min(communityOverall, 75))
       } else {
-        const weight = Math.min(0.3, communityRatingCount * 0.06)
+        const weight = Math.min(0.5, communityRatingCount * 0.10)
         overall = Math.round(statsOverall * (1 - weight) + communityOverall * weight)
       }
     }

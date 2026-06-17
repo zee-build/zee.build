@@ -44,6 +44,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     }
     update.traits = body.traits
   }
+  if (typeof body.can_vote === 'boolean') update.can_vote = body.can_vote
 
   const supabase = createServiceClient()
   const { data, error } = await supabase

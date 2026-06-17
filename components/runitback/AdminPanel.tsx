@@ -25,6 +25,8 @@ export default function AdminPanel({ players, matches, gamesPlayedById }: AdminP
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [editingMatchId, setEditingMatchId] = useState<string | null>(null)
   const [deletingMatchId, setDeletingMatchId] = useState<string | null>(null)
+  const [togglingVoteId, setTogglingVoteId] = useState<string | null>(null)
+  const [playerList, setPlayerList] = useState<Player[]>(players)
 
   const joinUrl = `${process.env.NEXT_PUBLIC_APP_URL ?? 'https://zeebuild.com'}/runitback/join`
 
@@ -42,6 +44,24 @@ export default function AdminPanel({ players, matches, gamesPlayedById }: AdminP
       if (res.ok) router.refresh()
     } finally {
       setDeletingId(null)
+    }
+  }
+
+  const handleToggleVote = async (player: Player) => {
+    setTogglingVoteId(player.id)
+    try {
+      const res = await adminFetch(`/api/runitback/players/${player.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ can_vote: !player.can_vote }),
+      })
+      if (res.ok) {
+        setPlayerList((prev) =>
+          prev.map((p) => (p.id === player.id ? { ...p, can_vote: !player.can_vote } : p))
+        )
+      }
+    } finally {
+      setTogglingVoteId(null)
     }
   }
 
@@ -147,7 +167,7 @@ export default function AdminPanel({ players, matches, gamesPlayedById }: AdminP
         )}
 
         <div className="space-y-2">
-          {players.map((player) => (
+          {playerList.map((player) => (
             <div key={player.id} className="rib-tile rounded-lg px-4 py-3">
               {editingId === player.id ? (
                 <PlayerForm
@@ -165,8 +185,23 @@ export default function AdminPanel({ players, matches, gamesPlayedById }: AdminP
                     <p className="rib-body text-xs">
                       {player.position ?? '—'} · {player.is_regular ? 'Regular' : 'Guest'} ·{' '}
                       {gamesPlayedById[player.id] ?? 0} games
+                      {!player.can_vote && (
+                        <span className="ml-2 text-red-400">· VOTING SUSPENDED</span>
+                      )}
                     </p>
                   </div>
+                  <button
+                    onClick={() => handleToggleVote(player)}
+                    disabled={togglingVoteId === player.id}
+                    className={`rib-heading text-xs px-3 py-1.5 rounded-lg border flex items-center gap-1.5 disabled:opacity-50 ${
+                      player.can_vote
+                        ? 'border-orange-800 text-orange-400 hover:bg-orange-950'
+                        : 'border-green-800 text-green-400 hover:bg-green-950'
+                    }`}
+                    style={{ letterSpacing: '1.5px' }}
+                  >
+                    {player.can_vote ? 'SUSPEND VOTE' : 'RESTORE VOTE'}
+                  </button>
                   <button
                     onClick={() => setEditingId(player.id)}
                     className="rib-heading text-xs px-3 py-1.5 rounded-lg border border-rib-border text-rib-muted hover:text-white flex items-center gap-1.5"

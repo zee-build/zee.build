@@ -15,6 +15,7 @@ export interface Player {
   country: string | null
   role: PlayerRole
   traits: string[]
+  can_vote: boolean
   created_at: string
 }
 
