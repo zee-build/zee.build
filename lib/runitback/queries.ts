@@ -93,21 +93,41 @@ export function buildPlayerStats(
     const goalsPerGame = games > 0 ? goals / games : 0
     const assistsPerGame = games > 0 ? assists / games : 0
     const motmRate = games > 0 ? (motm / games) * 100 : 0
-    const gamesFactor = Math.min((games / 20) * 100, 100)
 
-    // Weighted blend of per-90-style metrics, normalized to 0-100, then scaled to 60-99.
-    // Goals and assists carry equal weight so passers are rewarded as much as scorers.
+    // ── Stats component (0-100 → 60-99 FIFA scale) ───────────────────
+    // Each metric is normalised against a realistic 5-a-side elite benchmark
+    // so early-season spikes (e.g. 2 goals in game 1) can't inflate the score.
+    //
+    //  Goals   35 pts  — highest weight: hardest to score, most decisive
+    //  MOTM    25 pts  — in-game peer vote, strong quality signal
+    //  Assists 15 pts  — creative contribution
+    //  Win %   15 pts  — team impact
+    //  Games   10 pts  — reliability / sample size (caps at 12 games)
+    //
+    // Elite benchmarks for 5-a-side: ~0.7 g/game, ~0.45 a/game
+    const goalsFactor   = Math.min(goalsPerGame   / 0.7,  1.0)
+    const assistsFactor = Math.min(assistsPerGame  / 0.45, 1.0)
+    const motmFactor    = motmRate / 100
+    const winFactor     = winRate  / 100
+    const expFactor     = Math.min(games / 12, 1.0)
+
     const raw =
-      goalsPerGame * 15 +
-      assistsPerGame * 15 +
-      (motmRate / 100) * 25 +
-      (winRate / 100) * 25 +
-      (gamesFactor / 100) * 20
+      goalsFactor   * 35 +
+      assistsFactor * 15 +
+      motmFactor    * 25 +
+      winFactor     * 15 +
+      expFactor     * 10
+
     const statsOverall = games > 0 ? scaleOverall(raw) : 60
 
-    // Blend match performance with the community peer rating.
-    // Weight of community rating grows with vote count, capping at 80%.
-    // Until rated, overall is purely stats-based.
+    // ── Peer rating blend ─────────────────────────────────────────────
+    // Performance always contributes at least 40% so match output is never
+    // drowned out. Community weight grows as more teammates vote (caps at 60%).
+    //
+    //  0 ratings → 100% stats
+    //  1 rating  →  12% community / 88% stats
+    //  3 ratings →  36% community / 64% stats
+    //  5+ ratings → 60% community / 40% stats  ← max
     const ratingEntry = ratingTotals.get(player.id)
     const communityRating = ratingEntry ? ratingEntry.sum / ratingEntry.count : null
     const communityRatingCount = ratingEntry?.count ?? 0
@@ -115,9 +135,9 @@ export function buildPlayerStats(
     if (communityRating !== null) {
       const communityOverall = 60 + ((communityRating - 1) / 9) * 39
       if (games === 0) {
-        overall = Math.round(Math.min(communityOverall, 70))
+        overall = Math.round(Math.min(communityOverall, 72))
       } else {
-        const weight = Math.min(0.8, 0.3 + communityRatingCount * 0.15)
+        const weight = Math.min(0.6, communityRatingCount * 0.12)
         overall = Math.round(statsOverall * (1 - weight) + communityOverall * weight)
       }
     }
