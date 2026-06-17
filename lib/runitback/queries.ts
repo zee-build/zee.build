@@ -38,8 +38,12 @@ export function buildPlayerStats(
   matchPlayers: MatchPlayer[],
   ratings: PeerRating[] = []
 ): PlayerStats[] {
-  const matchById = new Map(matches.map((m) => [m.id, m]))
-  const sortedMatches = [...matches].sort(
+  // Only count matches that have already been played (date ≤ today UTC).
+  const todayStr = new Date().toISOString().slice(0, 10)
+  const playedMatches = matches.filter((m) => m.date <= todayStr)
+
+  const matchById = new Map(playedMatches.map((m) => [m.id, m]))
+  const sortedMatches = [...playedMatches].sort(
     (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
   )
   const matchOrder = new Map(sortedMatches.map((m, i) => [m.id, i]))
@@ -168,8 +172,8 @@ export function buildPlayerStats(
       }
     }
 
-    // Award-eligible: must have played at least half of this season's matches.
-    const awardsEligible = matches.length > 0 && games >= matches.length * 0.5
+    // Award-eligible: must have played at least half of this season's played matches.
+    const awardsEligible = playedMatches.length > 0 && games >= playedMatches.length * 0.5
 
     // Current streak: consecutive wins counting back from the most recent match.
     let streak = 0
@@ -230,13 +234,13 @@ export function buildPlayerStats(
 
   // Player of the Week: best individual performance in the most recently
   // played calendar week (Mon-Sun), scored by goals/assists/MOTM/result.
-  if (matches.length > 0) {
-    const latestWeek = matches.reduce(
+  if (playedMatches.length > 0) {
+    const latestWeek = playedMatches.reduce(
       (latest, m) => (weekKey(m.date) > latest ? weekKey(m.date) : latest),
       ''
     )
     const weekMatchIds = new Set(
-      matches.filter((m) => weekKey(m.date) === latestWeek).map((m) => m.id)
+      playedMatches.filter((m) => weekKey(m.date) === latestWeek).map((m) => m.id)
     )
 
     const weeklyScores = new Map<string, number>()
@@ -294,13 +298,15 @@ export function getPendingMatchRatings(
       .map((r) => `${r.match_id}:${r.ratee_id}`)
   )
 
-  // Only open rating for matches within the last 7 days so old sessions don't pile up.
+  // Only open rating for matches in the last 7 days; exclude future (scheduled) matches.
+  const todayStr = new Date().toISOString().slice(0, 10)
   const cutoff = new Date()
   cutoff.setUTCDate(cutoff.getUTCDate() - 7)
 
   const pending: PendingMatchRating[] = []
   for (const match of matches) {
     if (new Date(match.date).getFullYear() !== CURRENT_SEASON) continue
+    if (match.date > todayStr) continue
     if (new Date(match.date) < cutoff) continue
     const roster = matchPlayers.filter((mp) => mp.match_id === match.id)
     const playedInMatch = roster.some((mp) => mp.player_id === playerId)
