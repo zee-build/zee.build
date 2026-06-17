@@ -8,6 +8,7 @@ import { adminFetch } from '@/lib/runitback/admin'
 import MatchLogForm from './MatchLogForm'
 import PlayerForm from './PlayerForm'
 import AdminRatingsPanel from './AdminRatingsPanel'
+import ModSettings from './ModSettings'
 import type { MatchWithPlayers, Player } from '@/lib/runitback/types'
 
 interface AdminPanelProps {
@@ -58,6 +59,12 @@ export default function AdminPanel({ players, matches, gamesPlayedById }: AdminP
   return (
     <div className="space-y-10 max-w-4xl mx-auto">
       <h1 className="rib-heading text-3xl">ADMIN</h1>
+
+      {/* League settings */}
+      <section className="rib-tile rounded-xl p-5">
+        <h2 className="rib-heading text-xl mb-4">LEAGUE SETTINGS</h2>
+        <ModSettings />
+      </section>
 
       {/* Log new match */}
       <section className="rib-tile rounded-xl p-5">
