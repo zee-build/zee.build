@@ -139,7 +139,8 @@ export function buildPlayerStats(
     const assistsFactor = Math.min(assistsPerGame  / benchAssists, 1.0)
     const motmFactor    = motmRate / 100
     const winFactor     = winRate  / 100
-    const expFactor     = Math.min(games / 12, 1.0)
+    // Ramp over first 6 games so early-season stats aren't too deflated.
+    const expFactor     = Math.min(games / 6, 1.0)
 
     const raw =
       goalsFactor   * wGoals   +
@@ -151,13 +152,13 @@ export function buildPlayerStats(
     const statsOverall = games > 0 ? scaleOverall(raw) : 60
 
     // ── Peer rating blend ─────────────────────────────────────────────
-    // Performance always contributes ≥40% so match output is never
-    // drowned out by peer opinion. Community weight grows per vote, caps at 60%.
+    // Match performance always contributes ≥70%. Community is a soft
+    // modifier capped at 30% so it can nudge but never overrule stats.
     //
     //  0 votes → 100% stats
-    //  1 vote  →  88% stats / 12% community
-    //  3 votes →  64% stats / 36% community
-    //  5 votes →  40% stats / 60% community  ← max
+    //  1 vote  →  94% stats /  6% community
+    //  3 votes →  82% stats / 18% community
+    //  5 votes →  70% stats / 30% community  ← max
     const ratingEntry = ratingTotals.get(player.id)
     const communityRating = ratingEntry ? ratingEntry.sum / ratingEntry.count : null
     const communityRatingCount = ratingEntry?.count ?? 0
@@ -167,7 +168,7 @@ export function buildPlayerStats(
       if (games === 0) {
         overall = Math.round(Math.min(communityOverall, 72))
       } else {
-        const weight = Math.min(0.6, communityRatingCount * 0.12)
+        const weight = Math.min(0.3, communityRatingCount * 0.06)
         overall = Math.round(statsOverall * (1 - weight) + communityOverall * weight)
       }
     }
