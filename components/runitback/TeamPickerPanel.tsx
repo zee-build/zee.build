@@ -1,10 +1,12 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { Loader2, Shuffle, RefreshCw, Star, Share2 } from 'lucide-react'
+import { Loader2, Shuffle, RefreshCw, Star, Share2, UserPlus, CalendarPlus } from 'lucide-react'
 import { adminFetch } from '@/lib/runitback/admin'
 import TeamExportSheet from './TeamExportSheet'
-import type { PlayerStats, PlayerTier, Team, WeeklyTeamPlayer } from '@/lib/runitback/types'
+import type { Player, PlayerStats, PlayerTier, Team, WeeklyTeamPlayer } from '@/lib/runitback/types'
+
+const POSITIONS = ['GK', 'CB', 'RB', 'LB', 'CM', 'CAM', 'ST', 'LW', 'RW']
 
 interface TeamPickerPanelProps {
   stats: PlayerStats[]
@@ -46,8 +48,9 @@ function shuffle<T>(arr: T[]): T[] {
   return a
 }
 
-export default function TeamPickerPanel({ stats }: TeamPickerPanelProps) {
-  const statsById = new Map(stats.map((s) => [s.player.id, s]))
+export default function TeamPickerPanel({ stats: initialStats }: TeamPickerPanelProps) {
+  const [localStats, setLocalStats] = useState<PlayerStats[]>(initialStats)
+  const statsById = new Map(localStats.map((s) => [s.player.id, s]))
 
   const [date, setDate] = useState(() => nextFridayOrTuesday())
   const [formatIdx, setFormatIdx] = useState(0)
@@ -75,6 +78,19 @@ export default function TeamPickerPanel({ stats }: TeamPickerPanelProps) {
   const [rotationA, setRotationA] = useState<RotationSlot[] | null>(null)
   const [rotationB, setRotationB] = useState<RotationSlot[] | null>(null)
 
+  // Add guest player
+  const [showAddPlayer, setShowAddPlayer] = useState(false)
+  const [addName, setAddName] = useState('')
+  const [addPosition, setAddPosition] = useState('CM')
+  const [addingPlayer, setAddingPlayer] = useState(false)
+  const [addPlayerError, setAddPlayerError] = useState('')
+
+  // Log match
+  const [showLogMatch, setShowLogMatch] = useState(false)
+  const [matchLocation, setMatchLocation] = useState('Sharjah')
+  const [loggingMatch, setLoggingMatch] = useState(false)
+  const [matchMessage, setMatchMessage] = useState('')
+
   const dragRef = useRef<string | null>(null)
 
   useEffect(() => {
@@ -87,7 +103,7 @@ export default function TeamPickerPanel({ stats }: TeamPickerPanelProps) {
         const entries: WeeklyTeamPlayer[] = data.entries ?? []
         if (entries.length === 0) {
           // Default: all players in tier2 (unassigned), none benched
-          autoTierAll(stats.map((s) => s.player.id))
+          autoTierAll(localStats.map((s) => s.player.id))
           setTeamA([])
           setTeamB([])
           setGkIds(new Set())
@@ -97,7 +113,7 @@ export default function TeamPickerPanel({ stats }: TeamPickerPanelProps) {
         const assigned = new Set(entries.map((e) => e.player_id))
         setTeamA(entries.filter((e) => e.team === 'A').map((e) => e.player_id))
         setTeamB(entries.filter((e) => e.team === 'B').map((e) => e.player_id))
-        setBench(stats.map((s) => s.player.id).filter((id) => !assigned.has(id)))
+        setBench(localStats.map((s) => s.player.id).filter((id) => !assigned.has(id)))
         setTier1([])
         setTier2([])
         setTier3([])
@@ -167,6 +183,59 @@ export default function TeamPickerPanel({ stats }: TeamPickerPanelProps) {
     })
   }
 
+  const handleAddPlayer = async () => {
+    if (!addName.trim()) return
+    setAddPlayerError('')
+    setAddingPlayer(true)
+    try {
+      const res = await adminFetch('/api/runitback/players', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: addName.trim(), position: addPosition, is_regular: false, registered_via_link: false }),
+      })
+      const data = await res.json()
+      if (!res.ok) { setAddPlayerError(data.error ?? 'Could not add player.'); return }
+      const newPlayer: Player = data.player
+      const newStat: PlayerStats = {
+        player: newPlayer, overall: 60, games: 0, goals: 0, assists: 0, motm: 0,
+        wins: 0, losses: 0, draws: 0, winRate: 0, streak: 0, form: [],
+        goalsPerGame: 0, communityRating: null, communityRatingCount: 0,
+        attributeRatings: null, awardsEligible: false, seasonAward: null, weeklyAward: null,
+      }
+      setLocalStats((prev) => [...prev, newStat])
+      setTier2((prev) => [...prev, newPlayer.id])
+      setAddName('')
+      setAddPosition('CM')
+      setShowAddPlayer(false)
+    } catch { setAddPlayerError('Something went wrong.') }
+    finally { setAddingPlayer(false) }
+  }
+
+  const handleLogMatch = async () => {
+    if (teamA.length === 0 && teamB.length === 0) return
+    setLoggingMatch(true)
+    setMatchMessage('')
+    const d = new Date(date)
+    const dow = d.getDay()
+    const day_of_week = dow === 5 ? 'Friday' : dow === 2 ? 'Tuesday' : 'Friday'
+    const players = [
+      ...teamA.map((id) => ({ player_id: id, team: 'A' })),
+      ...teamB.map((id) => ({ player_id: id, team: 'B' })),
+    ]
+    try {
+      const res = await adminFetch('/api/runitback/matches', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ date, day_of_week, location: matchLocation, team_a_score: 0, team_b_score: 0, players }),
+      })
+      const data = await res.json()
+      if (!res.ok) { setMatchMessage(data.error ?? 'Could not create match.'); return }
+      setMatchMessage(`Match created! Update the score in Admin after the game.`)
+      setShowLogMatch(false)
+    } catch { setMatchMessage('Something went wrong.') }
+    finally { setLoggingMatch(false) }
+  }
+
   const generateFromTiers = () => {
     const poolIds = [...tier1, ...tier2, ...tier3]
     if (poolIds.length === 0) return
@@ -205,7 +274,7 @@ export default function TeamPickerPanel({ stats }: TeamPickerPanelProps) {
     setTier1([])
     setTier2([])
     setTier3([])
-    setBench(stats.map((s) => s.player.id).filter((id) => !a.includes(id) && !b.includes(id)))
+    setBench(localStats.map((s) => s.player.id).filter((id) => !a.includes(id) && !b.includes(id)))
     setSubIds(newSubIds)
 
     // Auto-assign GKs from starters
@@ -423,11 +492,19 @@ export default function TeamPickerPanel({ stats }: TeamPickerPanelProps) {
         <div className="flex gap-2 flex-wrap">
           <button
             type="button"
-            onClick={() => autoTierAll(stats.map((s) => s.player.id))}
+            onClick={() => autoTierAll(localStats.map((s) => s.player.id))}
             className="rib-heading text-xs px-3 py-2.5 rounded-lg border border-rib-border text-rib-muted hover:text-white flex items-center gap-1.5"
             style={{ letterSpacing: '1.5px' }}
           >
             <RefreshCw size={13} /> AUTO-TIER
+          </button>
+          <button
+            type="button"
+            onClick={() => { setShowAddPlayer((v) => !v); setAddPlayerError('') }}
+            className="rib-heading text-xs px-3 py-2.5 rounded-lg border border-rib-border text-rib-muted hover:text-white flex items-center gap-1.5"
+            style={{ letterSpacing: '1.5px' }}
+          >
+            <UserPlus size={13} /> ADD GUEST
           </button>
           {inPool && (
             <button
@@ -468,9 +545,81 @@ export default function TeamPickerPanel({ stats }: TeamPickerPanelProps) {
               <Share2 size={13} /> EXPORT
             </button>
           )}
+          {hasTeams && (
+            <button
+              type="button"
+              onClick={() => { setShowLogMatch((v) => !v); setMatchMessage('') }}
+              className="rib-heading text-xs px-4 py-2.5 rounded-lg border border-rib-border text-rib-muted hover:text-white flex items-center gap-1.5"
+              style={{ letterSpacing: '1.5px' }}
+            >
+              <CalendarPlus size={13} /> LOG MATCH
+            </button>
+          )}
         </div>
         {message && <span className="rib-body text-xs text-rib-muted self-center">{message}</span>}
       </div>
+
+      {/* Add Guest form */}
+      {showAddPlayer && (
+        <div className="rib-tile rounded-xl p-4 space-y-3">
+          <p className="rib-heading text-xs text-rib-muted" style={{ letterSpacing: '2px' }}>ADD GUEST PLAYER</p>
+          <div className="flex flex-wrap gap-2 items-end">
+            <input
+              type="text"
+              placeholder="Full name"
+              value={addName}
+              onChange={(e) => setAddName(e.target.value)}
+              className="bg-rib-bg2 border border-rib-border rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-rib-acc w-44"
+            />
+            <select
+              value={addPosition}
+              onChange={(e) => setAddPosition(e.target.value)}
+              className="bg-rib-bg2 border border-rib-border rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-rib-acc"
+            >
+              {POSITIONS.map((p) => <option key={p} value={p}>{p}</option>)}
+            </select>
+            <button
+              type="button"
+              onClick={handleAddPlayer}
+              disabled={addingPlayer || !addName.trim()}
+              className="rib-heading text-xs px-4 py-2 rounded-lg bg-rib-acc text-rib-bg disabled:opacity-50"
+              style={{ letterSpacing: '1.5px' }}
+            >
+              {addingPlayer ? 'ADDING...' : 'ADD'}
+            </button>
+          </div>
+          {addPlayerError && <p className="rib-body text-xs text-red-400">{addPlayerError}</p>}
+        </div>
+      )}
+
+      {/* Log match form */}
+      {showLogMatch && (
+        <div className="rib-tile rounded-xl p-4 space-y-3">
+          <p className="rib-heading text-xs text-rib-muted" style={{ letterSpacing: '2px' }}>LOG MATCH</p>
+          <p className="rib-body text-xs text-rib-muted">Creates a match record with the current teams. Update the score in Admin after the game.</p>
+          <div className="flex flex-wrap gap-2 items-end">
+            <div>
+              <label className="rib-heading text-xs text-rib-muted block mb-1" style={{ letterSpacing: '1.5px' }}>LOCATION</label>
+              <input
+                type="text"
+                value={matchLocation}
+                onChange={(e) => setMatchLocation(e.target.value)}
+                className="bg-rib-bg2 border border-rib-border rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-rib-acc w-44"
+              />
+            </div>
+            <button
+              type="button"
+              onClick={handleLogMatch}
+              disabled={loggingMatch || (!teamA.length && !teamB.length)}
+              className="rib-heading text-xs px-4 py-2 rounded-lg bg-rib-acc text-rib-bg disabled:opacity-50"
+              style={{ letterSpacing: '1.5px' }}
+            >
+              {loggingMatch ? 'CREATING...' : 'CREATE MATCH'}
+            </button>
+          </div>
+          {matchMessage && <p className="rib-body text-xs text-rib-muted">{matchMessage}</p>}
+        </div>
+      )}
 
       <p className="rib-body text-xs text-rib-muted">
         Drag players between columns. Use <strong>AUTO-TIER</strong> to bucket players by rating, then <strong>GENERATE TEAMS</strong> for a balanced draw. Or drag manually between Team A and Team B.

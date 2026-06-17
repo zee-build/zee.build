@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient, createServiceClient } from '@/lib/runitback/supabase'
-import { isAdminRequest } from '@/lib/runitback/adminAuth'
+import { isAdminRequest, isModRequest } from '@/lib/runitback/adminAuth'
 import { checkRateLimit } from '@/lib/runitback/rateLimit'
 import { hashPassword } from '@/lib/runitback/playerAuth'
 import { getCountry } from '@/lib/runitback/config'
@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid country.' }, { status: 400 })
   }
 
-  const admin = isAdminRequest(req)
+  const admin = isAdminRequest(req) || await isModRequest(req)
 
   // New joiners (non-admin) set up their login credentials at registration time.
   let passwordHash: string | null = null

@@ -1,14 +1,16 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { cookies } from 'next/headers'
 import { ArrowLeft, Star } from 'lucide-react'
 import { createClient } from '@/lib/runitback/supabase'
 import { buildHeadToHead, buildMatchesWithPlayers, buildPlayerStats, getInitials, PUBLIC_PLAYER_COLUMNS } from '@/lib/runitback/queries'
 import { CURRENT_SEASON, RATING_ATTRIBUTES, TRAITS } from '@/lib/runitback/config'
+import { readSessionToken, SESSION_COOKIE_NAME } from '@/lib/runitback/playerAuth'
 import FifaCard from '@/components/runitback/FifaCard'
 import StatBar from '@/components/runitback/StatBar'
 import RatingHistoryChart, { type RatingHistoryPoint } from '@/components/runitback/RatingHistoryChart'
-import type { Match, MatchPlayer, PeerRating, Player } from '@/lib/runitback/types'
+import type { LeagueSettings, Match, MatchPlayer, PeerRating, Player } from '@/lib/runitback/types'
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -87,6 +89,18 @@ export default async function PlayerProfilePage({ params }: PageProps) {
   const data = await getData(slug)
   if (!data) notFound()
 
+  // Check viewer's role and settings for ratings visibility
+  const supabase = createClient()
+  const cookieStore = await cookies()
+  const viewerId = readSessionToken(cookieStore.get(SESSION_COOKIE_NAME)?.value)
+  const [{ data: viewerRow }, { data: settingsRow }] = await Promise.all([
+    viewerId ? supabase.from('players').select('role').eq('id', viewerId).single<Pick<Player, 'role'>>() : Promise.resolve({ data: null }),
+    supabase.from('league_settings').select('ratings_public').eq('id', 'global').single<Pick<LeagueSettings, 'ratings_public'>>(),
+  ])
+  const isMod = viewerRow?.role === 'mod' || viewerRow?.role === 'admin'
+  const ratingsPublic = settingsRow?.ratings_public ?? true
+  const showRatings = isMod || ratingsPublic
+
   const { player, stats, matches, headToHead, receivedRatings, ratingHistory } = data
 
   return (
@@ -98,7 +112,7 @@ export default async function PlayerProfilePage({ params }: PageProps) {
       {/* Card + key stats side-by-side on desktop */}
       <div className="flex flex-col md:flex-row gap-8 mb-8 items-start">
         <div className="shrink-0 flex justify-center w-full md:w-auto">
-          <FifaCard stats={stats} variant="full" />
+          <FifaCard stats={stats} variant="full" showRatings={showRatings} />
         </div>
 
         {/* Stats panel */}
@@ -221,7 +235,8 @@ export default async function PlayerProfilePage({ params }: PageProps) {
         </div>
       )}
 
-      {/* Peer ratings — public so the squad can keep each other honest */}
+      {/* Peer ratings — only visible when ratings are public or viewer is mod */}
+      {showRatings && <>
       <h2 className="rib-heading text-xl mb-3">PEER RATINGS — {CURRENT_SEASON}</h2>
       {ratingHistory.length > 1 && <div className="mb-4"><RatingHistoryChart data={ratingHistory} /></div>}
       {receivedRatings.length === 0 ? (
@@ -273,6 +288,7 @@ export default async function PlayerProfilePage({ params }: PageProps) {
           </div>
         </div>
       )}
+      </>}
     </div>
   )
 }
