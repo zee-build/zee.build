@@ -118,7 +118,14 @@ export default function TeamPickerPanel({ stats: initialStats }: TeamPickerPanel
         setTier2([])
         setTier3([])
         setGkIds(new Set(entries.filter((e) => e.is_gk).map((e) => e.player_id)))
-        setSubIds(new Set(entries.filter((e) => e.is_sub).map((e) => e.player_id)))
+        const loadedSubIds = new Set(entries.filter((e) => e.is_sub).map((e) => e.player_id))
+        setSubIds(loadedSubIds)
+        // Auto-detect format from saved starters count
+        const startersA = entries.filter((e) => e.team === 'A' && !loadedSubIds.has(e.player_id)).length
+        if (startersA > 0) {
+          const matchedIdx = FORMAT_OPTIONS.findIndex((f) => f.size === startersA)
+          if (matchedIdx !== -1) setFormatIdx(matchedIdx)
+        }
       })
       .finally(() => setLoading(false))
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -328,7 +335,7 @@ export default function TeamPickerPanel({ stats: initialStats }: TeamPickerPanel
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ date, entries }),
       })
-      if (res.ok) setMessage('Lineup saved.')
+      if (res.ok) setMessage(`Saved! Select ${date} again to reload this lineup.`)
       else {
         const data = await res.json()
         setMessage(data.error ?? 'Something went wrong.')

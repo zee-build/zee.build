@@ -1,7 +1,7 @@
 'use client'
 
 import { useRef, useState } from 'react'
-import { X, Download, Copy, Check, Printer } from 'lucide-react'
+import { X, Download, Copy, Check, FileText } from 'lucide-react'
 import type { PlayerStats } from '@/lib/runitback/types'
 
 interface RotationSlot {
@@ -108,11 +108,39 @@ export default function TeamExportSheet({
     setTimeout(() => setCopied(false), 2000)
   }
 
-  const handlePrint = () => window.print()
+  const handleSavePdf = async () => {
+    if (!sheetRef.current) return
+    setDownloading(true)
+    try {
+      const html2canvas = (await import('html2canvas')).default
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const opts: any = { background: '#07071a', scale: 2, useCORS: true, logging: false }
+      const canvas = await html2canvas(sheetRef.current, opts)
+      const imgData = canvas.toDataURL('image/png')
+      const win = window.open('', '_blank')
+      if (!win) { setDownloading(false); return }
+      win.document.write(`<!DOCTYPE html><html><head>
+        <title>RIB Lineup — ${date}</title>
+        <style>
+          * { margin: 0; padding: 0; box-sizing: border-box; }
+          html, body { background: #07071a; width: 100%; }
+          img { width: 100%; height: auto; display: block; page-break-inside: avoid; }
+          @media print {
+            html, body { background: #07071a !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          }
+        </style>
+      </head><body><img src="${imgData}" /><script>
+        window.onload = function() { setTimeout(function(){ window.print(); }, 300); }
+      </script></body></html>`)
+      win.document.close()
+    } finally {
+      setDownloading(false)
+    }
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-      <div className="w-full max-w-2xl flex flex-col gap-3 max-h-[90vh]">
+      <div className="w-full max-w-2xl flex flex-col gap-3" style={{ maxHeight: '90vh' }}>
 
         {/* Action bar */}
         <div className="flex items-center justify-between gap-2 flex-wrap">
@@ -138,11 +166,13 @@ export default function TeamExportSheet({
               {downloading ? 'SAVING...' : 'SAVE IMAGE'}
             </button>
             <button
-              onClick={handlePrint}
-              className="rib-heading text-xs px-3 py-2 rounded-lg border border-rib-border text-rib-muted hover:text-white flex items-center gap-1.5 transition-colors"
+              onClick={handleSavePdf}
+              disabled={downloading}
+              className="rib-heading text-xs px-3 py-2 rounded-lg border border-rib-border text-rib-muted hover:text-white flex items-center gap-1.5 transition-colors disabled:opacity-60"
               style={{ letterSpacing: '1.5px' }}
             >
-              <Printer size={13} />
+              <FileText size={13} />
+              SAVE PDF
             </button>
             <button
               onClick={onClose}
@@ -156,7 +186,7 @@ export default function TeamExportSheet({
         {/* Export card — this is what gets captured */}
         <div
           ref={sheetRef}
-          className="overflow-y-auto rounded-2xl"
+          className="overflow-y-auto rounded-2xl flex-1 min-h-0"
           style={{
             background: 'linear-gradient(160deg, #07071a 0%, #0b0b24 60%, #07071a 100%)',
             border: '1px solid #1a1a42',
