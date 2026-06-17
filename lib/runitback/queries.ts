@@ -135,22 +135,24 @@ export function buildPlayerStats(
     let wCleanSheets: number, wDefPeer: number
     let benchGoals: number, benchAssists: number
 
+    // Goals/assists use the same benchmark for all outfield positions —
+    // in 5-a-side everyone attacks equally so a CM goal = a ST goal.
+    // Position differences only affect how much wins/clean-sheets matter.
+    const benchGoals = 0.5
+    const benchAssists = 0.4
+
     if (isDefender) {
-      wGoals = 5;  wAssists = 8;  wMotm = 10; wWins = 35; wGames = 7
+      wGoals = 8;  wAssists = 10; wMotm = 10; wWins = 30; wGames = 7
       wCleanSheets = 20; wDefPeer = 15
-      benchGoals = 0.2; benchAssists = 0.25
     } else if (isMidfielder) {
-      wGoals = 25; wAssists = 27; wMotm = 18; wWins = 20; wGames = 10
+      wGoals = 28; wAssists = 30; wMotm = 18; wWins = 16; wGames = 8
       wCleanSheets = 0;  wDefPeer = 0
-      benchGoals = 0.5; benchAssists = 0.6
     } else if (isAttacker) {
-      wGoals = 36; wAssists = 28; wMotm = 15; wWins = 12; wGames = 9
+      wGoals = 32; wAssists = 28; wMotm = 16; wWins = 16; wGames = 8
       wCleanSheets = 0;  wDefPeer = 0
-      benchGoals = 0.8; benchAssists = 0.4
     } else {
-      wGoals = 28; wAssists = 22; wMotm = 18; wWins = 22; wGames = 10
+      wGoals = 28; wAssists = 26; wMotm = 18; wWins = 18; wGames = 10
       wCleanSheets = 0;  wDefPeer = 0
-      benchGoals = 0.65; benchAssists = 0.45
     }
 
     const goalsFactor   = benchGoals   > 0 ? Math.min(goalsPerGame   / benchGoals,   1.0) : 0
