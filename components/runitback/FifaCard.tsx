@@ -61,6 +61,7 @@ interface FifaCardProps {
   variant?: 'mini' | 'full'
   href?: string
   onClick?: () => void
+  showRatings?: boolean
 }
 
 interface StatAttr {
@@ -73,7 +74,7 @@ interface StatAttr {
 const NATIVE_W = 202
 const NATIVE_H = 316
 
-export default function FifaCard({ stats, variant = 'mini', href, onClick }: FifaCardProps) {
+export default function FifaCard({ stats, variant = 'mini', href, onClick, showRatings = true }: FifaCardProps) {
   const { player, overall } = stats
   const type = cardType(stats)
   const bgSrc = CARD_BG[type] ?? CARD_BG.bronze
@@ -99,12 +100,12 @@ export default function FifaCard({ stats, variant = 'mini', href, onClick }: Fif
   // Back face: teammate-rated skill attributes
   const ratings = stats.attributeRatings
   const skillAttrs: StatAttr[] = [
-    { label: 'PAC', value: ratings?.pace ?? '—' },
-    { label: 'SHO', value: ratings?.shooting ?? '—' },
-    { label: 'PAS', value: ratings?.passing ?? '—' },
-    { label: 'DRI', value: ratings?.dribbling ?? '—' },
-    { label: 'DEF', value: ratings?.defending ?? '—' },
-    { label: 'PHY', value: ratings?.physical ?? '—' },
+    { label: 'PAC', value: showRatings ? (ratings?.pace ?? '—') : '—' },
+    { label: 'SHO', value: showRatings ? (ratings?.shooting ?? '—') : '—' },
+    { label: 'PAS', value: showRatings ? (ratings?.passing ?? '—') : '—' },
+    { label: 'DRI', value: showRatings ? (ratings?.dribbling ?? '—') : '—' },
+    { label: 'DEF', value: showRatings ? (ratings?.defending ?? '—') : '—' },
+    { label: 'PHY', value: showRatings ? (ratings?.physical ?? '—') : '—' },
   ]
 
   const renderAttrGrid = (attrs: StatAttr[]) =>
@@ -168,7 +169,7 @@ export default function FifaCard({ stats, variant = 'mini', href, onClick }: Fif
           color,
         }}
       >
-        {overall}
+        {showRatings ? overall : '—'}
       </div>
 
       {/* ── CLUB BADGE — empty space to the left of the player picture ── */}

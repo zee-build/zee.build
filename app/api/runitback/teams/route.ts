@@ -43,6 +43,9 @@ export async function POST(req: NextRequest) {
     if (!e.player_id || !VALID_TEAMS.includes(e.team)) {
       return NextResponse.json({ error: 'Invalid entry.' }, { status: 400 })
     }
+    if (e.is_sub !== undefined && typeof e.is_sub !== 'boolean') {
+      return NextResponse.json({ error: 'Invalid is_sub value.' }, { status: 400 })
+    }
   }
 
   const supabase = createServiceClient()
@@ -56,11 +59,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true })
   }
 
-  const rows = entries.map((e: { player_id: string; team: string; is_gk?: boolean }) => ({
+  const rows = entries.map((e: { player_id: string; team: string; is_gk?: boolean; is_sub?: boolean }) => ({
     match_date: date,
     player_id: e.player_id,
     team: e.team,
     is_gk: e.is_gk ?? false,
+    is_sub: e.is_sub ?? false,
   }))
 
   const { error: insertError } = await supabase.from('weekly_teams').insert(rows)

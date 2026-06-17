@@ -8,7 +8,7 @@ import type { PlayerStats } from '@/lib/runitback/types'
 type FilterMode = 'all' | 'regulars' | 'guests'
 type SortMode = 'overall' | 'goals' | 'motm' | 'name'
 
-export default function PlayersGrid({ stats }: { stats: PlayerStats[] }) {
+export default function PlayersGrid({ stats, showRatings = true }: { stats: PlayerStats[]; showRatings?: boolean }) {
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState<FilterMode>('all')
   const [sort, setSort] = useState<SortMode>('overall')
@@ -84,7 +84,7 @@ export default function PlayersGrid({ stats }: { stats: PlayerStats[] }) {
       ) : (
         <div className="flex flex-wrap gap-5 justify-center sm:justify-start">
           {filtered.map((s) => (
-            <FifaCard key={s.player.id} stats={s} href={`/runitback/players/${s.player.id}`} />
+            <FifaCard key={s.player.id} stats={s} href={`/runitback/players/${s.player.id}`} showRatings={showRatings} />
           ))}
         </div>
       )}

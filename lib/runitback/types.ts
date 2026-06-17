@@ -95,5 +95,15 @@ export interface WeeklyTeamPlayer {
   team: Team
   player_id: string
   is_gk: boolean
+  is_sub: boolean
   created_at: string
 }
+
+export interface LeagueSettings {
+  id: string
+  ratings_public: boolean
+  voting_open: boolean
+  updated_at: string
+}
+
+export type PlayerTier = 1 | 2 | 3
