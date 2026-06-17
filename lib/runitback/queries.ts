@@ -133,11 +133,8 @@ export function buildPlayerStats(
     // No position: balanced across everything
     let wGoals: number, wAssists: number, wMotm: number, wWins: number, wGames: number
     let wCleanSheets: number, wDefPeer: number
-    let benchGoals: number, benchAssists: number
 
-    // Goals/assists use the same benchmark for all outfield positions —
-    // in 5-a-side everyone attacks equally so a CM goal = a ST goal.
-    // Position differences only affect how much wins/clean-sheets matter.
+    // Same benchmark for all positions — in 5-a-side a CM goal = a ST goal.
     const benchGoals = 0.5
     const benchAssists = 0.4
 
