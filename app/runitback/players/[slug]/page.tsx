@@ -97,9 +97,8 @@ export default async function PlayerProfilePage({ params }: PageProps) {
     viewerId ? supabase.from('players').select('role').eq('id', viewerId).single<Pick<Player, 'role'>>() : Promise.resolve({ data: null }),
     supabase.from('league_settings').select('ratings_public').eq('id', 'global').single<Pick<LeagueSettings, 'ratings_public'>>(),
   ])
-  const isMod = viewerRow?.role === 'mod' || viewerRow?.role === 'admin'
   const ratingsPublic = settingsRow?.ratings_public ?? true
-  const showRatings = isMod || ratingsPublic
+  const showRatings = ratingsPublic
 
   const { player, stats, matches, headToHead, receivedRatings, ratingHistory } = data
 
