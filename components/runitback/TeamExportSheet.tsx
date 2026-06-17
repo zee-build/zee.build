@@ -183,13 +183,12 @@ export default function TeamExportSheet({
           </div>
         </div>
 
-        {/* Export card — this is what gets captured */}
+        {/* Export card — outer div scrolls in the modal; inner div is captured in full */}
+        <div className="overflow-y-auto rounded-2xl flex-1 min-h-0" style={{ border: '1px solid #1a1a42' }}>
         <div
           ref={sheetRef}
-          className="overflow-y-auto rounded-2xl flex-1 min-h-0"
           style={{
             background: 'linear-gradient(160deg, #07071a 0%, #0b0b24 60%, #07071a 100%)',
-            border: '1px solid #1a1a42',
             fontFamily: "'Barlow Condensed', 'Open Sans', sans-serif",
           }}
         >
@@ -513,6 +512,7 @@ export default function TeamExportSheet({
               ))}
             </div>
           </div>
+        </div>
         </div>
       </div>
     </div>
