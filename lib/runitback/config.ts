@@ -18,6 +18,10 @@ export const RATING_ATTRIBUTES: { key: RatingAttribute; label: string }[] = [
 // separate from RATING_ATTRIBUTES so it doesn't show up for every player.
 export const GK_RATING_ATTRIBUTE = { key: 'goalkeeping' as const, label: 'GK RATING' }
 
+// Positions a mod can assign per-match, overriding a player's registered
+// position (e.g. an outfield player covering in goal for an injured GK).
+export const POSITIONS = ['GK', 'CB', 'RB', 'LB', 'CM', 'CAM', 'ST', 'LW', 'RW']
+
 // FIFA-style trait badges players can be tagged with (separate from the
 // 6 teammate-rated attributes above).
 export const TRAITS: { id: string; label: string }[] = [

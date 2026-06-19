@@ -43,6 +43,7 @@ export interface MatchPlayer {
   goals: number
   assists: number
   is_motm: boolean
+  played_position: string | null
   created_at: string
 }
 

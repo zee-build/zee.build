@@ -32,7 +32,12 @@ export async function GET(req: NextRequest) {
     matchId: match.id,
     date: match.date,
     dayOfWeek: match.day_of_week,
-    teammates: teammates.map((p) => statsById.get(p.id)).filter(Boolean),
+    teammates: teammates
+      .map((t) => {
+        const stats = statsById.get(t.player.id)
+        return stats ? { stats, playedPosition: t.playedPosition } : null
+      })
+      .filter(Boolean),
   }))
 
   return NextResponse.json({ season: CURRENT_SEASON, pending })

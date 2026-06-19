@@ -116,6 +116,7 @@ export default async function MatchDetailPage({ params }: PageProps) {
               <thead>
                 <tr className="border-b border-rib-border">
                   <th className="rib-heading text-xs text-rib-muted text-left px-4 py-2" style={{ letterSpacing: '1.5px' }}>PLAYER</th>
+                  <th className="rib-heading text-xs text-rib-muted text-center px-3 py-2" style={{ letterSpacing: '1.5px' }}>POS</th>
                   <th className="rib-heading text-xs text-rib-muted text-center px-3 py-2" style={{ letterSpacing: '1.5px' }}>G</th>
                   <th className="rib-heading text-xs text-rib-muted text-center px-3 py-2" style={{ letterSpacing: '1.5px' }}>A</th>
                   <th className="rib-heading text-xs text-rib-muted text-center px-4 py-2" style={{ letterSpacing: '1.5px' }}>MOTM</th>
@@ -128,6 +129,9 @@ export default async function MatchDetailPage({ params }: PageProps) {
                       <Link href={`/runitback/players/${mp.player.id}`} className="rib-heading text-xs hover:text-rib-acc" style={{ letterSpacing: '1.5px' }}>
                         {mp.player.name}
                       </Link>
+                    </td>
+                    <td className="rib-body text-xs text-center px-3 py-3 text-rib-muted">
+                      {mp.played_position ?? mp.player.position ?? '—'}
                     </td>
                     <td className="rib-stat text-sm text-center px-3 py-3">{mp.goals}</td>
                     <td className="rib-stat text-sm text-center px-3 py-3">{mp.assists}</td>

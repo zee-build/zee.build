@@ -326,7 +326,7 @@ export function buildPlayerStats(
 
 export interface PendingMatchRating {
   match: Match
-  teammates: Player[]
+  teammates: { player: Player; playedPosition: string | null }[]
 }
 
 /**
@@ -370,8 +370,11 @@ export function getPendingMatchRatings(
 
     const teammates = roster
       .filter((mp) => mp.player_id !== playerId && !ratedPairs.has(`${match.id}:${mp.player_id}`))
-      .map((mp) => playerById.get(mp.player_id))
-      .filter((p): p is Player => Boolean(p))
+      .map((mp) => {
+        const player = playerById.get(mp.player_id)
+        return player ? { player, playedPosition: mp.played_position } : null
+      })
+      .filter((t): t is { player: Player; playedPosition: string | null } => Boolean(t))
 
     if (teammates.length > 0) pending.push({ match, teammates })
   }

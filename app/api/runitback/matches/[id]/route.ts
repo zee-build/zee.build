@@ -55,13 +55,14 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     return NextResponse.json({ error: deleteError.message }, { status: 500 })
   }
 
-  const rows = players.map((p: { player_id: string; team: string; goals?: number; assists?: number; is_motm?: boolean }) => ({
+  const rows = players.map((p: { player_id: string; team: string; goals?: number; assists?: number; is_motm?: boolean; played_position?: string | null }) => ({
     match_id: id,
     player_id: p.player_id,
     team: p.team,
     goals: p.goals ?? 0,
     assists: p.assists ?? 0,
     is_motm: p.is_motm ?? false,
+    played_position: p.played_position || null,
   }))
 
   const { error: rosterError } = await supabase.from('match_players').insert(rows)
