@@ -38,9 +38,21 @@ export function buildPlayerStats(
   matchPlayers: MatchPlayer[],
   ratings: PeerRating[] = []
 ): PlayerStats[] {
-  // Only count matches that have already been played (date ≤ today UTC).
-  const todayStr = new Date().toISOString().slice(0, 10)
-  const playedMatches = matches.filter((m) => m.date <= todayStr)
+  // Only count matches that have already been played.
+  // If a match has a kickoff time, compare the full datetime so a same-day
+  // scheduled game isn't counted until after kickoff.
+  const now = new Date()
+  const todayStr = now.toISOString().slice(0, 10)
+  const playedMatches = matches.filter((m) => {
+    if (m.date > todayStr) return false
+    if (m.date === todayStr && m.match_time) {
+      const [h, min] = m.match_time.split(':').map(Number)
+      const kickoff = new Date(now)
+      kickoff.setHours(h, min, 0, 0)
+      return now >= kickoff
+    }
+    return true
+  })
 
   const matchById = new Map(playedMatches.map((m) => [m.id, m]))
   const sortedMatches = [...playedMatches].sort(
@@ -318,15 +330,22 @@ export function getPendingMatchRatings(
       .map((r) => `${r.match_id}:${r.ratee_id}`)
   )
 
-  // Only open rating for matches in the last 7 days; exclude future (scheduled) matches.
-  const todayStr = new Date().toISOString().slice(0, 10)
+  // Only open rating for matches in the last 7 days; exclude future/unplayed matches.
+  const ratingNow = new Date()
+  const ratingTodayStr = ratingNow.toISOString().slice(0, 10)
   const cutoff = new Date()
   cutoff.setUTCDate(cutoff.getUTCDate() - 7)
 
   const pending: PendingMatchRating[] = []
   for (const match of matches) {
     if (new Date(match.date).getFullYear() !== CURRENT_SEASON) continue
-    if (match.date > todayStr) continue
+    if (match.date > ratingTodayStr) continue
+    if (match.date === ratingTodayStr && match.match_time) {
+      const [h, min] = match.match_time.split(':').map(Number)
+      const kickoff = new Date(ratingNow)
+      kickoff.setHours(h, min, 0, 0)
+      if (ratingNow < kickoff) continue
+    }
     if (new Date(match.date) < cutoff) continue
     const roster = matchPlayers.filter((mp) => mp.match_id === match.id)
     const playedInMatch = roster.some((mp) => mp.player_id === playerId)

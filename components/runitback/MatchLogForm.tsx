@@ -27,6 +27,7 @@ interface MatchLogFormProps {
 export default function MatchLogForm({ players, match, onSaved, onCancel }: MatchLogFormProps) {
   const isEditing = !!match
   const [date, setDate] = useState(() => match?.date ?? new Date().toISOString().slice(0, 10))
+  const [matchTime, setMatchTime] = useState(match?.match_time ?? '20:00')
   const [dayOfWeek, setDayOfWeek] = useState<DayOfWeek>(match?.day_of_week ?? 'Friday')
   const [location, setLocation] = useState(match?.location ?? 'Sharjah')
   const [notes, setNotes] = useState(match?.notes ?? '')
@@ -103,6 +104,7 @@ export default function MatchLogForm({ players, match, onSaved, onCancel }: Matc
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           date,
+          match_time: matchTime || null,
           day_of_week: dayOfWeek,
           location,
           notes: notes.trim() || null,
@@ -157,7 +159,7 @@ export default function MatchLogForm({ players, match, onSaved, onCancel }: Matc
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
         <div>
           <label className="rib-heading text-xs text-rib-muted block mb-1.5" style={{ letterSpacing: '1.5px' }}>
             DATE
@@ -166,6 +168,17 @@ export default function MatchLogForm({ players, match, onSaved, onCancel }: Matc
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
+            className="w-full bg-rib-bg2 border border-rib-border rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-rib-acc"
+          />
+        </div>
+        <div>
+          <label className="rib-heading text-xs text-rib-muted block mb-1.5" style={{ letterSpacing: '1.5px' }}>
+            KICKOFF TIME
+          </label>
+          <input
+            type="time"
+            value={matchTime}
+            onChange={(e) => setMatchTime(e.target.value)}
             className="w-full bg-rib-bg2 border border-rib-border rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-rib-acc"
           />
         </div>

@@ -26,6 +26,7 @@ export interface Match {
   date: string
   day_of_week: DayOfWeek
   location: string
+  match_time: string | null
   team_a_score: number
   team_b_score: number
   notes: string | null

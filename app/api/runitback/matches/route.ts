@@ -30,12 +30,14 @@ export async function POST(req: NextRequest) {
 
   const supabase = createServiceClient()
 
+  const { match_time } = body
   const { data: match, error: matchError } = await supabase
     .from('matches')
     .insert({
       date,
       day_of_week,
       location: location || 'Sharjah',
+      match_time: match_time || null,
       team_a_score: team_a_score ?? 0,
       team_b_score: team_b_score ?? 0,
       notes: notes || null,
