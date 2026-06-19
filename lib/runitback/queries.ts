@@ -382,16 +382,6 @@ export function getPendingMatchRatings(
   return pending.sort((a, b) => new Date(b.match.date).getTime() - new Date(a.match.date).getTime())
 }
 
-// MOTM voting stays open for the same window players have to rate each other.
-const MOTM_VOTING_WINDOW_DAYS = 7
-
-/** True once a match's MOTM voting window has fully elapsed. */
-export function isMotmVotingClosed(match: Match): boolean {
-  const closesAt = new Date(`${match.date}T00:00:00.000Z`)
-  closesAt.setUTCDate(closesAt.getUTCDate() + MOTM_VOTING_WINDOW_DAYS)
-  return new Date() >= closesAt
-}
-
 export interface MotmTallyEntry {
   playerId: string
   votes: number
@@ -410,12 +400,11 @@ export function getMotmTally(matchId: string, votes: MotmVote[]): MotmTallyEntry
 }
 
 /**
- * The fan-voted MOTM for a match, once voting has closed. Returns null
- * while voting is still open, if nobody voted, or if the top spot ties.
+ * Who the fan vote currently favors for a match. Returns null if nobody has
+ * voted yet, or if the top spot is tied — a mod must resolve ties manually.
  */
-export function getFanMotmWinner(match: Match, votes: MotmVote[]): string | null {
-  if (!isMotmVotingClosed(match)) return null
-  const tally = getMotmTally(match.id, votes)
+export function getMotmLeader(matchId: string, votes: MotmVote[]): string | null {
+  const tally = getMotmTally(matchId, votes)
   if (tally.length === 0) return null
   if (tally.length > 1 && tally[0].votes === tally[1].votes) return null
   return tally[0].playerId

@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
 import { createClient } from '@/lib/runitback/supabase'
-import { buildMatchesWithPlayers, getFanMotmWinner, PUBLIC_PLAYER_COLUMNS } from '@/lib/runitback/queries'
+import { buildMatchesWithPlayers, PUBLIC_PLAYER_COLUMNS } from '@/lib/runitback/queries'
 import MatchesTimeline from '@/components/runitback/MatchesTimeline'
-import type { Match, MatchPlayer, MotmVote, Player } from '@/lib/runitback/types'
+import type { Match, MatchPlayer, Player } from '@/lib/runitback/types'
 
 export const metadata: Metadata = {
   title: 'Run It Back — Matches',
@@ -12,17 +12,13 @@ export const metadata: Metadata = {
 export default async function MatchesPage() {
   const supabase = createClient()
 
-  const [{ data: players }, { data: matches }, { data: matchPlayers }, { data: votes }] = await Promise.all([
+  const [{ data: players }, { data: matches }, { data: matchPlayers }] = await Promise.all([
     supabase.from('players').select(PUBLIC_PLAYER_COLUMNS).returns<Player[]>(),
     supabase.from('matches').select('*').returns<Match[]>(),
     supabase.from('match_players').select('*').returns<MatchPlayer[]>(),
-    supabase.from('motm_votes').select('*').returns<MotmVote[]>(),
   ])
 
-  const matchesWithPlayers = buildMatchesWithPlayers(matches ?? [], matchPlayers ?? [], players ?? []).map((m) => ({
-    ...m,
-    fanMotmId: getFanMotmWinner(m, votes ?? []),
-  }))
+  const matchesWithPlayers = buildMatchesWithPlayers(matches ?? [], matchPlayers ?? [], players ?? [])
 
   return (
     <div className="rib-page">
