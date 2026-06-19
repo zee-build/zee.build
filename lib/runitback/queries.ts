@@ -1,4 +1,4 @@
-import type { Match, MatchPlayer, MatchResult, MatchWithPlayers, PeerRating, Player, PlayerStats, RatingAttribute } from './types'
+import type { Match, MatchPlayer, MatchResult, MatchWithPlayers, MotmVote, PeerRating, Player, PlayerStats, RatingAttribute } from './types'
 import { CURRENT_SEASON, RATING_ATTRIBUTES } from './config'
 
 /** Columns safe to return to the browser — excludes password_hash. */
@@ -68,6 +68,7 @@ export function buildPlayerStats(
     string,
     { sum: number; count: number; attrSum: Record<RatingAttribute, number> }
   >()
+  const gkTotals = new Map<string, { sum: number; count: number }>()
   for (const r of ratings) {
     if (r.season !== CURRENT_SEASON) continue
     const avgAttr = (r.pace + r.shooting + r.passing + r.dribbling + r.defending + r.physical) / 6
@@ -80,6 +81,13 @@ export function buildPlayerStats(
     entry.count += 1
     for (const { key } of RATING_ATTRIBUTES) entry.attrSum[key] += r[key]
     ratingTotals.set(r.ratee_id, entry)
+
+    if (typeof r.goalkeeping === 'number') {
+      const gkEntry = gkTotals.get(r.ratee_id) ?? { sum: 0, count: 0 }
+      gkEntry.sum += r.goalkeeping
+      gkEntry.count += 1
+      gkTotals.set(r.ratee_id, gkEntry)
+    }
   }
 
   const stats = players.map((player) => {
@@ -228,6 +236,11 @@ export function buildPlayerStats(
       }
     }
 
+    const gkEntry = gkTotals.get(player.id)
+    const gkRating = gkEntry && gkEntry.count > 0
+      ? Math.round(60 + ((gkEntry.sum / gkEntry.count - 1) / 9) * 39)
+      : null
+
     return {
       player,
       games,
@@ -245,6 +258,7 @@ export function buildPlayerStats(
       communityRating,
       communityRatingCount,
       attributeRatings,
+      gkRating,
       awardsEligible,
       seasonAward: null as PlayerStats['seasonAward'],
       weeklyAward: null as PlayerStats['weeklyAward'],
@@ -345,8 +359,8 @@ export function getPendingMatchRatings(
     if (match.date > ratingTodayStr) continue
     if (match.date === ratingTodayStr && match.match_time) {
       const [h, min] = match.match_time.split(':').map(Number)
-      const kickoff = new Date(ratingNow)
-      kickoff.setHours(h, min, 0, 0)
+      const kickoff = new Date(`${match.date}T00:00:00.000Z`)
+      kickoff.setUTCHours(h, min, 0, 0)
       if (ratingNow < kickoff) continue
     }
     if (new Date(match.date) < cutoff) continue
@@ -356,6 +370,59 @@ export function getPendingMatchRatings(
 
     const teammates = roster
       .filter((mp) => mp.player_id !== playerId && !ratedPairs.has(`${match.id}:${mp.player_id}`))
+      .map((mp) => playerById.get(mp.player_id))
+      .filter((p): p is Player => Boolean(p))
+
+    if (teammates.length > 0) pending.push({ match, teammates })
+  }
+
+  return pending.sort((a, b) => new Date(b.match.date).getTime() - new Date(a.match.date).getTime())
+}
+
+export interface PendingMotmVote {
+  match: Match
+  teammates: Player[]
+}
+
+/**
+ * Matches `playerId` played in (current season, last 7 days) for which they
+ * haven't yet cast their one MOTM vote. Excludes themselves from the
+ * votable teammate list.
+ */
+export function getPendingMotmVotes(
+  playerId: string,
+  matches: Match[],
+  matchPlayers: MatchPlayer[],
+  players: Player[],
+  votes: MotmVote[]
+): PendingMotmVote[] {
+  const playerById = new Map(players.map((p) => [p.id, p]))
+  const votedMatchIds = new Set(votes.filter((v) => v.voter_id === playerId).map((v) => v.match_id))
+
+  const now = new Date()
+  const todayStr = now.toISOString().slice(0, 10)
+  const cutoff = new Date()
+  cutoff.setUTCDate(cutoff.getUTCDate() - 7)
+
+  const pending: PendingMotmVote[] = []
+  for (const match of matches) {
+    if (new Date(match.date).getFullYear() !== CURRENT_SEASON) continue
+    if (match.date > todayStr) continue
+    if (match.date === todayStr && match.match_time) {
+      const [h, min] = match.match_time.split(':').map(Number)
+      const kickoff = new Date(`${match.date}T00:00:00.000Z`)
+      kickoff.setUTCHours(h, min, 0, 0)
+      if (now < kickoff) continue
+    }
+    if (new Date(match.date) < cutoff) continue
+    if (votedMatchIds.has(match.id)) continue
+
+    const roster = matchPlayers.filter((mp) => mp.match_id === match.id)
+    const playedInMatch = roster.some((mp) => mp.player_id === playerId)
+    if (!playedInMatch) continue
+
+    const teammates = roster
+      .filter((mp) => mp.player_id !== playerId)
       .map((mp) => playerById.get(mp.player_id))
       .filter((p): p is Player => Boolean(p))
 

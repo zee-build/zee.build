@@ -11,6 +11,7 @@ interface FifaMenuGridProps {
   topStreak: { player: PlayerStats } | null
   totalGoals: number
   pendingRatings?: number
+  pendingMotmVotes?: number
   isMod?: boolean
 }
 
@@ -75,6 +76,7 @@ export default function FifaMenuGrid({
   topStreak,
   totalGoals,
   pendingRatings = 0,
+  pendingMotmVotes = 0,
   isMod = false,
 }: FifaMenuGridProps) {
   return (
@@ -159,6 +161,19 @@ export default function FifaMenuGrid({
             stat={pendingRatings}
             statLabel="TO RATE"
             icon={<Star size={56} />}
+            newTab
+          />
+        )}
+
+        {pendingMotmVotes > 0 && (
+          <MenuTile
+            href="/runitback/motm"
+            label="MAN OF THE MATCH"
+            title="VOTE MOTM"
+            sub="One vote per match"
+            stat={pendingMotmVotes}
+            statLabel="TO VOTE"
+            icon={<Trophy size={56} />}
             newTab
           />
         )}

@@ -1,12 +1,12 @@
 import type { Metadata } from 'next'
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/runitback/supabase'
-import { buildPlayerStats, getPendingMatchRatings, PUBLIC_PLAYER_COLUMNS } from '@/lib/runitback/queries'
+import { buildPlayerStats, getPendingMatchRatings, getPendingMotmVotes, PUBLIC_PLAYER_COLUMNS } from '@/lib/runitback/queries'
 import { readSessionToken, SESSION_COOKIE_NAME } from '@/lib/runitback/playerAuth'
 import { CURRENT_SEASON } from '@/lib/runitback/config'
 import FifaMenuGrid from '@/components/runitback/FifaMenuGrid'
 import WelcomeSplash from '@/components/runitback/WelcomeSplash'
-import type { Match, MatchPlayer, PeerRating, Player } from '@/lib/runitback/types'
+import type { Match, MatchPlayer, MotmVote, PeerRating, Player } from '@/lib/runitback/types'
 
 export const metadata: Metadata = {
   title: 'Run It Back — Home',
@@ -18,17 +18,19 @@ export default async function RunItBackHome() {
   const cookieStore = await cookies()
   const playerId = readSessionToken(cookieStore.get(SESSION_COOKIE_NAME)?.value)
 
-  const [{ data: players }, { data: matches }, { data: matchPlayers }, { data: ratings }] = await Promise.all([
+  const [{ data: players }, { data: matches }, { data: matchPlayers }, { data: ratings }, { data: votes }] = await Promise.all([
     supabase.from('players').select(PUBLIC_PLAYER_COLUMNS).returns<Player[]>(),
     supabase.from('matches').select('*').order('date', { ascending: false }).returns<Match[]>(),
     supabase.from('match_players').select('*').returns<MatchPlayer[]>(),
     supabase.from('peer_ratings').select('*').eq('season', CURRENT_SEASON).returns<PeerRating[]>(),
+    supabase.from('motm_votes').select('*').eq('season', CURRENT_SEASON).returns<MotmVote[]>(),
   ])
 
   const allPlayers = players ?? []
   const allMatches = matches ?? []
   const allMatchPlayers = matchPlayers ?? []
   const allRatings = ratings ?? []
+  const allVotes = votes ?? []
 
   const stats = buildPlayerStats(allPlayers, allMatches, allMatchPlayers, allRatings)
 
@@ -48,6 +50,10 @@ export default async function RunItBackHome() {
       )
     : 0
 
+  const pendingMotmCount = playerId
+    ? getPendingMotmVotes(playerId, allMatches, allMatchPlayers, allPlayers, allVotes).length
+    : 0
+
   return (
     <>
     <WelcomeSplash />
@@ -59,6 +65,7 @@ export default async function RunItBackHome() {
       topStreak={topStreakStat ? { player: topStreakStat } : null}
       totalGoals={totalGoals}
       pendingRatings={pendingCount}
+      pendingMotmVotes={pendingMotmCount}
       isMod={isMod}
     />
     </>

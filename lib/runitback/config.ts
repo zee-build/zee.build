@@ -14,6 +14,10 @@ export const RATING_ATTRIBUTES: { key: RatingAttribute; label: string }[] = [
   { key: 'physical', label: 'PHYSICAL' },
 ]
 
+// Extra attribute only rated when the teammate played in goal — kept
+// separate from RATING_ATTRIBUTES so it doesn't show up for every player.
+export const GK_RATING_ATTRIBUTE = { key: 'goalkeeping' as const, label: 'GK RATING' }
+
 // FIFA-style trait badges players can be tagged with (separate from the
 // 6 teammate-rated attributes above).
 export const TRAITS: { id: string; label: string }[] = [

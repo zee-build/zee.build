@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { Loader2, X } from 'lucide-react'
 import FifaCard from './FifaCard'
-import { RATING_ATTRIBUTES } from '@/lib/runitback/config'
+import { GK_RATING_ATTRIBUTE, RATING_ATTRIBUTES } from '@/lib/runitback/config'
 import type { DayOfWeek, PlayerStats, RatingAttribute } from '@/lib/runitback/types'
 
 const DEFAULT_VALUES: Record<RatingAttribute, number> = {
@@ -32,6 +32,7 @@ export default function RatePlayersForm() {
   const [pending, setPending] = useState<PendingMatch[] | null>(null)
   const [selected, setSelected] = useState<SelectedRating | null>(null)
   const [values, setValues] = useState<Record<RatingAttribute, number>>(DEFAULT_VALUES)
+  const [gkRating, setGkRating] = useState(5)
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
@@ -48,6 +49,7 @@ export default function RatePlayersForm() {
   const openRating = (matchId: string, player: PlayerStats) => {
     setError('')
     setValues(DEFAULT_VALUES)
+    setGkRating(5)
     setSelected({ matchId, player })
   }
 
@@ -56,10 +58,16 @@ export default function RatePlayersForm() {
     setError('')
     setSubmitting(true)
     try {
+      const isGoalkeeper = selected.player.player.position === 'GK'
       const res = await fetch('/api/runitback/ratings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ match_id: selected.matchId, ratee_id: selected.player.player.id, ...values }),
+        body: JSON.stringify({
+          match_id: selected.matchId,
+          ratee_id: selected.player.player.id,
+          ...values,
+          goalkeeping: isGoalkeeper ? gkRating : null,
+        }),
       })
       const data = await res.json()
       if (!res.ok) {
@@ -180,6 +188,26 @@ export default function RatePlayersForm() {
                   />
                 </div>
               ))}
+
+              {selected.player.player.position === 'GK' && (
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="rib-heading text-xs text-rib-muted" style={{ letterSpacing: '1.5px' }}>
+                      {GK_RATING_ATTRIBUTE.label}
+                    </span>
+                    <span className="rib-stat text-lg">{gkRating}</span>
+                  </div>
+                  <input
+                    type="range"
+                    min={1}
+                    max={10}
+                    step={1}
+                    value={gkRating}
+                    onChange={(e) => setGkRating(Number(e.target.value))}
+                    className="w-full accent-rib-acc"
+                  />
+                </div>
+              )}
             </div>
 
             {error && <p className="rib-body text-red-400 text-sm mt-4">{error}</p>}

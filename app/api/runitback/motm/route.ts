@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/runitback/supabase'
 import { readSession } from '@/lib/runitback/playerAuth'
-import { CURRENT_SEASON, RATING_ATTRIBUTES } from '@/lib/runitback/config'
-import { buildPlayerStats, getPendingMatchRatings, PUBLIC_PLAYER_COLUMNS } from '@/lib/runitback/queries'
-import type { Match, MatchPlayer, PeerRating, Player } from '@/lib/runitback/types'
+import { CURRENT_SEASON } from '@/lib/runitback/config'
+import { buildPlayerStats, getPendingMotmVotes, PUBLIC_PLAYER_COLUMNS } from '@/lib/runitback/queries'
+import type { Match, MatchPlayer, MotmVote, PeerRating, Player } from '@/lib/runitback/types'
 
 export async function GET(req: NextRequest) {
   const playerId = readSession(req)
@@ -12,19 +12,22 @@ export async function GET(req: NextRequest) {
   }
 
   const supabase = createServiceClient()
-  const [{ data: players }, { data: matches }, { data: matchPlayers }, { data: ratings }] = await Promise.all([
-    supabase.from('players').select(PUBLIC_PLAYER_COLUMNS).returns<Player[]>(),
-    supabase.from('matches').select('*').returns<Match[]>(),
-    supabase.from('match_players').select('*').returns<MatchPlayer[]>(),
-    supabase.from('peer_ratings').select('*').eq('season', CURRENT_SEASON).returns<PeerRating[]>(),
-  ])
+  const [{ data: players }, { data: matches }, { data: matchPlayers }, { data: ratings }, { data: votes }] =
+    await Promise.all([
+      supabase.from('players').select(PUBLIC_PLAYER_COLUMNS).returns<Player[]>(),
+      supabase.from('matches').select('*').returns<Match[]>(),
+      supabase.from('match_players').select('*').returns<MatchPlayer[]>(),
+      supabase.from('peer_ratings').select('*').eq('season', CURRENT_SEASON).returns<PeerRating[]>(),
+      supabase.from('motm_votes').select('*').eq('season', CURRENT_SEASON).returns<MotmVote[]>(),
+    ])
 
   const allPlayers = players ?? []
   const allMatches = matches ?? []
   const allMatchPlayers = matchPlayers ?? []
   const allRatings = ratings ?? []
+  const allVotes = votes ?? []
 
-  const pendingMatches = getPendingMatchRatings(playerId, allMatches, allMatchPlayers, allPlayers, allRatings)
+  const pendingMatches = getPendingMotmVotes(playerId, allMatches, allMatchPlayers, allPlayers, allVotes)
   const stats = buildPlayerStats(allPlayers, allMatches, allMatchPlayers, allRatings)
   const statsById = new Map(stats.map((s) => [s.player.id, s]))
 
@@ -44,7 +47,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  // Check voter is not suspended
   const supabase = createServiceClient()
   const { data: voter } = await supabase
     .from('players')
@@ -56,38 +58,13 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json()
-  const { match_id, ratee_id } = body
+  const { match_id, votee_id } = body
 
   if (typeof match_id !== 'string' || !match_id) {
     return NextResponse.json({ error: 'Invalid match.' }, { status: 400 })
   }
-  if (typeof ratee_id !== 'string' || ratee_id === playerId) {
-    return NextResponse.json({ error: 'Invalid player.' }, { status: 400 })
-  }
-
-  const attrs: Record<string, number> = {}
-  for (const { key } of RATING_ATTRIBUTES) {
-    const value = body[key]
-    if (typeof value !== 'number' || !Number.isInteger(value) || value < 1 || value > 10) {
-      return NextResponse.json(
-        { error: `${key} must be a whole number between 1 and 10.` },
-        { status: 400 }
-      )
-    }
-    attrs[key] = value
-  }
-
-  let goalkeeping: number | null = null
-  if (body.goalkeeping !== undefined && body.goalkeeping !== null) {
-    if (
-      typeof body.goalkeeping !== 'number' ||
-      !Number.isInteger(body.goalkeeping) ||
-      body.goalkeeping < 1 ||
-      body.goalkeeping > 10
-    ) {
-      return NextResponse.json({ error: 'goalkeeping must be a whole number between 1 and 10.' }, { status: 400 })
-    }
-    goalkeeping = body.goalkeeping
+  if (typeof votee_id !== 'string' || votee_id === playerId) {
+    return NextResponse.json({ error: 'You cannot vote for yourself.' }, { status: 400 })
   }
 
   const { data: roster } = await supabase
@@ -97,32 +74,32 @@ export async function POST(req: NextRequest) {
     .returns<{ player_id: string }[]>()
 
   const rosterIds = new Set((roster ?? []).map((r) => r.player_id))
-  if (!rosterIds.has(playerId) || !rosterIds.has(ratee_id)) {
+  if (!rosterIds.has(playerId) || !rosterIds.has(votee_id)) {
     return NextResponse.json({ error: 'Both players must have played in this match.' }, { status: 400 })
   }
 
   const { data: existing } = await supabase
-    .from('peer_ratings')
+    .from('motm_votes')
     .select('id')
     .eq('match_id', match_id)
-    .eq('rater_id', playerId)
-    .eq('ratee_id', ratee_id)
+    .eq('voter_id', playerId)
     .maybeSingle()
 
   if (existing) {
-    return NextResponse.json({ error: 'You already rated this player for this match.' }, { status: 409 })
+    return NextResponse.json({ error: 'You already voted for this match.' }, { status: 409 })
   }
 
-  const { error } = await supabase.from('peer_ratings').insert({
+  const { error } = await supabase.from('motm_votes').insert({
     season: CURRENT_SEASON,
     match_id,
-    rater_id: playerId,
-    ratee_id,
-    ...attrs,
-    goalkeeping,
+    voter_id: playerId,
+    votee_id,
   })
 
   if (error) {
+    if (error.code === '23505') {
+      return NextResponse.json({ error: 'You already voted for this match.' }, { status: 409 })
+    }
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 

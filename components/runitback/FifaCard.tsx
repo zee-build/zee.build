@@ -97,11 +97,16 @@ export default function FifaCard({ stats, variant = 'mini', href, onClick, showR
     { label: 'STR', value: stats.streak },
   ]
 
-  // Back face: teammate-rated skill attributes
+  // Back face: teammate-rated skill attributes.
+  // Goalkeepers swap SHOOTING for their dedicated GK rating since it's
+  // the more relevant stat and the card layout is fixed at 6 slots.
   const ratings = stats.attributeRatings
+  const isGK = player.position === 'GK'
   const skillAttrs: StatAttr[] = [
     { label: 'PAC', value: showRatings ? (ratings?.pace ?? '—') : '—' },
-    { label: 'SHO', value: showRatings ? (ratings?.shooting ?? '—') : '—' },
+    isGK
+      ? { label: 'GKR', value: showRatings ? (stats.gkRating ?? '—') : '—' }
+      : { label: 'SHO', value: showRatings ? (ratings?.shooting ?? '—') : '—' },
     { label: 'PAS', value: showRatings ? (ratings?.passing ?? '—') : '—' },
     { label: 'DRI', value: showRatings ? (ratings?.dribbling ?? '—') : '—' },
     { label: 'DEF', value: showRatings ? (ratings?.defending ?? '—') : '—' },
