@@ -12,7 +12,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
   const { id } = await params
   const body = await req.json()
-  const { date, day_of_week, location, notes, team_a_score, team_b_score, players } = body
+  const { date, day_of_week, location, notes, match_time, team_a_score, team_b_score, players } = body
 
   if (typeof date !== 'string' || !date) {
     return NextResponse.json({ error: 'Date is required.' }, { status: 400 })
@@ -37,6 +37,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       date,
       day_of_week,
       location: location || 'Sharjah',
+      match_time: match_time || null,
       team_a_score: team_a_score ?? 0,
       team_b_score: team_b_score ?? 0,
       notes: notes || null,
