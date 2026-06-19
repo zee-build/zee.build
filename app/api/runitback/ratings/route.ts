@@ -32,7 +32,12 @@ export async function GET(req: NextRequest) {
     matchId: match.id,
     date: match.date,
     dayOfWeek: match.day_of_week,
-    teammates: teammates.map((p) => statsById.get(p.id)).filter(Boolean),
+    teammates: teammates
+      .map((t) => {
+        const stats = statsById.get(t.player.id)
+        return stats ? { stats, playedPosition: t.playedPosition } : null
+      })
+      .filter(Boolean),
   }))
 
   return NextResponse.json({ season: CURRENT_SEASON, pending })
@@ -77,6 +82,19 @@ export async function POST(req: NextRequest) {
     attrs[key] = value
   }
 
+  let goalkeeping: number | null = null
+  if (body.goalkeeping !== undefined && body.goalkeeping !== null) {
+    if (
+      typeof body.goalkeeping !== 'number' ||
+      !Number.isInteger(body.goalkeeping) ||
+      body.goalkeeping < 1 ||
+      body.goalkeeping > 10
+    ) {
+      return NextResponse.json({ error: 'goalkeeping must be a whole number between 1 and 10.' }, { status: 400 })
+    }
+    goalkeeping = body.goalkeeping
+  }
+
   const { data: roster } = await supabase
     .from('match_players')
     .select('player_id')
@@ -106,6 +124,7 @@ export async function POST(req: NextRequest) {
     rater_id: playerId,
     ratee_id,
     ...attrs,
+    goalkeeping,
   })
 
   if (error) {

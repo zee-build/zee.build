@@ -43,6 +43,7 @@ export interface MatchPlayer {
   goals: number
   assists: number
   is_motm: boolean
+  played_position: string | null
   created_at: string
 }
 
@@ -65,6 +66,7 @@ export interface PlayerStats {
   communityRating: number | null
   communityRatingCount: number
   attributeRatings: Record<RatingAttribute, number> | null
+  gkRating: number | null
   awardsEligible: boolean
   seasonAward: 'toty' | 'hero' | null
   weeklyAward: 'potw' | null
@@ -86,6 +88,7 @@ export interface PeerRating {
   dribbling: number
   defending: number
   physical: number
+  goalkeeping: number | null
   created_at: string
 }
 
@@ -109,3 +112,12 @@ export interface LeagueSettings {
 }
 
 export type PlayerTier = 1 | 2 | 3
+
+export interface MotmVote {
+  id: string
+  season: number
+  match_id: string
+  voter_id: string
+  votee_id: string
+  created_at: string
+}

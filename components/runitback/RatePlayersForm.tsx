@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { Loader2, X } from 'lucide-react'
 import FifaCard from './FifaCard'
-import { RATING_ATTRIBUTES } from '@/lib/runitback/config'
+import { GK_RATING_ATTRIBUTE, RATING_ATTRIBUTES } from '@/lib/runitback/config'
 import type { DayOfWeek, PlayerStats, RatingAttribute } from '@/lib/runitback/types'
 
 const DEFAULT_VALUES: Record<RatingAttribute, number> = {
@@ -15,16 +15,21 @@ const DEFAULT_VALUES: Record<RatingAttribute, number> = {
   physical: 5,
 }
 
+interface Teammate {
+  stats: PlayerStats
+  playedPosition: string | null
+}
+
 interface PendingMatch {
   matchId: string
   date: string
   dayOfWeek: DayOfWeek
-  teammates: PlayerStats[]
+  teammates: Teammate[]
 }
 
 interface SelectedRating {
   matchId: string
-  player: PlayerStats
+  teammate: Teammate
 }
 
 export default function RatePlayersForm() {
@@ -32,6 +37,7 @@ export default function RatePlayersForm() {
   const [pending, setPending] = useState<PendingMatch[] | null>(null)
   const [selected, setSelected] = useState<SelectedRating | null>(null)
   const [values, setValues] = useState<Record<RatingAttribute, number>>(DEFAULT_VALUES)
+  const [gkRating, setGkRating] = useState(5)
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
@@ -45,11 +51,14 @@ export default function RatePlayersForm() {
       .catch(() => setError('Could not load players to rate.'))
   }, [])
 
-  const openRating = (matchId: string, player: PlayerStats) => {
+  const openRating = (matchId: string, teammate: Teammate) => {
     setError('')
     setValues(DEFAULT_VALUES)
-    setSelected({ matchId, player })
+    setGkRating(5)
+    setSelected({ matchId, teammate })
   }
+
+  const isGoalkeeper = (t: Teammate) => (t.playedPosition ?? t.stats.player.position) === 'GK'
 
   const handleSubmit = async () => {
     if (!selected) return
@@ -59,19 +68,24 @@ export default function RatePlayersForm() {
       const res = await fetch('/api/runitback/ratings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ match_id: selected.matchId, ratee_id: selected.player.player.id, ...values }),
+        body: JSON.stringify({
+          match_id: selected.matchId,
+          ratee_id: selected.teammate.stats.player.id,
+          ...values,
+          goalkeeping: isGoalkeeper(selected.teammate) ? gkRating : null,
+        }),
       })
       const data = await res.json()
       if (!res.ok) {
         setError(data.error ?? 'Something went wrong.')
         return
       }
-      const { matchId, player } = selected
+      const { matchId, teammate } = selected
       setPending((prev) =>
         (prev ?? [])
           .map((m) =>
             m.matchId === matchId
-              ? { ...m, teammates: m.teammates.filter((s) => s.player.id !== player.player.id) }
+              ? { ...m, teammates: m.teammates.filter((t) => t.stats.player.id !== teammate.stats.player.id) }
               : m
           )
           .filter((m) => m.teammates.length > 0)
@@ -119,12 +133,12 @@ export default function RatePlayersForm() {
               {match.dayOfWeek.toUpperCase()}
             </h2>
             <div className="flex flex-wrap gap-4">
-              {match.teammates.map((s) => (
+              {match.teammates.map((t) => (
                 <FifaCard
-                  key={s.player.id}
-                  stats={s}
+                  key={t.stats.player.id}
+                  stats={t.stats}
                   variant="mini"
-                  onClick={() => openRating(match.matchId, s)}
+                  onClick={() => openRating(match.matchId, t)}
                 />
               ))}
             </div>
@@ -155,7 +169,7 @@ export default function RatePlayersForm() {
               RATE
             </p>
             <h2 className="rib-heading text-xl mb-4">
-              {selected.player.player.name}
+              {selected.teammate.stats.player.name}
             </h2>
 
             <div className="space-y-4">
@@ -180,6 +194,26 @@ export default function RatePlayersForm() {
                   />
                 </div>
               ))}
+
+              {isGoalkeeper(selected.teammate) && (
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="rib-heading text-xs text-rib-muted" style={{ letterSpacing: '1.5px' }}>
+                      {GK_RATING_ATTRIBUTE.label}
+                    </span>
+                    <span className="rib-stat text-lg">{gkRating}</span>
+                  </div>
+                  <input
+                    type="range"
+                    min={1}
+                    max={10}
+                    step={1}
+                    value={gkRating}
+                    onChange={(e) => setGkRating(Number(e.target.value))}
+                    className="w-full accent-rib-acc"
+                  />
+                </div>
+              )}
             </div>
 
             {error && <p className="rib-body text-red-400 text-sm mt-4">{error}</p>}

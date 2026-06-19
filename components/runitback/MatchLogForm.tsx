@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import { adminFetch } from '@/lib/runitback/admin'
+import { POSITIONS } from '@/lib/runitback/config'
 import type { DayOfWeek, MatchWithPlayers, Player, Team } from '@/lib/runitback/types'
 
 interface RosterRow {
@@ -10,6 +11,7 @@ interface RosterRow {
   goals: number
   assists: number
   isMotm: boolean
+  playedPosition: string | null
 }
 
 const DAYS: { value: DayOfWeek; label: string }[] = [
@@ -39,6 +41,7 @@ export default function MatchLogForm({ players, match, onSaved, onCancel }: Matc
         goals: mp.goals,
         assists: mp.assists,
         isMotm: mp.is_motm,
+        playedPosition: mp.played_position,
       })) ?? []
   )
   const [selectedPlayer, setSelectedPlayer] = useState('')
@@ -65,7 +68,7 @@ export default function MatchLogForm({ players, match, onSaved, onCancel }: Matc
     if (!selectedPlayer) return
     setRoster((prev) => [
       ...prev,
-      { playerId: selectedPlayer, team: 'A', goals: 0, assists: 0, isMotm: false },
+      { playerId: selectedPlayer, team: 'A', goals: 0, assists: 0, isMotm: false, playedPosition: null },
     ])
     setSelectedPlayer('')
   }
@@ -116,6 +119,7 @@ export default function MatchLogForm({ players, match, onSaved, onCancel }: Matc
             goals: r.goals,
             assists: r.assists,
             is_motm: r.isMotm,
+            played_position: r.playedPosition,
           })),
         }),
       })
@@ -266,6 +270,17 @@ export default function MatchLogForm({ players, match, onSaved, onCancel }: Matc
                     </button>
                   ))}
                 </div>
+                <select
+                  value={row.playedPosition ?? ''}
+                  onChange={(e) => updateRow(row.playerId, { playedPosition: e.target.value || null })}
+                  title="Position played this match (overrides registered position)"
+                  className="bg-rib-bg2 border border-rib-border rounded px-2 py-1.5 text-white text-xs focus:outline-none focus:border-rib-acc"
+                >
+                  <option value="">{player.position ?? 'POS'} (default)</option>
+                  {POSITIONS.filter((p) => p !== player.position).map((p) => (
+                    <option key={p} value={p}>{p}</option>
+                  ))}
+                </select>
                 <input
                   type="number"
                   min={0}

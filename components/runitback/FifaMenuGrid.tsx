@@ -11,6 +11,7 @@ interface FifaMenuGridProps {
   topStreak: { player: PlayerStats } | null
   totalGoals: number
   pendingRatings?: number
+  pendingMotmVotes?: number
   isMod?: boolean
 }
 
@@ -23,6 +24,7 @@ function MenuTile({
   statLabel,
   admin,
   icon,
+  newTab,
 }: {
   href: string
   label: string
@@ -32,11 +34,13 @@ function MenuTile({
   statLabel?: string
   admin?: boolean
   icon: React.ReactNode
+  newTab?: boolean
 }) {
   return (
     <Link
       href={href}
       className={`rib-menu-tile ${admin ? 'rib-menu-tile--admin' : ''}`}
+      {...(newTab ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
     >
       <span
         className="rib-heading text-[10px] mb-1"
@@ -72,6 +76,7 @@ export default function FifaMenuGrid({
   topStreak,
   totalGoals,
   pendingRatings = 0,
+  pendingMotmVotes = 0,
   isMod = false,
 }: FifaMenuGridProps) {
   return (
@@ -156,6 +161,20 @@ export default function FifaMenuGrid({
             stat={pendingRatings}
             statLabel="TO RATE"
             icon={<Star size={56} />}
+            newTab
+          />
+        )}
+
+        {pendingMotmVotes > 0 && (
+          <MenuTile
+            href="/runitback/motm"
+            label="MAN OF THE MATCH"
+            title="VOTE MOTM"
+            sub="One vote per match"
+            stat={pendingMotmVotes}
+            statLabel="TO VOTE"
+            icon={<Trophy size={56} />}
+            newTab
           />
         )}
 
