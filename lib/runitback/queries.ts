@@ -40,15 +40,18 @@ export function buildPlayerStats(
 ): PlayerStats[] {
   // Only count matches that have already been played.
   // If a match has a kickoff time, compare the full datetime so a same-day
-  // scheduled game isn't counted until after kickoff.
+  // scheduled game isn't counted until after kickoff. Both sides of the
+  // comparison must use the same timezone basis (UTC) — mixing
+  // toISOString() (UTC) with Date.setHours() (server-local time) caused
+  // newly logged matches to be silently excluded from stats.
   const now = new Date()
   const todayStr = now.toISOString().slice(0, 10)
   const playedMatches = matches.filter((m) => {
     if (m.date > todayStr) return false
     if (m.date === todayStr && m.match_time) {
       const [h, min] = m.match_time.split(':').map(Number)
-      const kickoff = new Date(now)
-      kickoff.setHours(h, min, 0, 0)
+      const kickoff = new Date(`${m.date}T00:00:00.000Z`)
+      kickoff.setUTCHours(h, min, 0, 0)
       return now >= kickoff
     }
     return true

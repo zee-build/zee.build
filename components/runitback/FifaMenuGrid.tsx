@@ -23,6 +23,7 @@ function MenuTile({
   statLabel,
   admin,
   icon,
+  newTab,
 }: {
   href: string
   label: string
@@ -32,11 +33,13 @@ function MenuTile({
   statLabel?: string
   admin?: boolean
   icon: React.ReactNode
+  newTab?: boolean
 }) {
   return (
     <Link
       href={href}
       className={`rib-menu-tile ${admin ? 'rib-menu-tile--admin' : ''}`}
+      {...(newTab ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
     >
       <span
         className="rib-heading text-[10px] mb-1"
@@ -156,6 +159,7 @@ export default function FifaMenuGrid({
             stat={pendingRatings}
             statLabel="TO RATE"
             icon={<Star size={56} />}
+            newTab
           />
         )}
 
