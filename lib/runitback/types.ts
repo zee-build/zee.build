@@ -74,6 +74,8 @@ export interface PlayerStats {
 
 export interface MatchWithPlayers extends Match {
   players: (MatchPlayer & { player: Player })[]
+  /** Fan-voted MOTM once voting has closed, used when no mod has set is_motm. */
+  fanMotmId?: string | null
 }
 
 export interface PeerRating {

@@ -17,7 +17,9 @@ function formatScorers(players: MatchWithPlayers['players']) {
 
 export default function MatchCard({ match }: { match: MatchWithPlayers }) {
   const date = new Date(match.date)
-  const motm = match.players.find((p) => p.is_motm)
+  const modMotm = match.players.find((p) => p.is_motm)
+  const fanMotm = !modMotm && match.fanMotmId ? match.players.find((p) => p.player_id === match.fanMotmId) : undefined
+  const motm = modMotm ?? fanMotm
   const scorers = formatScorers(match.players)
 
   return (
@@ -53,6 +55,7 @@ export default function MatchCard({ match }: { match: MatchWithPlayers }) {
       {motm && (
         <p className="flex items-center justify-center gap-1.5 text-[#e8c547] rib-heading text-sm">
           <Star size={14} fill="currentColor" /> MOTM: {motm.player.name}
+          {fanMotm && <span className="text-rib-muted text-xs">(fan vote)</span>}
         </p>
       )}
 
