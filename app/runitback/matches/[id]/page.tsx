@@ -3,9 +3,16 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ArrowLeft, Star } from 'lucide-react'
 import { createClient } from '@/lib/runitback/supabase'
-import { buildMatchesWithPlayers, getInitials, PUBLIC_PLAYER_COLUMNS } from '@/lib/runitback/queries'
+import {
+  buildMatchesWithPlayers,
+  getFanMotmWinner,
+  getInitials,
+  getMotmTally,
+  isMotmVotingClosed,
+  PUBLIC_PLAYER_COLUMNS,
+} from '@/lib/runitback/queries'
 import { RATING_ATTRIBUTES } from '@/lib/runitback/config'
-import type { Match, MatchPlayer, PeerRating, Player } from '@/lib/runitback/types'
+import type { Match, MatchPlayer, MotmVote, PeerRating, Player } from '@/lib/runitback/types'
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -20,12 +27,14 @@ const DAY_PILL_CLASS: Record<string, string> = {
 async function getData(id: string) {
   const supabase = createClient()
 
-  const [{ data: players }, { data: matches }, { data: matchPlayers }, { data: ratings }] = await Promise.all([
-    supabase.from('players').select(PUBLIC_PLAYER_COLUMNS).returns<Player[]>(),
-    supabase.from('matches').select('*').returns<Match[]>(),
-    supabase.from('match_players').select('*').returns<MatchPlayer[]>(),
-    supabase.from('peer_ratings').select('*').eq('match_id', id).returns<PeerRating[]>(),
-  ])
+  const [{ data: players }, { data: matches }, { data: matchPlayers }, { data: ratings }, { data: votes }] =
+    await Promise.all([
+      supabase.from('players').select(PUBLIC_PLAYER_COLUMNS).returns<Player[]>(),
+      supabase.from('matches').select('*').returns<Match[]>(),
+      supabase.from('match_players').select('*').returns<MatchPlayer[]>(),
+      supabase.from('peer_ratings').select('*').eq('match_id', id).returns<PeerRating[]>(),
+      supabase.from('motm_votes').select('*').eq('match_id', id).returns<MotmVote[]>(),
+    ])
 
   const matchesWithPlayers = buildMatchesWithPlayers(matches ?? [], matchPlayers ?? [], players ?? [])
   const match = matchesWithPlayers.find((m) => m.id === id)
@@ -38,7 +47,15 @@ async function getData(id: string) {
     attrs: r,
   }))
 
-  return { match, matchRatings }
+  const allVotes = votes ?? []
+  const fanMotmId = getFanMotmWinner(match, allVotes)
+  const votingClosed = isMotmVotingClosed(match)
+  const motmTally = getMotmTally(match.id, allVotes).map((t) => ({
+    player: playerById.get(t.playerId) ?? null,
+    votes: t.votes,
+  }))
+
+  return { match, matchRatings, fanMotmId, votingClosed, motmTally }
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -57,9 +74,11 @@ export default async function MatchDetailPage({ params }: PageProps) {
   const data = await getData(id)
   if (!data) notFound()
 
-  const { match, matchRatings } = data
+  const { match, matchRatings, fanMotmId, votingClosed, motmTally } = data
   const date = new Date(match.date)
-  const motm = match.players.find((p) => p.is_motm)
+  const modMotm = match.players.find((p) => p.is_motm)
+  const fanMotm = !modMotm && fanMotmId ? match.players.find((p) => p.player_id === fanMotmId) : undefined
+  const motm = modMotm ?? fanMotm
   const teamA = match.players.filter((p) => p.team === 'A')
   const teamB = match.players.filter((p) => p.team === 'B')
 
@@ -95,6 +114,7 @@ export default async function MatchDetailPage({ params }: PageProps) {
         {motm && (
           <p className="flex items-center justify-center gap-1.5 text-[#e8c547] rib-heading text-sm">
             <Star size={14} fill="currentColor" /> MOTM: {motm.player.name}
+            {fanMotm && <span className="text-rib-muted text-xs">(fan vote)</span>}
           </p>
         )}
 
@@ -145,6 +165,39 @@ export default async function MatchDetailPage({ params }: PageProps) {
           </div>
         ))}
       </div>
+
+      {/* MOTM fan vote tally — only meaningful once voting has closed */}
+      {motmTally.length > 0 && (
+        <>
+          <h2 className="rib-heading text-xl mb-3">MOTM VOTE{votingClosed ? '' : ' (IN PROGRESS)'}</h2>
+          <div className="rib-tile rounded-lg overflow-hidden mb-8">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-rib-border">
+                  <th className="rib-heading text-xs text-rib-muted text-left px-4 py-2" style={{ letterSpacing: '1.5px' }}>PLAYER</th>
+                  <th className="rib-heading text-xs text-rib-muted text-center px-4 py-2" style={{ letterSpacing: '1.5px' }}>VOTES</th>
+                </tr>
+              </thead>
+              <tbody>
+                {motmTally.map(({ player, votes }) => (
+                  <tr key={player?.id ?? 'unknown'} className="border-b border-rib-border last:border-0">
+                    <td className="px-4 py-3">
+                      {player ? (
+                        <Link href={`/runitback/players/${player.id}`} className="rib-heading text-xs hover:text-rib-acc" style={{ letterSpacing: '1.5px' }}>
+                          {player.name}
+                        </Link>
+                      ) : (
+                        <span className="rib-heading text-xs text-rib-muted" style={{ letterSpacing: '1.5px' }}>UNKNOWN</span>
+                      )}
+                    </td>
+                    <td className="rib-stat text-sm text-center px-4 py-3">{votes}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
 
       {/* Peer ratings for this match — public so the squad can keep each other honest */}
       <h2 className="rib-heading text-xl mb-3">MATCH RATINGS</h2>
