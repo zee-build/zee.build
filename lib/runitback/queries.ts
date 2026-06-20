@@ -183,14 +183,20 @@ export function buildPlayerStats(
     // Full weight after 6 games — early season stays grounded.
     const expFactor     = Math.min(games / 6, 1.0)
 
-    const raw =
+    // Per-game rate factors (goals/assists/motm/win/clean sheets) are noisy on a
+    // small sample — a single standout game shouldn't read the same as a proven
+    // record. Discount the whole performance score (and the games-played term)
+    // by expFactor so it only reaches full weight at 6+ games. The DEF peer
+    // anchor is exempt — it's an independent observation, not a per-game rate,
+    // so it keeps acting as a stable floor regardless of sample size.
+    const performanceRaw =
       goalsFactor    * wGoals       +
       assistsFactor  * wAssists     +
       motmFactor     * wMotm        +
       winFactor      * wWins        +
-      expFactor      * wGames       +
-      cleanSheetRate * wCleanSheets +
-      defPeerFactor  * wDefPeer
+      cleanSheetRate * wCleanSheets
+
+    const raw = expFactor * (performanceRaw + wGames) + defPeerFactor * wDefPeer
 
     const statsOverall = games > 0 ? scaleOverall(raw) : 60
 
@@ -210,7 +216,10 @@ export function buildPlayerStats(
       if (games === 0) {
         overall = Math.round(Math.min(communityOverall, 75))
       } else {
-        const weight = Math.min(0.70, communityRatingCount * 0.14)
+        // Also cap the community weight by games played — a single 5-a-side
+        // match can produce several peer ratings at once, which would
+        // otherwise let one game punch straight through to the 70% cap.
+        const weight = Math.min(0.70, communityRatingCount * 0.14, games * 0.2)
         overall = Math.round(statsOverall * (1 - weight) + communityOverall * weight)
       }
     }
