@@ -49,8 +49,8 @@ function cardType(stats: PlayerStats): string {
   if (stats.seasonAward === 'hero') return 'hero'
   // Best performer in the most recent week gets the in-form Player of the Week card
   if (stats.weeklyAward === 'potw') return 'potw'
-  // Players with 3+ MOTM awards get the special orange MOTM card
-  if (stats.motm >= 3) return 'motm'
+  // Players with a MOTM award get the special orange MOTM card
+  if (stats.motm >= 1) return 'motm'
   // Top-tier players (5+ goals, gold rating) get TOTS gold
   if (stats.overall >= 88 && stats.goals >= 5 && stats.awardsEligible) return 'tots_gold'
   return tierForRating(stats.overall) // 'gold' | 'silver' | 'bronze'
