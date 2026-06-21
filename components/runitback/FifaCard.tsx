@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { RotateCw } from 'lucide-react'
+import { Lock, RotateCw } from 'lucide-react'
 import type { PlayerStats } from '@/lib/runitback/types'
 import { getInitials, tierForRating } from '@/lib/runitback/queries'
 import { getClub, getCountry } from '@/lib/runitback/config'
@@ -362,6 +362,42 @@ export default function FifaCard({ stats, variant = 'mini', href, onClick, showR
           {renderFace(skillAttrs)}
         </div>
       </div>
+
+      {/* ── PENDING RATINGS LOCK — this player still owes ratings, shown to everyone ── */}
+      {stats.hasPendingRatings && (
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            zIndex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 8,
+            textAlign: 'center',
+            padding: 16,
+            backdropFilter: 'blur(6px)',
+            WebkitBackdropFilter: 'blur(6px)',
+            background: 'rgba(0,0,0,0.55)',
+            pointerEvents: 'none',
+          }}
+        >
+          <Lock size={26} color="#fff" />
+          <span
+            style={{
+              fontFamily: "'Barlow Condensed', 'Open Sans', sans-serif",
+              fontWeight: 700,
+              fontSize: 11,
+              letterSpacing: 1,
+              textTransform: 'uppercase',
+              color: '#fff',
+            }}
+          >
+            Hasn&apos;t rated teammates yet
+          </span>
+        </div>
+      )}
 
       {/* ── FLIP BUTTON — toggles match stats vs. teammate-rated attributes ── */}
       <div
