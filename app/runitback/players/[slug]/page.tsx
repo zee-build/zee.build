@@ -52,6 +52,12 @@ async function getData(id: string) {
       match: r.match_id ? matchByIdForRatings.get(r.match_id) ?? null : null,
       attrs: r,
     }))
+    .sort((a, b) => {
+      const dateA = a.match ? new Date(a.match.date).getTime() : 0
+      const dateB = b.match ? new Date(b.match.date).getTime() : 0
+      if (dateA !== dateB) return dateB - dateA
+      return (a.rater?.name ?? '').localeCompare(b.rater?.name ?? '')
+    })
 
   const ratingsByMatch = new Map<string, { sum: number; count: number; date: string; dayOfWeek: typeof allMatches[number]['day_of_week'] }>()
   for (const r of receivedRatings) {

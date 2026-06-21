@@ -62,30 +62,44 @@ export function buildPlayerStats(
     (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
   )
   const matchOrder = new Map(sortedMatches.map((m, i) => [m.id, i]))
+  const matchDateById = new Map(matches.map((m) => [m.id, m.date]))
+
+  // Recent ratings should visibly move a player's card instead of being
+  // drowned out by a season's worth of older votes — weight each rating by
+  // how long ago its match was played, halving its influence every 21 days.
+  const RATING_HALF_LIFE_DAYS = 21
+  function ratingWeight(r: PeerRating): number {
+    const dateStr = (r.match_id ? matchDateById.get(r.match_id) : undefined) ?? r.created_at
+    const ageDays = (now.getTime() - new Date(dateStr).getTime()) / 86_400_000
+    return Math.pow(0.5, Math.max(0, ageDays) / RATING_HALF_LIFE_DAYS)
+  }
 
   // Average community rating (overall + per-attribute) per player for the current season.
   const ratingTotals = new Map<
     string,
-    { sum: number; count: number; attrSum: Record<RatingAttribute, number> }
+    { sum: number; weight: number; rawCount: number; attrSum: Record<RatingAttribute, number> }
   >()
-  const gkTotals = new Map<string, { sum: number; count: number }>()
+  const gkTotals = new Map<string, { sum: number; weight: number }>()
   for (const r of ratings) {
     if (r.season !== CURRENT_SEASON) continue
+    const w = ratingWeight(r)
     const avgAttr = (r.pace + r.shooting + r.passing + r.dribbling + r.defending + r.physical) / 6
     const entry = ratingTotals.get(r.ratee_id) ?? {
       sum: 0,
-      count: 0,
+      weight: 0,
+      rawCount: 0,
       attrSum: { pace: 0, shooting: 0, passing: 0, dribbling: 0, defending: 0, physical: 0 },
     }
-    entry.sum += avgAttr
-    entry.count += 1
-    for (const { key } of RATING_ATTRIBUTES) entry.attrSum[key] += r[key]
+    entry.sum += avgAttr * w
+    entry.weight += w
+    entry.rawCount += 1
+    for (const { key } of RATING_ATTRIBUTES) entry.attrSum[key] += r[key] * w
     ratingTotals.set(r.ratee_id, entry)
 
     if (typeof r.goalkeeping === 'number') {
-      const gkEntry = gkTotals.get(r.ratee_id) ?? { sum: 0, count: 0 }
-      gkEntry.sum += r.goalkeeping
-      gkEntry.count += 1
+      const gkEntry = gkTotals.get(r.ratee_id) ?? { sum: 0, weight: 0 }
+      gkEntry.sum += r.goalkeeping * w
+      gkEntry.weight += w
       gkTotals.set(r.ratee_id, gkEntry)
     }
   }
@@ -123,8 +137,8 @@ export function buildPlayerStats(
 
     // ── Peer rating data (needed early for defender DEF anchor) ──────
     const ratingEntry = ratingTotals.get(player.id)
-    const communityRating = ratingEntry ? ratingEntry.sum / ratingEntry.count : null
-    const communityRatingCount = ratingEntry?.count ?? 0
+    const communityRating = ratingEntry ? ratingEntry.sum / ratingEntry.weight : null
+    const communityRatingCount = ratingEntry?.rawCount ?? 0
 
     // ── Position flags ────────────────────────────────────────────────
     const pos = player.position ?? ''
@@ -145,8 +159,8 @@ export function buildPlayerStats(
     // ── DEF peer attribute anchor (defenders only) ────────────────────
     // Peer DEF ratings are permanent records — they don't fluctuate when
     // new matches are played, so they act as a stable floor for defenders.
-    const defPeerFactor = (isDefender && ratingEntry && ratingEntry.count > 0)
-      ? (ratingEntry.attrSum.defending / ratingEntry.count - 1) / 9
+    const defPeerFactor = (isDefender && ratingEntry && ratingEntry.weight > 0)
+      ? (ratingEntry.attrSum.defending / ratingEntry.weight - 1) / 9
       : 0
 
     // ── Position-aware weights ────────────────────────────────────────
@@ -240,14 +254,14 @@ export function buildPlayerStats(
     if (ratingEntry) {
       attributeRatings = {} as Record<RatingAttribute, number>
       for (const { key } of RATING_ATTRIBUTES) {
-        const avg = ratingEntry.attrSum[key] / ratingEntry.count
+        const avg = ratingEntry.attrSum[key] / ratingEntry.weight
         attributeRatings[key] = Math.round(60 + ((avg - 1) / 9) * 39)
       }
     }
 
     const gkEntry = gkTotals.get(player.id)
-    const gkRating = gkEntry && gkEntry.count > 0
-      ? Math.round(60 + ((gkEntry.sum / gkEntry.count - 1) / 9) * 39)
+    const gkRating = gkEntry && gkEntry.weight > 0
+      ? Math.round(60 + ((gkEntry.sum / gkEntry.weight - 1) / 9) * 39)
       : null
 
     const hasPendingRatings =
