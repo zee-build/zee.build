@@ -208,6 +208,7 @@ export default function TeamPickerPanel({ stats: initialStats }: TeamPickerPanel
         wins: 0, losses: 0, draws: 0, winRate: 0, streak: 0, form: [],
         goalsPerGame: 0, communityRating: null, communityRatingCount: 0,
         attributeRatings: null, gkRating: null, awardsEligible: false, seasonAward: null, weeklyAward: null,
+        hasPendingRatings: false,
       }
       setLocalStats((prev) => [...prev, newStat])
       setTier2((prev) => [...prev, newPlayer.id])

@@ -70,6 +70,8 @@ export interface PlayerStats {
   awardsEligible: boolean
   seasonAward: 'toty' | 'hero' | null
   weeklyAward: 'potw' | null
+  /** True if this player still owes ratings for a match within the last 7 days. */
+  hasPendingRatings: boolean
 }
 
 export interface MatchWithPlayers extends Match {

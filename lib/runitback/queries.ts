@@ -250,6 +250,9 @@ export function buildPlayerStats(
       ? Math.round(60 + ((gkEntry.sum / gkEntry.count - 1) / 9) * 39)
       : null
 
+    const hasPendingRatings =
+      getPendingMatchRatings(player.id, matches, matchPlayers, players, ratings).length > 0
+
     return {
       player,
       games,
@@ -271,6 +274,7 @@ export function buildPlayerStats(
       awardsEligible,
       seasonAward: null as PlayerStats['seasonAward'],
       weeklyAward: null as PlayerStats['weeklyAward'],
+      hasPendingRatings,
     }
   })
 
