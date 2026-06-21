@@ -233,7 +233,9 @@ export function buildPlayerStats(
         // Also cap the community weight by games played — a single 5-a-side
         // match can produce several peer ratings at once, which would
         // otherwise let one game punch straight through to the 70% cap.
-        const weight = Math.min(0.70, communityRatingCount * 0.14, games * 0.2)
+        // Reaches the full cap at 3 games so a short but consistent track
+        // record isn't held back any longer than it needs to be.
+        const weight = Math.min(0.70, communityRatingCount * 0.14, (games / 3) * 0.70)
         overall = Math.round(statsOverall * (1 - weight) + communityOverall * weight)
       }
     }
