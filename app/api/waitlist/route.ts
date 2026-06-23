@@ -2,12 +2,12 @@ import { NextRequest, NextResponse } from 'next/server'
 
 /**
  * GOOGLE FORM SETUP INSTRUCTIONS:
- * 
+ *
  * 1. Create a Google Form with these fields:
  *    - Email (Short answer, required)
  *    - Child Age in Months (Dropdown: 6-36)
  *    - Location (Multiple choice: UAE, Other)
- * 
+ *
  * 2. Get the Form ID and Entry IDs:
  *    a. Open your Google Form
  *    b. Click "Send" and get the form link
@@ -21,13 +21,13 @@ import { NextRequest, NextResponse } from 'next/server'
  *       - entry.987654321: 12
  *       - entry.456789123: UAE
  *    i. Copy these entry IDs
- * 
+ *
  * 3. Set Environment Variables (Vercel + .env.local):
  *    GOOGLE_FORM_ID=your_form_id_here
  *    GOOGLE_FORM_EMAIL_ENTRY=123456789
  *    GOOGLE_FORM_AGE_ENTRY=987654321
  *    GOOGLE_FORM_LOCATION_ENTRY=456789123
- * 
+ *
  * 4. Link Form to Google Sheet:
  *    - In Google Forms, click "Responses" tab
  *    - Click the Google Sheets icon to create linked spreadsheet
@@ -56,33 +56,33 @@ function getClientIP(request: NextRequest): string {
   // Try various headers for IP (Vercel provides x-forwarded-for)
   const forwarded = request.headers.get('x-forwarded-for')
   const realIp = request.headers.get('x-real-ip')
-  
+
   if (forwarded) {
     return forwarded.split(',')[0].trim()
   }
-  
+
   if (realIp) {
     return realIp
   }
-  
+
   return 'unknown'
 }
 
 function checkRateLimit(ip: string): boolean {
   const now = Date.now()
   const timestamps = rateLimitStore.get(ip) || []
-  
+
   // Remove old timestamps outside the window
   const recentTimestamps = timestamps.filter(ts => now - ts < RATE_LIMIT_WINDOW)
-  
+
   if (recentTimestamps.length >= RATE_LIMIT_MAX) {
     return false // rate limit exceeded
   }
-  
+
   // Add current timestamp
   recentTimestamps.push(now)
   rateLimitStore.set(ip, recentTimestamps)
-  
+
   return true
 }
 
@@ -128,7 +128,7 @@ export async function POST(request: NextRequest) {
     if (!formId || !emailEntry) {
       console.error('[Waitlist API] Missing environment variables for product:', product)
       return NextResponse.json(
-        { 
+        {
           error: 'Server configuration error. Please contact support.',
           details: `Missing form configuration for ${product || 'default'}`
         },
@@ -140,7 +140,7 @@ export async function POST(request: NextRequest) {
     if (product !== 'sentinelrisk' && (!ageEntry || !locationEntry)) {
       console.error('[Waitlist API] Missing NutriNest-specific environment variables')
       return NextResponse.json(
-        { 
+        {
           error: 'Server configuration error. Please contact support.',
           details: 'Missing GOOGLE_FORM_AGE_ENTRY or GOOGLE_FORM_LOCATION_ENTRY'
         },
@@ -196,13 +196,13 @@ export async function POST(request: NextRequest) {
     // 5. FORWARD TO GOOGLE FORM
     const formData = new URLSearchParams()
     formData.append(`entry.${emailEntry}`, email)
-    
+
     // Only add age and location for NutriNest
     if (product !== 'sentinelrisk') {
       if (childAgeMonths && ageEntry) {
         formData.append(`entry.${ageEntry}`, childAgeMonths.toString())
       }
-      
+
       if (location && locationEntry) {
         formData.append(`entry.${locationEntry}`, location)
       }
@@ -210,7 +210,7 @@ export async function POST(request: NextRequest) {
 
     const googleFormUrl = `https://docs.google.com/forms/d/e/${formId}/formResponse`
 
-    console.log('[Waitlist API] Submitting to Google Forms:', { 
+    console.log('[Waitlist API] Submitting to Google Forms:', {
       url: googleFormUrl.substring(0, 50) + '...', // Only log partial URL
       hasEmail: !!email,
       hasAge: !!childAgeMonths,
@@ -227,7 +227,7 @@ export async function POST(request: NextRequest) {
     })
 
     // Log response status
-    console.log('[Waitlist API] Google Forms response:', { 
+    console.log('[Waitlist API] Google Forms response:', {
       status: response.status,
       statusText: response.statusText
     })
@@ -235,26 +235,26 @@ export async function POST(request: NextRequest) {
     // Even if Google returns an error, we'll consider it successful
     // Check your Google Sheet to verify submissions are coming through
 
-    console.log('Waitlist submission processed:', { 
-      email, 
-      childAgeMonths, 
+    console.log('Waitlist submission processed:', {
+      email,
+      childAgeMonths,
       location,
       product,
       ip: clientIP,
-      googleStatus: response.status 
+      googleStatus: response.status
     })
 
     // Analytics event (replace with your analytics service)
     console.log('[ANALYTICS] submit_waitlist_success', { email, location, childAgeMonths, product })
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       success: true,
-      message: 'Successfully joined the waitlist!' 
+      message: 'Successfully joined the waitlist!'
     })
 
   } catch (error) {
     console.error('Waitlist API error:', error)
-    
+
     // Analytics event
     console.log('[ANALYTICS] submit_waitlist_error', { error: String(error) })
 

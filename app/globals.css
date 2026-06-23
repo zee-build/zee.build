@@ -191,3 +191,15 @@ body::before {
     min-height: -webkit-fill-available;
   }
 }
+
+/* Islamic Finance Mastery Course tokens — scoped to /learn routes */
+.course-shell {
+  --c-teal: #1D9E75;
+  --c-teal-dk: #0F6E56;
+  --c-teal-lt: #E1F5EE;
+  --c-teal-txt: #085041;
+  --c-blue: #185FA5;
+  --c-blue-dk: #0C447C;
+  --c-blue-lt: #E6F1FB;
+  --c-blue-txt: #042C53;
+}
