@@ -3,7 +3,7 @@ import { createClient } from '@/lib/runitback/supabase'
 import { buildPlayerStats, PUBLIC_PLAYER_COLUMNS } from '@/lib/runitback/queries'
 import { CURRENT_SEASON } from '@/lib/runitback/config'
 import LeaderboardTabs from '@/components/runitback/LeaderboardTabs'
-import type { Match, MatchPlayer, PeerRating, Player } from '@/lib/runitback/types'
+import type { AttributeRating, Match, MatchPlayer, MatchRating, Player } from '@/lib/runitback/types'
 
 export const metadata: Metadata = {
   title: 'Run It Back — Leaderboard',
@@ -13,14 +13,15 @@ export const metadata: Metadata = {
 export default async function LeaderboardPage() {
   const supabase = createClient()
 
-  const [{ data: players }, { data: matches }, { data: matchPlayers }, { data: ratings }] = await Promise.all([
+  const [{ data: players }, { data: matches }, { data: matchPlayers }, { data: matchRatings }, { data: attributeRatings }] = await Promise.all([
     supabase.from('players').select(PUBLIC_PLAYER_COLUMNS).returns<Player[]>(),
     supabase.from('matches').select('*').returns<Match[]>(),
     supabase.from('match_players').select('*').returns<MatchPlayer[]>(),
-    supabase.from('peer_ratings').select('*').eq('season', CURRENT_SEASON).returns<PeerRating[]>(),
+    supabase.from('match_ratings').select('*').eq('season', CURRENT_SEASON).returns<MatchRating[]>(),
+    supabase.from('attribute_ratings').select('*').eq('season', CURRENT_SEASON).returns<AttributeRating[]>(),
   ])
 
-  const stats = buildPlayerStats(players ?? [], matches ?? [], matchPlayers ?? [], ratings ?? [])
+  const stats = buildPlayerStats(players ?? [], matches ?? [], matchPlayers ?? [], matchRatings ?? [], attributeRatings ?? [])
 
   return (
     <div className="rib-page">

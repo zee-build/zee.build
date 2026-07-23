@@ -207,7 +207,7 @@ export default function TeamPickerPanel({ stats: initialStats }: TeamPickerPanel
         player: newPlayer, overall: 60, games: 0, goals: 0, assists: 0, motm: 0,
         wins: 0, losses: 0, draws: 0, winRate: 0, streak: 0, form: [],
         goalsPerGame: 0, communityRating: null, communityRatingCount: 0,
-        attributeRatings: null, gkRating: null, awardsEligible: false, seasonAward: null, weeklyAward: null,
+        attributeRatings: null, attributeRaterCount: 0, gkRating: null, awardsEligible: false, seasonAward: null, weeklyAward: null,
         hasPendingRatings: false,
       }
       setLocalStats((prev) => [...prev, newStat])

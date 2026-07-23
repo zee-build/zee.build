@@ -1,5 +1,5 @@
-import type { Match, MatchPlayer, MatchResult, MatchWithPlayers, MotmVote, PeerRating, Player, PlayerStats, RatingAttribute } from './types'
-import { CURRENT_SEASON, RATING_ATTRIBUTES } from './config'
+import type { AttributeRating, Match, MatchPlayer, MatchRating, MatchResult, MatchWithPlayers, MotmVote, Player, PlayerStats, RatingAttribute } from './types'
+import { CURRENT_SEASON, RATING_ATTRIBUTES, weightsForPosition } from './config'
 
 /** Columns safe to return to the browser — excludes password_hash. */
 export const PUBLIC_PLAYER_COLUMNS =
@@ -36,7 +36,8 @@ export function buildPlayerStats(
   players: Player[],
   matches: Match[],
   matchPlayers: MatchPlayer[],
-  ratings: PeerRating[] = []
+  matchRatings: MatchRating[] = [],
+  attributeRatings: AttributeRating[] = []
 ): PlayerStats[] {
   // Only count matches that have already been played.
   // If a match has a kickoff time, compare the full datetime so a same-day
@@ -64,44 +65,57 @@ export function buildPlayerStats(
   const matchOrder = new Map(sortedMatches.map((m, i) => [m.id, i]))
   const matchDateById = new Map(matches.map((m) => [m.id, m.date]))
 
-  // Recent ratings should visibly move a player's card instead of being
+  // ── Weekly match ratings (1-10) → recency-weighted "form" signal ──────
+  // Recent scores should visibly move a player's card instead of being
   // drowned out by a season's worth of older votes — weight each rating by
   // how long ago its match was played, halving its influence every 21 days.
   const RATING_HALF_LIFE_DAYS = 21
-  function ratingWeight(r: PeerRating): number {
-    const dateStr = (r.match_id ? matchDateById.get(r.match_id) : undefined) ?? r.created_at
+  function matchRatingWeight(r: MatchRating): number {
+    const dateStr = matchDateById.get(r.match_id) ?? r.created_at
     const ageDays = (now.getTime() - new Date(dateStr).getTime()) / 86_400_000
     return Math.pow(0.5, Math.max(0, ageDays) / RATING_HALF_LIFE_DAYS)
   }
 
-  // Average community rating (overall + per-attribute) per player for the current season.
-  const ratingTotals = new Map<
-    string,
-    { sum: number; weight: number; rawCount: number; attrSum: Record<RatingAttribute, number> }
-  >()
-  const gkTotals = new Map<string, { sum: number; weight: number }>()
-  for (const r of ratings) {
+  const matchRatingTotals = new Map<string, { sum: number; weight: number; rawCount: number }>()
+  for (const r of matchRatings) {
     if (r.season !== CURRENT_SEASON) continue
-    const w = ratingWeight(r)
-    const avgAttr = (r.pace + r.shooting + r.passing + r.dribbling + r.defending + r.physical) / 6
-    const entry = ratingTotals.get(r.ratee_id) ?? {
-      sum: 0,
-      weight: 0,
-      rawCount: 0,
-      attrSum: { pace: 0, shooting: 0, passing: 0, dribbling: 0, defending: 0, physical: 0 },
-    }
-    entry.sum += avgAttr * w
+    const w = matchRatingWeight(r)
+    const entry = matchRatingTotals.get(r.ratee_id) ?? { sum: 0, weight: 0, rawCount: 0 }
+    entry.sum += r.score * w
     entry.weight += w
     entry.rawCount += 1
-    for (const { key } of RATING_ATTRIBUTES) entry.attrSum[key] += r[key] * w
-    ratingTotals.set(r.ratee_id, entry)
+    matchRatingTotals.set(r.ratee_id, entry)
+  }
 
-    if (typeof r.goalkeeping === 'number') {
-      const gkEntry = gkTotals.get(r.ratee_id) ?? { sum: 0, weight: 0 }
-      gkEntry.sum += r.goalkeeping * w
-      gkEntry.weight += w
-      gkTotals.set(r.ratee_id, gkEntry)
+  // ── Bimonthly attribute ratings (1-99) → the FIFA card face ───────────
+  // Each update window replaces the card, so a player's current attributes
+  // are the average of every teammate's submission from the LATEST window
+  // that player has any ratings in.
+  const attrRowsByPlayer = new Map<string, AttributeRating[]>()
+  for (const a of attributeRatings) {
+    if (a.season !== CURRENT_SEASON) continue
+    const list = attrRowsByPlayer.get(a.ratee_id) ?? []
+    list.push(a)
+    attrRowsByPlayer.set(a.ratee_id, list)
+  }
+
+  const attrByPlayer = new Map<
+    string,
+    { attrs: Record<RatingAttribute, number>; gk: number | null; count: number }
+  >()
+  for (const [playerId, rows] of attrRowsByPlayer) {
+    const latestWindow = rows.reduce((mx, r) => (r.rating_window > mx ? r.rating_window : mx), '')
+    const windowRows = rows.filter((r) => r.rating_window === latestWindow)
+    if (windowRows.length === 0) continue
+
+    const attrs = {} as Record<RatingAttribute, number>
+    for (const { key } of RATING_ATTRIBUTES) {
+      attrs[key] = windowRows.reduce((sum, r) => sum + r[key], 0) / windowRows.length
     }
+    const gkVals = windowRows.map((r) => r.goalkeeping).filter((v): v is number => typeof v === 'number')
+    const gk = gkVals.length > 0 ? gkVals.reduce((s, v) => s + v, 0) / gkVals.length : null
+
+    attrByPlayer.set(playerId, { attrs, gk, count: windowRows.length })
   }
 
   const stats = players.map((player) => {
@@ -135,10 +149,15 @@ export function buildPlayerStats(
     const assistsPerGame = games > 0 ? assists / games : 0
     const motmRate = games > 0 ? (motm / games) * 100 : 0
 
-    // ── Peer rating data (needed early for defender DEF anchor) ──────
-    const ratingEntry = ratingTotals.get(player.id)
-    const communityRating = ratingEntry ? ratingEntry.sum / ratingEntry.weight : null
-    const communityRatingCount = ratingEntry?.rawCount ?? 0
+    // ── Rating data (needed early for defender DEF anchor) ────────────
+    // Match ratings drive the 1-10 "form" number; attribute ratings drive
+    // the 1-99 FIFA attributes and the position-weighted card overall.
+    const matchRatingEntry = matchRatingTotals.get(player.id)
+    const communityRating = matchRatingEntry ? matchRatingEntry.sum / matchRatingEntry.weight : null
+    const communityRatingCount = matchRatingEntry?.rawCount ?? 0
+
+    const attrEntry = attrByPlayer.get(player.id)
+    const attributeRaterCount = attrEntry?.count ?? 0
 
     // ── Position flags ────────────────────────────────────────────────
     const pos = player.position ?? ''
@@ -156,11 +175,12 @@ export function buildPlayerStats(
     }
     const cleanSheetRate = games > 0 ? cleanSheets / games : 0
 
-    // ── DEF peer attribute anchor (defenders only) ────────────────────
-    // Peer DEF ratings are permanent records — they don't fluctuate when
-    // new matches are played, so they act as a stable floor for defenders.
-    const defPeerFactor = (isDefender && ratingEntry && ratingEntry.weight > 0)
-      ? (ratingEntry.attrSum.defending / ratingEntry.weight - 1) / 9
+    // ── DEF attribute anchor (defenders only) ─────────────────────────
+    // A defender's peer-rated DEF attribute (1-99) is a stable observation
+    // that doesn't swing with match results, so it acts as a floor for
+    // defenders whose value doesn't show up in goals/assists.
+    const defPeerFactor = (isDefender && attrEntry)
+      ? (attrEntry.attrs.defending - 1) / 98
       : 0
 
     // ── Position-aware weights ────────────────────────────────────────
@@ -214,31 +234,60 @@ export function buildPlayerStats(
 
     const statsOverall = games > 0 ? scaleOverall(raw) : 60
 
-    // ── Community blend ───────────────────────────────────────────────
-    // Stats and community go hand in hand — 50/50 at 5+ votes.
-    // With fewer votes, stats still dominate so thin samples don't skew.
-    //
-    //  0 votes → 100% stats
-    //  1 vote  →  90% stats / 10% community
-    //  3 votes →  70% stats / 30% community
-    //  5 votes →  50% stats / 50% community  ← cap
-    //
-    // 0-game players: show community rating only (capped at 75).
-    let overall = statsOverall
-    if (communityRating !== null) {
-      const communityOverall = 60 + ((communityRating - 1) / 9) * 39
-      if (games === 0) {
-        overall = Math.round(Math.min(communityOverall, 75))
-      } else {
-        // Also cap the community weight by games played — a single 5-a-side
-        // match can produce several peer ratings at once, which would
-        // otherwise let one game punch straight through to the 70% cap.
-        // Reaches the full cap at 3 games so a short but consistent track
-        // record isn't held back any longer than it needs to be.
-        const weight = Math.min(0.70, communityRatingCount * 0.14, (games / 3) * 0.70)
-        overall = Math.round(statsOverall * (1 - weight) + communityOverall * weight)
+    // ── Attribute overall (position-weighted, 1-99) ───────────────────
+    // Everyone shares the same six attributes, but a player's position
+    // decides how much each counts — defending barely moves a striker,
+    // shooting barely moves a defender. This is the EA-style card rating.
+    let attributeOverall: number | null = null
+    if (attrEntry) {
+      const weights = weightsForPosition(pos)
+      let wSum = 0
+      let vSum = 0
+      for (const { key } of RATING_ATTRIBUTES) {
+        const w = weights[key] ?? 0
+        if (w > 0) {
+          vSum += attrEntry.attrs[key] * w
+          wSum += w
+        }
       }
+      const gkW = weights.goalkeeping ?? 0
+      if (gkW > 0 && attrEntry.gk !== null) {
+        vSum += attrEntry.gk * gkW
+        wSum += gkW
+      }
+      if (wSum > 0) attributeOverall = vSum / wSum
     }
+
+    // ── Blend attributes with match performance ───────────────────────
+    // Attributes ARE the card, so the more teammates who've rated a player
+    // the more the overall leans on them; with few (or no) ratings, match
+    // stats carry the card so thin samples don't skew it.
+    //
+    //  0 raters → 100% stats
+    //  1 rater  →  67% stats / 33% attributes
+    //  3 raters →  31% stats / 69% attributes
+    //  5+ raters → 15% stats / 85% attributes  ← cap
+    let overall = statsOverall
+    if (attributeOverall !== null) {
+      const attrWeight = Math.min(0.85, 0.15 + attributeRaterCount * 0.18)
+      overall = statsOverall * (1 - attrWeight) + attributeOverall * attrWeight
+    }
+
+    // ── Form nudge from weekly match ratings ──────────────────────────
+    // Between attribute windows, recent 1-10 scores gently push the card up
+    // or down (±3 max) so hot and cold streaks are felt. 5.5/10 is neutral,
+    // and the nudge scales in with how many scores back it (one game can't
+    // swing a card).
+    if (communityRating !== null && games > 0) {
+      const rawNudge = Math.max(-3, Math.min(3, ((communityRating - 5.5) / 4.5) * 3))
+      const formConfidence = Math.min(1, communityRatingCount / 4)
+      overall += rawNudge * formConfidence
+    }
+
+    // 0-game players: peer opinion alone can't outrank people who've shown up.
+    if (games === 0) overall = Math.min(overall, 75)
+
+    overall = Math.round(Math.max(40, Math.min(99, overall)))
 
     // Award-eligible: must have played at least half of this season's played matches.
     const awardsEligible = playedMatches.length > 0 && games >= playedMatches.length * 0.5
@@ -252,22 +301,19 @@ export function buildPlayerStats(
 
     const form = results.slice(-5)
 
+    // Attribute values are already on the 1-99 scale from the update windows.
     let attributeRatings: Record<RatingAttribute, number> | null = null
-    if (ratingEntry) {
+    if (attrEntry) {
       attributeRatings = {} as Record<RatingAttribute, number>
       for (const { key } of RATING_ATTRIBUTES) {
-        const avg = ratingEntry.attrSum[key] / ratingEntry.weight
-        attributeRatings[key] = Math.round(60 + ((avg - 1) / 9) * 39)
+        attributeRatings[key] = Math.round(attrEntry.attrs[key])
       }
     }
 
-    const gkEntry = gkTotals.get(player.id)
-    const gkRating = gkEntry && gkEntry.weight > 0
-      ? Math.round(60 + ((gkEntry.sum / gkEntry.weight - 1) / 9) * 39)
-      : null
+    const gkRating = attrEntry && attrEntry.gk !== null ? Math.round(attrEntry.gk) : null
 
     const hasPendingRatings =
-      getPendingMatchRatings(player.id, matches, matchPlayers, players, ratings).length > 0
+      getPendingMatchRatings(player.id, matches, matchPlayers, players, matchRatings).length > 0
 
     return {
       player,
@@ -286,6 +332,7 @@ export function buildPlayerStats(
       communityRating,
       communityRatingCount,
       attributeRatings,
+      attributeRaterCount,
       gkRating,
       awardsEligible,
       seasonAward: null as PlayerStats['seasonAward'],
@@ -367,12 +414,12 @@ export function getPendingMatchRatings(
   matches: Match[],
   matchPlayers: MatchPlayer[],
   players: Player[],
-  ratings: PeerRating[]
+  matchRatings: MatchRating[]
 ): PendingMatchRating[] {
   const playerById = new Map(players.map((p) => [p.id, p]))
   const ratedPairs = new Set(
-    ratings
-      .filter((r) => r.rater_id === playerId && r.match_id)
+    matchRatings
+      .filter((r) => r.rater_id === playerId)
       .map((r) => `${r.match_id}:${r.ratee_id}`)
   )
 

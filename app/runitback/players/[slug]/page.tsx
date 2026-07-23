@@ -5,12 +5,12 @@ import { cookies } from 'next/headers'
 import { ArrowLeft, Star } from 'lucide-react'
 import { createClient } from '@/lib/runitback/supabase'
 import { buildHeadToHead, buildMatchesWithPlayers, buildPlayerStats, getInitials, PUBLIC_PLAYER_COLUMNS } from '@/lib/runitback/queries'
-import { CURRENT_SEASON, RATING_ATTRIBUTES, TRAITS } from '@/lib/runitback/config'
+import { CURRENT_SEASON, RATING_ATTRIBUTES, TRAITS, windowLabel } from '@/lib/runitback/config'
 import { readSessionToken, SESSION_COOKIE_NAME } from '@/lib/runitback/playerAuth'
 import FifaCard from '@/components/runitback/FifaCard'
 import StatBar from '@/components/runitback/StatBar'
 import RatingHistoryChart, { type RatingHistoryPoint } from '@/components/runitback/RatingHistoryChart'
-import type { LeagueSettings, Match, MatchPlayer, PeerRating, Player } from '@/lib/runitback/types'
+import type { AttributeRating, LeagueSettings, Match, MatchPlayer, MatchRating, Player } from '@/lib/runitback/types'
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -19,21 +19,24 @@ interface PageProps {
 async function getData(id: string) {
   const supabase = createClient()
 
-  const [{ data: players }, { data: matches }, { data: matchPlayers }, { data: ratings }] = await Promise.all([
+  const [{ data: players }, { data: matches }, { data: matchPlayers }, { data: matchRatings }, { data: attributeRatings }] = await Promise.all([
     supabase.from('players').select(PUBLIC_PLAYER_COLUMNS).returns<Player[]>(),
     supabase.from('matches').select('*').returns<Match[]>(),
     supabase.from('match_players').select('*').returns<MatchPlayer[]>(),
-    supabase.from('peer_ratings').select('*').eq('season', CURRENT_SEASON).returns<PeerRating[]>(),
+    supabase.from('match_ratings').select('*').eq('season', CURRENT_SEASON).returns<MatchRating[]>(),
+    supabase.from('attribute_ratings').select('*').eq('season', CURRENT_SEASON).returns<AttributeRating[]>(),
   ])
 
   const allPlayers = players ?? []
   const allMatches = matches ?? []
   const allMatchPlayers = matchPlayers ?? []
+  const allMatchRatings = matchRatings ?? []
+  const allAttributeRatings = attributeRatings ?? []
 
   const player = allPlayers.find((p) => p.id === id)
   if (!player) return null
 
-  const stats = buildPlayerStats(allPlayers, allMatches, allMatchPlayers, ratings ?? []).find(
+  const stats = buildPlayerStats(allPlayers, allMatches, allMatchPlayers, allMatchRatings, allAttributeRatings).find(
     (s) => s.player.id === id
   )!
 
@@ -44,40 +47,40 @@ async function getData(id: string) {
   const headToHead = buildHeadToHead(id, allPlayers, allMatches, allMatchPlayers)
 
   const playerById = new Map(allPlayers.map((p) => [p.id, p]))
-  const matchByIdForRatings = new Map(allMatches.map((m) => [m.id, m]))
-  const receivedRatings = (ratings ?? [])
-    .filter((r) => r.ratee_id === id)
-    .map((r) => ({
-      rater: playerById.get(r.rater_id) ?? null,
-      match: r.match_id ? matchByIdForRatings.get(r.match_id) ?? null : null,
-      attrs: r,
-    }))
-    .sort((a, b) => {
-      const dateA = a.match ? new Date(a.match.date).getTime() : 0
-      const dateB = b.match ? new Date(b.match.date).getTime() : 0
-      if (dateA !== dateB) return dateB - dateA
-      return (a.rater?.name ?? '').localeCompare(b.rater?.name ?? '')
-    })
+  const matchById = new Map(allMatches.map((m) => [m.id, m]))
 
+  // ── Weekly match ratings received (1-10), averaged per match ──────────
   const ratingsByMatch = new Map<string, { sum: number; count: number; date: string; dayOfWeek: typeof allMatches[number]['day_of_week'] }>()
-  for (const r of receivedRatings) {
-    if (!r.match) continue
-    const avgAttr = RATING_ATTRIBUTES.reduce((sum, a) => sum + r.attrs[a.key], 0) / RATING_ATTRIBUTES.length
-    const entry = ratingsByMatch.get(r.match.id) ?? { sum: 0, count: 0, date: r.match.date, dayOfWeek: r.match.day_of_week }
-    entry.sum += avgAttr
+  for (const r of allMatchRatings) {
+    if (r.ratee_id !== id) continue
+    const match = matchById.get(r.match_id)
+    if (!match) continue
+    const entry = ratingsByMatch.get(r.match_id) ?? { sum: 0, count: 0, date: match.date, dayOfWeek: match.day_of_week }
+    entry.sum += r.score
     entry.count += 1
-    ratingsByMatch.set(r.match.id, entry)
+    ratingsByMatch.set(r.match_id, entry)
   }
   const ratingHistory: RatingHistoryPoint[] = Array.from(ratingsByMatch.entries())
-    .map(([matchId, { sum, count, date, dayOfWeek }]) => ({
-      matchId,
-      date,
-      dayOfWeek,
-      avg: sum / count,
-    }))
+    .map(([matchId, { sum, count, date, dayOfWeek }]) => ({ matchId, date, dayOfWeek, avg: sum / count }))
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
 
-  return { player, stats, matches: matchesWithPlayers, headToHead, receivedRatings, ratingHistory }
+  // ── Attribute ratings received (1-99) — latest window only ────────────
+  const attrRows = allAttributeRatings.filter((r) => r.ratee_id === id)
+  const latestWindow = attrRows.reduce((mx, r) => (r.rating_window > mx ? r.rating_window : mx), '')
+  const attributeRatingsReceived = attrRows
+    .filter((r) => r.rating_window === latestWindow)
+    .map((r) => ({ rater: playerById.get(r.rater_id) ?? null, attrs: r }))
+    .sort((a, b) => (a.rater?.name ?? '').localeCompare(b.rater?.name ?? ''))
+
+  return {
+    player,
+    stats,
+    matches: matchesWithPlayers,
+    headToHead,
+    ratingHistory,
+    attributeRatingsReceived,
+    attributeWindow: latestWindow,
+  }
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -106,7 +109,8 @@ export default async function PlayerProfilePage({ params }: PageProps) {
   const ratingsPublic = settingsRow?.ratings_public ?? true
   const showRatings = ratingsPublic
 
-  const { player, stats, matches, headToHead, receivedRatings, ratingHistory } = data
+  const { player, stats, matches, headToHead, ratingHistory, attributeRatingsReceived, attributeWindow } = data
+  const isGK = player.position === 'GK'
 
   return (
     <div className="rib-page max-w-4xl mx-auto">
@@ -240,12 +244,22 @@ export default async function PlayerProfilePage({ params }: PageProps) {
         </div>
       )}
 
-      {/* Peer ratings — only visible when ratings are public or viewer is mod */}
+      {/* Ratings — only visible when ratings are public or viewer is mod */}
       {showRatings && <>
-      <h2 className="rib-heading text-xl mb-3">PEER RATINGS — {CURRENT_SEASON}</h2>
-      {ratingHistory.length > 1 && <div className="mb-4"><RatingHistoryChart data={ratingHistory} /></div>}
-      {receivedRatings.length === 0 ? (
-        <p className="rib-body text-sm">No teammates have rated {player.name.split(' ')[0]} yet.</p>
+      {/* Weekly form — average match rating out of 10 over the season */}
+      <h2 className="rib-heading text-xl mb-3">FORM — {CURRENT_SEASON}</h2>
+      {ratingHistory.length > 1 ? (
+        <div className="mb-8"><RatingHistoryChart data={ratingHistory} /></div>
+      ) : (
+        <p className="rib-body text-sm mb-8">Not enough match ratings yet to chart {player.name.split(' ')[0]}&apos;s form.</p>
+      )}
+
+      {/* Attribute ratings — the 1-99 breakdown from the latest update window */}
+      <h2 className="rib-heading text-xl mb-3">
+        ATTRIBUTE RATINGS{attributeWindow ? ` — ${windowLabel(attributeWindow)}` : ''}
+      </h2>
+      {attributeRatingsReceived.length === 0 ? (
+        <p className="rib-body text-sm">No one has rated {player.name.split(' ')[0]}&apos;s attributes yet.</p>
       ) : (
         <div className="rib-tile rounded-lg overflow-hidden">
           <div className="rib-table-wrap">
@@ -253,41 +267,36 @@ export default async function PlayerProfilePage({ params }: PageProps) {
             <thead>
               <tr className="border-b border-rib-border">
                 <th className="rib-heading text-xs text-rib-muted text-left px-4 py-2" style={{ letterSpacing: '1.5px' }}>RATED BY</th>
-                <th className="rib-heading text-xs text-rib-muted text-left px-4 py-2" style={{ letterSpacing: '1.5px' }}>MATCH</th>
                 {RATING_ATTRIBUTES.map((a) => (
                   <th key={a.key} className="rib-heading text-xs text-rib-muted text-center px-3 py-2" style={{ letterSpacing: '1.5px' }}>
                     {a.label.slice(0, 3)}
                   </th>
                 ))}
-                <th className="rib-heading text-xs text-rib-muted text-center px-4 py-2" style={{ letterSpacing: '1.5px' }}>AVG</th>
+                {isGK && (
+                  <th className="rib-heading text-xs text-rib-muted text-center px-3 py-2" style={{ letterSpacing: '1.5px' }}>GK</th>
+                )}
               </tr>
             </thead>
             <tbody>
-              {receivedRatings.map(({ rater, match, attrs }) => {
-                const avg = RATING_ATTRIBUTES.reduce((sum, a) => sum + attrs[a.key], 0) / RATING_ATTRIBUTES.length
-                return (
-                  <tr key={attrs.id} className="border-b border-rib-border last:border-0">
-                    <td className="px-4 py-3">
-                      {rater ? (
-                        <Link href={`/runitback/players/${rater.id}`} className="rib-heading text-xs hover:text-rib-acc inline-flex items-center gap-2" style={{ letterSpacing: '1.5px' }}>
-                          {getInitials(rater.name)} · {rater.name}
-                        </Link>
-                      ) : (
-                        <span className="rib-heading text-xs text-rib-muted" style={{ letterSpacing: '1.5px' }}>UNKNOWN</span>
-                      )}
-                    </td>
-                    <td className="rib-body text-xs px-4 py-3">
-                      {match
-                        ? new Date(match.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })
-                        : '—'}
-                    </td>
-                    {RATING_ATTRIBUTES.map((a) => (
-                      <td key={a.key} className="rib-stat text-sm text-center px-3 py-3">{attrs[a.key]}</td>
-                    ))}
-                    <td className="rib-stat text-sm text-center px-4 py-3 text-rib-acc">{avg.toFixed(1)}</td>
-                  </tr>
-                )
-              })}
+              {attributeRatingsReceived.map(({ rater, attrs }) => (
+                <tr key={attrs.id} className="border-b border-rib-border last:border-0">
+                  <td className="px-4 py-3">
+                    {rater ? (
+                      <Link href={`/runitback/players/${rater.id}`} className="rib-heading text-xs hover:text-rib-acc inline-flex items-center gap-2" style={{ letterSpacing: '1.5px' }}>
+                        {getInitials(rater.name)} · {rater.name}
+                      </Link>
+                    ) : (
+                      <span className="rib-heading text-xs text-rib-muted" style={{ letterSpacing: '1.5px' }}>UNKNOWN</span>
+                    )}
+                  </td>
+                  {RATING_ATTRIBUTES.map((a) => (
+                    <td key={a.key} className="rib-stat text-sm text-center px-3 py-3">{attrs[a.key]}</td>
+                  ))}
+                  {isGK && (
+                    <td className="rib-stat text-sm text-center px-3 py-3">{attrs.goalkeeping ?? '—'}</td>
+                  )}
+                </tr>
+              ))}
             </tbody>
           </table>
           </div>

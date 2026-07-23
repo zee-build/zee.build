@@ -65,7 +65,10 @@ export interface PlayerStats {
   goalsPerGame: number
   communityRating: number | null
   communityRatingCount: number
+  /** Averaged 1-99 attribute values from bimonthly update windows. */
   attributeRatings: Record<RatingAttribute, number> | null
+  /** Number of teammates whose attribute submissions feed attributeRatings. */
+  attributeRaterCount: number
   gkRating: number | null
   awardsEligible: boolean
   seasonAward: 'toty' | 'hero' | null
@@ -78,6 +81,7 @@ export interface MatchWithPlayers extends Match {
   players: (MatchPlayer & { player: Player })[]
 }
 
+/** Legacy per-match 6-attribute rating (archived — the app no longer writes these). */
 export interface PeerRating {
   id: string
   season: number
@@ -92,6 +96,38 @@ export interface PeerRating {
   physical: number
   goalkeeping: number | null
   created_at: string
+}
+
+/** One quick 1-10 "how did they play" score per teammate per match. */
+export interface MatchRating {
+  id: string
+  season: number
+  match_id: string
+  rater_id: string
+  ratee_id: string
+  score: number
+  created_at: string
+}
+
+/**
+ * Bimonthly EA-style attribute update (1-99), submitted once per rater per
+ * ratee per rating window (Jan/Mar/May/Jul/Sep/Nov, keyed 'YYYY-MM').
+ */
+export interface AttributeRating {
+  id: string
+  season: number
+  rating_window: string
+  rater_id: string
+  ratee_id: string
+  pace: number
+  shooting: number
+  passing: number
+  dribbling: number
+  defending: number
+  physical: number
+  goalkeeping: number | null
+  created_at: string
+  updated_at: string
 }
 
 export type RatingAttribute = 'pace' | 'shooting' | 'passing' | 'dribbling' | 'defending' | 'physical'

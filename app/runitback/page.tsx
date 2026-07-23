@@ -6,7 +6,7 @@ import { readSessionToken, SESSION_COOKIE_NAME } from '@/lib/runitback/playerAut
 import { CURRENT_SEASON } from '@/lib/runitback/config'
 import FifaMenuGrid from '@/components/runitback/FifaMenuGrid'
 import WelcomeSplash from '@/components/runitback/WelcomeSplash'
-import type { Match, MatchPlayer, MotmVote, PeerRating, Player } from '@/lib/runitback/types'
+import type { AttributeRating, Match, MatchPlayer, MatchRating, MotmVote, Player } from '@/lib/runitback/types'
 
 export const metadata: Metadata = {
   title: 'Run It Back — Home',
@@ -18,21 +18,21 @@ export default async function RunItBackHome() {
   const cookieStore = await cookies()
   const playerId = readSessionToken(cookieStore.get(SESSION_COOKIE_NAME)?.value)
 
-  const [{ data: players }, { data: matches }, { data: matchPlayers }, { data: ratings }, { data: votes }] = await Promise.all([
+  const [{ data: players }, { data: matches }, { data: matchPlayers }, { data: matchRatings }, { data: attributeRatings }, { data: votes }] = await Promise.all([
     supabase.from('players').select(PUBLIC_PLAYER_COLUMNS).returns<Player[]>(),
     supabase.from('matches').select('*').order('date', { ascending: false }).returns<Match[]>(),
     supabase.from('match_players').select('*').returns<MatchPlayer[]>(),
-    supabase.from('peer_ratings').select('*').eq('season', CURRENT_SEASON).returns<PeerRating[]>(),
+    supabase.from('match_ratings').select('*').eq('season', CURRENT_SEASON).returns<MatchRating[]>(),
+    supabase.from('attribute_ratings').select('*').eq('season', CURRENT_SEASON).returns<AttributeRating[]>(),
     supabase.from('motm_votes').select('*').eq('season', CURRENT_SEASON).returns<MotmVote[]>(),
   ])
 
   const allPlayers = players ?? []
   const allMatches = matches ?? []
   const allMatchPlayers = matchPlayers ?? []
-  const allRatings = ratings ?? []
   const allVotes = votes ?? []
 
-  const stats = buildPlayerStats(allPlayers, allMatches, allMatchPlayers, allRatings)
+  const stats = buildPlayerStats(allPlayers, allMatches, allMatchPlayers, matchRatings ?? [], attributeRatings ?? [])
 
   const topScorer = [...stats].sort((a, b) => b.goals - a.goals)[0] ?? null
   const topStreakStat = [...stats].sort((a, b) => b.streak - a.streak)[0] ?? null
@@ -44,7 +44,7 @@ export default async function RunItBackHome() {
   const isMod = me?.role === 'mod' || me?.role === 'admin'
 
   const pendingCount = playerId
-    ? getPendingMatchRatings(playerId, allMatches, allMatchPlayers, allPlayers, allRatings).reduce(
+    ? getPendingMatchRatings(playerId, allMatches, allMatchPlayers, allPlayers, matchRatings ?? []).reduce(
         (sum, p) => sum + p.teammates.length,
         0
       )

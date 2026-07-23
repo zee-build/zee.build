@@ -3,7 +3,7 @@ import { createServiceClient } from '@/lib/runitback/supabase'
 import { readSession } from '@/lib/runitback/playerAuth'
 import { CURRENT_SEASON } from '@/lib/runitback/config'
 import { buildPlayerStats, getPendingMotmVotes, PUBLIC_PLAYER_COLUMNS } from '@/lib/runitback/queries'
-import type { Match, MatchPlayer, MotmVote, PeerRating, Player } from '@/lib/runitback/types'
+import type { AttributeRating, Match, MatchPlayer, MatchRating, MotmVote, Player } from '@/lib/runitback/types'
 
 export async function GET(req: NextRequest) {
   const playerId = readSession(req)
@@ -12,23 +12,23 @@ export async function GET(req: NextRequest) {
   }
 
   const supabase = createServiceClient()
-  const [{ data: players }, { data: matches }, { data: matchPlayers }, { data: ratings }, { data: votes }] =
+  const [{ data: players }, { data: matches }, { data: matchPlayers }, { data: matchRatings }, { data: attributeRatings }, { data: votes }] =
     await Promise.all([
       supabase.from('players').select(PUBLIC_PLAYER_COLUMNS).returns<Player[]>(),
       supabase.from('matches').select('*').returns<Match[]>(),
       supabase.from('match_players').select('*').returns<MatchPlayer[]>(),
-      supabase.from('peer_ratings').select('*').eq('season', CURRENT_SEASON).returns<PeerRating[]>(),
+      supabase.from('match_ratings').select('*').eq('season', CURRENT_SEASON).returns<MatchRating[]>(),
+      supabase.from('attribute_ratings').select('*').eq('season', CURRENT_SEASON).returns<AttributeRating[]>(),
       supabase.from('motm_votes').select('*').eq('season', CURRENT_SEASON).returns<MotmVote[]>(),
     ])
 
   const allPlayers = players ?? []
   const allMatches = matches ?? []
   const allMatchPlayers = matchPlayers ?? []
-  const allRatings = ratings ?? []
   const allVotes = votes ?? []
 
   const pendingMatches = getPendingMotmVotes(playerId, allMatches, allMatchPlayers, allPlayers, allVotes)
-  const stats = buildPlayerStats(allPlayers, allMatches, allMatchPlayers, allRatings)
+  const stats = buildPlayerStats(allPlayers, allMatches, allMatchPlayers, matchRatings ?? [], attributeRatings ?? [])
   const statsById = new Map(stats.map((s) => [s.player.id, s]))
 
   const pending = pendingMatches.map(({ match, teammates }) => ({

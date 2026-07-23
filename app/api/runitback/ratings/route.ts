@@ -1,9 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/runitback/supabase'
 import { readSession } from '@/lib/runitback/playerAuth'
-import { CURRENT_SEASON, RATING_ATTRIBUTES } from '@/lib/runitback/config'
+import {
+  CURRENT_SEASON,
+  getNextWindow,
+  getOpenWindow,
+  windowLabel,
+} from '@/lib/runitback/config'
 import { buildPlayerStats, getPendingMatchRatings, PUBLIC_PLAYER_COLUMNS } from '@/lib/runitback/queries'
-import type { Match, MatchPlayer, PeerRating, Player } from '@/lib/runitback/types'
+import type { AttributeRating, Match, MatchPlayer, MatchRating, Player } from '@/lib/runitback/types'
 
 export async function GET(req: NextRequest) {
   const playerId = readSession(req)
@@ -12,20 +17,28 @@ export async function GET(req: NextRequest) {
   }
 
   const supabase = createServiceClient()
-  const [{ data: players }, { data: matches }, { data: matchPlayers }, { data: ratings }] = await Promise.all([
+  const [
+    { data: players },
+    { data: matches },
+    { data: matchPlayers },
+    { data: matchRatings },
+    { data: attributeRatings },
+  ] = await Promise.all([
     supabase.from('players').select(PUBLIC_PLAYER_COLUMNS).returns<Player[]>(),
     supabase.from('matches').select('*').returns<Match[]>(),
     supabase.from('match_players').select('*').returns<MatchPlayer[]>(),
-    supabase.from('peer_ratings').select('*').eq('season', CURRENT_SEASON).returns<PeerRating[]>(),
+    supabase.from('match_ratings').select('*').eq('season', CURRENT_SEASON).returns<MatchRating[]>(),
+    supabase.from('attribute_ratings').select('*').eq('season', CURRENT_SEASON).returns<AttributeRating[]>(),
   ])
 
   const allPlayers = players ?? []
   const allMatches = matches ?? []
   const allMatchPlayers = matchPlayers ?? []
-  const allRatings = ratings ?? []
+  const allMatchRatings = matchRatings ?? []
+  const allAttributeRatings = attributeRatings ?? []
 
-  const pendingMatches = getPendingMatchRatings(playerId, allMatches, allMatchPlayers, allPlayers, allRatings)
-  const stats = buildPlayerStats(allPlayers, allMatches, allMatchPlayers, allRatings)
+  const pendingMatches = getPendingMatchRatings(playerId, allMatches, allMatchPlayers, allPlayers, allMatchRatings)
+  const stats = buildPlayerStats(allPlayers, allMatches, allMatchPlayers, allMatchRatings, allAttributeRatings)
   const statsById = new Map(stats.map((s) => [s.player.id, s]))
 
   const pending = pendingMatches.map(({ match, teammates }) => ({
@@ -34,13 +47,39 @@ export async function GET(req: NextRequest) {
     dayOfWeek: match.day_of_week,
     teammates: teammates
       .map((t) => {
-        const stats = statsById.get(t.player.id)
-        return stats ? { stats, playedPosition: t.playedPosition } : null
+        const teammateStats = statsById.get(t.player.id)
+        return teammateStats ? { stats: teammateStats, playedPosition: t.playedPosition } : null
       })
       .filter(Boolean),
   }))
 
-  return NextResponse.json({ season: CURRENT_SEASON, pending })
+  // ── Attribute update window ────────────────────────────────────────
+  const openWindow = getOpenWindow()
+  const activeWindow = openWindow ?? getNextWindow()
+
+  // The rater's own submissions for the active window, keyed by ratee.
+  const mySubs = new Map(
+    allAttributeRatings
+      .filter((a) => a.rater_id === playerId && a.rating_window === activeWindow)
+      .map((a) => [a.ratee_id, a])
+  )
+
+  // Everyone the player can rate (all registered squad members except self).
+  const squad = stats
+    .filter((s) => s.player.id !== playerId)
+    .sort((a, b) => a.player.name.localeCompare(b.player.name))
+    .map((s) => ({ stats: s, mySubmission: mySubs.get(s.player.id) ?? null }))
+
+  return NextResponse.json({
+    season: CURRENT_SEASON,
+    pending,
+    attributeWindow: {
+      key: activeWindow,
+      label: windowLabel(activeWindow),
+      open: openWindow !== null,
+    },
+    squad,
+  })
 }
 
 export async function POST(req: NextRequest) {
@@ -49,7 +88,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  // Check voter is not suspended
   const supabase = createServiceClient()
   const { data: voter } = await supabase
     .from('players')
@@ -61,7 +99,7 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json()
-  const { match_id, ratee_id } = body
+  const { match_id, ratee_id, score } = body
 
   if (typeof match_id !== 'string' || !match_id) {
     return NextResponse.json({ error: 'Invalid match.' }, { status: 400 })
@@ -69,30 +107,8 @@ export async function POST(req: NextRequest) {
   if (typeof ratee_id !== 'string' || ratee_id === playerId) {
     return NextResponse.json({ error: 'Invalid player.' }, { status: 400 })
   }
-
-  const attrs: Record<string, number> = {}
-  for (const { key } of RATING_ATTRIBUTES) {
-    const value = body[key]
-    if (typeof value !== 'number' || !Number.isInteger(value) || value < 1 || value > 10) {
-      return NextResponse.json(
-        { error: `${key} must be a whole number between 1 and 10.` },
-        { status: 400 }
-      )
-    }
-    attrs[key] = value
-  }
-
-  let goalkeeping: number | null = null
-  if (body.goalkeeping !== undefined && body.goalkeeping !== null) {
-    if (
-      typeof body.goalkeeping !== 'number' ||
-      !Number.isInteger(body.goalkeeping) ||
-      body.goalkeeping < 1 ||
-      body.goalkeeping > 10
-    ) {
-      return NextResponse.json({ error: 'goalkeeping must be a whole number between 1 and 10.' }, { status: 400 })
-    }
-    goalkeeping = body.goalkeeping
+  if (typeof score !== 'number' || !Number.isInteger(score) || score < 1 || score > 10) {
+    return NextResponse.json({ error: 'Rating must be a whole number between 1 and 10.' }, { status: 400 })
   }
 
   const { data: roster } = await supabase
@@ -107,7 +123,7 @@ export async function POST(req: NextRequest) {
   }
 
   const { data: existing } = await supabase
-    .from('peer_ratings')
+    .from('match_ratings')
     .select('id')
     .eq('match_id', match_id)
     .eq('rater_id', playerId)
@@ -118,13 +134,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'You already rated this player for this match.' }, { status: 409 })
   }
 
-  const { error } = await supabase.from('peer_ratings').insert({
+  const { error } = await supabase.from('match_ratings').insert({
     season: CURRENT_SEASON,
     match_id,
     rater_id: playerId,
     ratee_id,
-    ...attrs,
-    goalkeeping,
+    score,
   })
 
   if (error) {

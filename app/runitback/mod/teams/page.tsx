@@ -6,7 +6,7 @@ import { PUBLIC_PLAYER_COLUMNS, buildPlayerStats } from '@/lib/runitback/queries
 import { readSessionToken, SESSION_COOKIE_NAME } from '@/lib/runitback/playerAuth'
 import { CURRENT_SEASON } from '@/lib/runitback/config'
 import TeamPickerPanel from '@/components/runitback/TeamPickerPanel'
-import type { Match, MatchPlayer, PeerRating, Player } from '@/lib/runitback/types'
+import type { AttributeRating, Match, MatchPlayer, MatchRating, Player } from '@/lib/runitback/types'
 
 export const metadata: Metadata = {
   title: 'Run It Back — Team Picker',
@@ -23,11 +23,12 @@ export default async function TeamPickerPage() {
 
   const supabase = createClient()
 
-  const [{ data: players }, { data: matches }, { data: matchPlayers }, { data: ratings }] = await Promise.all([
+  const [{ data: players }, { data: matches }, { data: matchPlayers }, { data: matchRatings }, { data: attributeRatings }] = await Promise.all([
     supabase.from('players').select(PUBLIC_PLAYER_COLUMNS).order('name').returns<Player[]>(),
     supabase.from('matches').select('*').returns<Match[]>(),
     supabase.from('match_players').select('*').returns<MatchPlayer[]>(),
-    supabase.from('peer_ratings').select('*').eq('season', CURRENT_SEASON).returns<PeerRating[]>(),
+    supabase.from('match_ratings').select('*').eq('season', CURRENT_SEASON).returns<MatchRating[]>(),
+    supabase.from('attribute_ratings').select('*').eq('season', CURRENT_SEASON).returns<AttributeRating[]>(),
   ])
 
   const me = (players ?? []).find((p) => p.id === playerId)
@@ -35,7 +36,7 @@ export default async function TeamPickerPage() {
     redirect('/runitback')
   }
 
-  const stats = buildPlayerStats(players ?? [], matches ?? [], matchPlayers ?? [], ratings ?? [])
+  const stats = buildPlayerStats(players ?? [], matches ?? [], matchPlayers ?? [], matchRatings ?? [], attributeRatings ?? [])
 
   return (
     <div className="rib-page max-w-5xl mx-auto">

@@ -4,7 +4,8 @@ import type { RatingAttribute } from './types'
 export const CURRENT_SEASON = new Date().getFullYear()
 export const SEASON_LABEL = `SEASON ${CURRENT_SEASON}`
 
-// Skill attributes teammates rate each other on (1-10), shown FIFA-style.
+// Skill attributes teammates rate each other on (1-99 in bimonthly update
+// windows), shown FIFA-style.
 export const RATING_ATTRIBUTES: { key: RatingAttribute; label: string }[] = [
   { key: 'pace', label: 'PACE' },
   { key: 'shooting', label: 'SHOOTING' },
@@ -14,9 +15,73 @@ export const RATING_ATTRIBUTES: { key: RatingAttribute; label: string }[] = [
   { key: 'physical', label: 'PHYSICAL' },
 ]
 
-// Extra attribute only rated when the teammate played in goal — kept
+// Extra attribute only rated when the teammate plays in goal — kept
 // separate from RATING_ATTRIBUTES so it doesn't show up for every player.
 export const GK_RATING_ATTRIBUTE = { key: 'goalkeeping' as const, label: 'GK RATING' }
+
+// ── Bimonthly attribute update windows (like EA FC ratings refreshes) ──
+// Attribute ratings can only be submitted during these months; each window
+// is keyed 'YYYY-MM'. Submissions are editable until the window closes.
+export const UPDATE_MONTHS = [1, 3, 5, 7, 9, 11] // Jan Mar May Jul Sep Nov
+
+const MONTH_NAMES = [
+  'JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE',
+  'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER',
+]
+
+export function windowKey(year: number, month: number): string {
+  return `${year}-${String(month).padStart(2, '0')}`
+}
+
+export function windowLabel(key: string): string {
+  const [year, month] = key.split('-').map(Number)
+  return `${MONTH_NAMES[(month ?? 1) - 1]} ${year} UPDATE`
+}
+
+/** The currently open update window, or null when between windows. */
+export function getOpenWindow(now = new Date()): string | null {
+  const month = now.getUTCMonth() + 1
+  return UPDATE_MONTHS.includes(month) ? windowKey(now.getUTCFullYear(), month) : null
+}
+
+/** The next update window (or the current one if a window is open). */
+export function getNextWindow(now = new Date()): string {
+  const year = now.getUTCFullYear()
+  const month = now.getUTCMonth() + 1
+  for (const m of UPDATE_MONTHS) {
+    if (m >= month) return windowKey(year, m)
+  }
+  return windowKey(year + 1, UPDATE_MONTHS[0])
+}
+
+// ── Position-weighted overall ──────────────────────────────────────────
+// Everyone shares the same six attributes (so cards stay comparable), but
+// how much each attribute counts toward a player's overall depends on their
+// primary position — defending shouldn't drag a striker the way it drags a
+// CB, and shooting barely matters for a defender. Weights sum to 100.
+// GK weights include the dedicated goalkeeping attribute.
+export type WeightedAttribute = RatingAttribute | 'goalkeeping'
+
+export const POSITION_WEIGHTS: Record<string, Partial<Record<WeightedAttribute, number>>> = {
+  GK: { goalkeeping: 45, passing: 15, defending: 10, physical: 10, dribbling: 10, pace: 5, shooting: 5 },
+  CB: { defending: 30, physical: 25, passing: 15, pace: 15, dribbling: 10, shooting: 5 },
+  RB: { defending: 25, pace: 20, passing: 20, dribbling: 15, physical: 15, shooting: 5 },
+  LB: { defending: 25, pace: 20, passing: 20, dribbling: 15, physical: 15, shooting: 5 },
+  CM: { passing: 30, dribbling: 20, physical: 15, defending: 15, pace: 10, shooting: 10 },
+  CAM: { passing: 30, dribbling: 25, shooting: 20, pace: 10, defending: 10, physical: 5 },
+  LW: { pace: 25, dribbling: 25, shooting: 20, passing: 15, physical: 10, defending: 5 },
+  RW: { pace: 25, dribbling: 25, shooting: 20, passing: 15, physical: 10, defending: 5 },
+  ST: { shooting: 30, pace: 20, physical: 15, dribbling: 15, passing: 10, defending: 10 },
+}
+
+// Balanced fallback for players with no registered position.
+export const DEFAULT_WEIGHTS: Partial<Record<WeightedAttribute, number>> = {
+  pace: 17, shooting: 17, passing: 17, dribbling: 17, defending: 16, physical: 16,
+}
+
+export function weightsForPosition(position: string | null | undefined) {
+  return (position && POSITION_WEIGHTS[position]) || DEFAULT_WEIGHTS
+}
 
 // Positions a mod can assign per-match, overriding a player's registered
 // position (e.g. an outfield player covering in goal for an injured GK).
