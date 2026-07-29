@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
   }
 
   const supabase = createServiceClient()
-  const [{ data: matchRatings, error: mErr }, { data: attributeRatings, error: aErr }, { data: players }] =
+  const [{ data: matchRatings, error: mErr }, { data: attributeRatings, error: aErr }, { data: players }, { data: matches }] =
     await Promise.all([
       supabase
         .from('match_ratings')
@@ -22,6 +22,7 @@ export async function GET(req: NextRequest) {
         .eq('season', CURRENT_SEASON)
         .order('created_at', { ascending: false }),
       supabase.from('players').select('id, name, nickname'),
+      supabase.from('matches').select('id, date, day_of_week'),
     ])
 
   const error = mErr ?? aErr
@@ -29,9 +30,17 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 
+  // Attach each match rating's match date/day so the admin can see and sort
+  // ratings by when the game was played (latest first).
+  const matchById = new Map((matches ?? []).map((m) => [m.id, m]))
+  const matchRatingsWithDate = (matchRatings ?? []).map((r) => {
+    const m = matchById.get(r.match_id)
+    return { ...r, match_date: m?.date ?? null, day_of_week: m?.day_of_week ?? null }
+  })
+
   return NextResponse.json({
     season: CURRENT_SEASON,
-    matchRatings: matchRatings ?? [],
+    matchRatings: matchRatingsWithDate,
     attributeRatings: attributeRatings ?? [],
     players: players ?? [],
   })

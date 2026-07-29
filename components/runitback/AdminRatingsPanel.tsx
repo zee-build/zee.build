@@ -11,6 +11,13 @@ interface MatchRatingRow {
   rater_id: string
   ratee_id: string
   score: number
+  match_date: string | null
+  day_of_week: string | null
+}
+
+function formatDate(date: string | null): string {
+  if (!date) return '—'
+  return new Date(date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' })
 }
 
 interface AttributeRatingRow {
@@ -139,12 +146,15 @@ export default function AdminRatingsPanel() {
     </button>
   )
 
-  // ── Match ratings grouped by ratee ──────────────────────────────────
+  // ── Match ratings grouped by ratee, latest match first ──────────────
   const matchByRatee = new Map<string, MatchRatingRow[]>()
   for (const r of matchRatings) {
     const list = matchByRatee.get(r.ratee_id) ?? []
     list.push(r)
     matchByRatee.set(r.ratee_id, list)
+  }
+  for (const list of matchByRatee.values()) {
+    list.sort((a, b) => (b.match_date ?? '').localeCompare(a.match_date ?? ''))
   }
 
   // ── Attribute ratings grouped by ratee ──────────────────────────────
@@ -179,7 +189,12 @@ export default function AdminRatingsPanel() {
                 <div className="space-y-2">
                   {rows.map((r) => (
                     <div key={r.id} className="flex items-center gap-3 text-sm">
-                      <span className="rib-body flex-1 min-w-0 truncate">{nameFor(r.rater_id)}</span>
+                      <span className="rib-body flex-1 min-w-0 truncate">
+                        {nameFor(r.rater_id)}
+                        <span className="text-rib-muted text-xs">
+                          {' · '}{r.day_of_week ? `${r.day_of_week.slice(0, 3)} ` : ''}{formatDate(r.match_date)}
+                        </span>
+                      </span>
                       {editingId === r.id ? (
                         <>
                           <input
