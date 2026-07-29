@@ -8,6 +8,7 @@ import { adminFetch } from '@/lib/runitback/admin'
 import MatchLogForm from './MatchLogForm'
 import ModSettings from './ModSettings'
 import AdminMotmPanel from './AdminMotmPanel'
+import PasswordResetsPanel from './PasswordResetsPanel'
 import type { MatchWithPlayers, Player } from '@/lib/runitback/types'
 
 interface ModPanelProps {
@@ -60,6 +61,12 @@ export default function ModPanel({ players, matches }: ModPanelProps) {
       <section className="rib-tile rounded-xl p-5">
         <h2 className="rib-heading text-xl mb-4">MOTM VOTES</h2>
         <AdminMotmPanel />
+      </section>
+
+      {/* Password reset requests */}
+      <section className="rib-tile rounded-xl p-5">
+        <h2 className="rib-heading text-xl mb-4">PASSWORD RESETS</h2>
+        <PasswordResetsPanel />
       </section>
 
       {/* Manage matches */}

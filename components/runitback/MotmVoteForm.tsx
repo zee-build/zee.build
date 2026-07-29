@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Loader2 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Loader2, X, Trophy } from 'lucide-react'
 import FifaCard from './FifaCard'
 import type { DayOfWeek, PlayerStats } from '@/lib/runitback/types'
 
@@ -13,10 +14,12 @@ interface PendingMatch {
 }
 
 export default function MotmVoteForm() {
+  const router = useRouter()
   const [season, setSeason] = useState<number | null>(null)
   const [pending, setPending] = useState<PendingMatch[] | null>(null)
   const [error, setError] = useState('')
   const [submittingMatchId, setSubmittingMatchId] = useState<string | null>(null)
+  const [showVoteDone, setShowVoteDone] = useState(false)
 
   useEffect(() => {
     fetch('/api/runitback/motm')
@@ -42,7 +45,9 @@ export default function MotmVoteForm() {
         setError(data.error ?? 'Something went wrong.')
         return
       }
-      setPending((prev) => (prev ?? []).filter((m) => m.matchId !== matchId))
+      const nextPending = (pending ?? []).filter((m) => m.matchId !== matchId)
+      setPending(nextPending)
+      if (nextPending.length === 0) setShowVoteDone(true)
     } catch {
       setError('Something went wrong.')
     } finally {
@@ -60,12 +65,54 @@ export default function MotmVoteForm() {
 
   if (pending.length === 0) {
     return (
-      <div className="rib-tile rounded-xl p-12 text-center max-w-md mx-auto">
-        <p className="rib-heading text-xl mb-2">ALL CAUGHT UP</p>
-        <p className="rib-body text-sm">
-          You&apos;ve cast your MOTM vote for every match this {season ? `SEASON ${season}` : 'season'}.
-        </p>
-      </div>
+      <>
+        <div className="rib-tile rounded-xl p-12 text-center max-w-md mx-auto">
+          <p className="rib-heading text-xl mb-2">ALL CAUGHT UP</p>
+          <p className="rib-body text-sm">
+            You&apos;ve cast your MOTM vote for every match this {season ? `SEASON ${season}` : 'season'}.
+          </p>
+        </div>
+
+        {showVoteDone && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4" onClick={() => setShowVoteDone(false)}>
+            <div className="rib-tile rounded-xl p-8 w-full max-w-sm relative text-center" onClick={(e) => e.stopPropagation()}>
+              <button
+                type="button"
+                onClick={() => setShowVoteDone(false)}
+                className="absolute top-3 right-3 text-rib-muted hover:text-white"
+                aria-label="Close"
+              >
+                <X size={18} />
+              </button>
+              <div className="flex justify-center mb-3">
+                <Trophy size={40} className="text-rib-acc" />
+              </div>
+              <h2 className="rib-heading text-2xl mb-2">VOTES IN!</h2>
+              <p className="rib-body text-sm mb-6">
+                You&apos;ve cast your MOTM vote for every match. The winners are decided by the squad.
+              </p>
+              <div className="space-y-3">
+                <button
+                  type="button"
+                  onClick={() => { router.push('/runitback'); router.refresh() }}
+                  className="w-full rib-heading text-sm py-3 rounded-lg bg-rib-acc text-rib-bg"
+                  style={{ letterSpacing: '2px' }}
+                >
+                  BACK TO HOME
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowVoteDone(false)}
+                  className="w-full rib-heading text-sm py-3 rounded-lg border border-rib-border text-white"
+                  style={{ letterSpacing: '2px' }}
+                >
+                  DONE
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </>
     )
   }
 

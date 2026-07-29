@@ -1,7 +1,9 @@
 import type { Metadata } from 'next'
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/runitback/supabase'
-import { buildPlayerStats, PUBLIC_PLAYER_COLUMNS } from '@/lib/runitback/queries'
+import Link from 'next/link'
+import { Lock } from 'lucide-react'
+import { buildPlayerStats, getPendingMatchRatings, PUBLIC_PLAYER_COLUMNS } from '@/lib/runitback/queries'
 import { CURRENT_SEASON } from '@/lib/runitback/config'
 import { readSessionToken, SESSION_COOKIE_NAME } from '@/lib/runitback/playerAuth'
 import PlayersGrid from '@/components/runitback/PlayersGrid'
@@ -34,10 +36,34 @@ export default async function PlayersPage() {
 
   const stats = buildPlayerStats(players ?? [], matches ?? [], matchPlayers ?? [], matchRatings ?? [], attributeRatings ?? [])
 
+  // A logged-in player who still owes match ratings has everyone else's cards
+  // blurred until they finish — finishing their votes unlocks the whole squad.
+  const viewerPending = playerId
+    ? getPendingMatchRatings(playerId, matches ?? [], matchPlayers ?? [], players ?? [], matchRatings ?? [])
+        .reduce((sum, p) => sum + p.teammates.length, 0)
+    : 0
+  const cardsLocked = !!playerId && !isMod && viewerPending > 0
+
   return (
     <div className="rib-page">
       <h1 className="rib-heading text-3xl mb-6">PLAYERS</h1>
-      <PlayersGrid stats={stats} showRatings={showRatings} />
+
+      {cardsLocked && (
+        <Link
+          href="/runitback/rate"
+          className="rib-tile rounded-xl p-4 mb-6 flex items-center gap-3 hover:border-rib-acc transition-colors"
+        >
+          <Lock size={18} className="text-rib-acc shrink-0" />
+          <span className="rib-body text-sm">
+            <span className="rib-heading text-rib-acc" style={{ letterSpacing: '1px' }}>
+              {viewerPending} rating{viewerPending === 1 ? '' : 's'} left
+            </span>{' '}
+            — finish rating your teammates to unlock everyone&apos;s cards.
+          </span>
+        </Link>
+      )}
+
+      <PlayersGrid stats={stats} showRatings={showRatings} cardsLocked={cardsLocked} viewerId={playerId} />
     </div>
   )
 }

@@ -8,7 +8,18 @@ import type { PlayerStats } from '@/lib/runitback/types'
 type FilterMode = 'all' | 'regulars' | 'guests'
 type SortMode = 'overall' | 'goals' | 'motm' | 'name'
 
-export default function PlayersGrid({ stats, showRatings = true }: { stats: PlayerStats[]; showRatings?: boolean }) {
+export default function PlayersGrid({
+  stats,
+  showRatings = true,
+  cardsLocked = false,
+  viewerId = null,
+}: {
+  stats: PlayerStats[]
+  showRatings?: boolean
+  /** When true, blur every card except the viewer's own until they finish rating. */
+  cardsLocked?: boolean
+  viewerId?: string | null
+}) {
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState<FilterMode>('all')
   const [sort, setSort] = useState<SortMode>('overall')
@@ -83,9 +94,19 @@ export default function PlayersGrid({ stats, showRatings = true }: { stats: Play
         </div>
       ) : (
         <div className="flex flex-wrap gap-5 justify-center sm:justify-start">
-          {filtered.map((s) => (
-            <FifaCard key={s.player.id} stats={s} href={`/runitback/players/${s.player.id}`} showRatings={showRatings} />
-          ))}
+          {filtered.map((s) => {
+            const isLocked = cardsLocked && s.player.id !== viewerId
+            return (
+              <FifaCard
+                key={s.player.id}
+                stats={s}
+                // Locked cards don't link through to the (unblurred) profile.
+                href={isLocked ? undefined : `/runitback/players/${s.player.id}`}
+                showRatings={showRatings}
+                locked={isLocked}
+              />
+            )
+          })}
         </div>
       )}
     </div>

@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Loader2, X, Lock, Star } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Loader2, X, Lock, Star, PartyPopper } from 'lucide-react'
 import FifaCard from './FifaCard'
 import {
   GK_RATING_ATTRIBUTE,
@@ -40,8 +41,10 @@ const DEFAULT_ATTRS: Record<RatingAttribute, number> = {
 type Mode = 'match' | 'squad'
 
 export default function RatePlayersForm() {
+  const router = useRouter()
   const [season, setSeason] = useState<number | null>(null)
   const [mode, setMode] = useState<Mode>('match')
+  const [showRatingDone, setShowRatingDone] = useState(false)
 
   const [pending, setPending] = useState<PendingMatch[] | null>(null)
   const [squad, setSquad] = useState<SquadMember[]>([])
@@ -101,16 +104,17 @@ export default function RatePlayersForm() {
         return
       }
       const { matchId, teammate } = scoreTarget
-      setPending((prev) =>
-        (prev ?? [])
-          .map((m) =>
-            m.matchId === matchId
-              ? { ...m, teammates: m.teammates.filter((t) => t.stats.player.id !== teammate.stats.player.id) }
-              : m
-          )
-          .filter((m) => m.teammates.length > 0)
-      )
+      const nextPending = (pending ?? [])
+        .map((m) =>
+          m.matchId === matchId
+            ? { ...m, teammates: m.teammates.filter((t) => t.stats.player.id !== teammate.stats.player.id) }
+            : m
+        )
+        .filter((m) => m.teammates.length > 0)
+      setPending(nextPending)
       setScoreTarget(null)
+      // Just cleared the last pending rating → celebrate + unlocked cards.
+      if (nextPending.length === 0) setShowRatingDone(true)
     } catch {
       setError('Something went wrong.')
     } finally {
@@ -361,6 +365,48 @@ export default function RatePlayersForm() {
             >
               {submitting ? 'SUBMITTING...' : score === null ? 'PICK A SCORE' : `SUBMIT ${score}/10`}
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* ── RATING COMPLETE CELEBRATION ───────────────────────────── */}
+      {showRatingDone && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4" onClick={() => setShowRatingDone(false)}>
+          <div className="rib-tile rounded-xl p-8 w-full max-w-sm relative text-center" onClick={(e) => e.stopPropagation()}>
+            <button
+              type="button"
+              onClick={() => setShowRatingDone(false)}
+              className="absolute top-3 right-3 text-rib-muted hover:text-white"
+              aria-label="Close"
+            >
+              <X size={18} />
+            </button>
+            <div className="flex justify-center mb-3">
+              <PartyPopper size={40} className="text-rib-acc" />
+            </div>
+            <h2 className="rib-heading text-2xl mb-2">ALL RATED!</h2>
+            <p className="rib-body text-sm mb-6">
+              You&apos;ve rated every teammate this season. Every card in the squad is now
+              <span className="text-rib-acc"> unlocked</span> for you.
+            </p>
+            <div className="space-y-3">
+              <button
+                type="button"
+                onClick={() => { router.push('/runitback/players'); router.refresh() }}
+                className="w-full rib-heading text-sm py-3 rounded-lg bg-rib-acc text-rib-bg"
+                style={{ letterSpacing: '2px' }}
+              >
+                SEE ALL CARDS
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowRatingDone(false)}
+                className="w-full rib-heading text-sm py-3 rounded-lg border border-rib-border text-white"
+                style={{ letterSpacing: '2px' }}
+              >
+                DONE
+              </button>
+            </div>
           </div>
         </div>
       )}

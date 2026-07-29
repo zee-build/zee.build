@@ -134,6 +134,12 @@ export default function LoginForm() {
         </button>
 
         <p className="rib-body text-xs text-center">
+          <Link href="/runitback/forgot" className="text-rib-muted hover:text-rib-acc">
+            Forgot your password?
+          </Link>
+        </p>
+
+        <p className="rib-body text-xs text-center">
           New here?{' '}
           <Link href="/runitback/register" className="text-rib-acc">
             Create an account

@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation'
 import { cookies } from 'next/headers'
 import { ArrowLeft, Star } from 'lucide-react'
 import { createClient } from '@/lib/runitback/supabase'
-import { buildHeadToHead, buildMatchesWithPlayers, buildPlayerStats, getInitials, PUBLIC_PLAYER_COLUMNS } from '@/lib/runitback/queries'
+import { buildHeadToHead, buildMatchesWithPlayers, buildPlayerStats, getInitials, getPendingMatchRatings, PUBLIC_PLAYER_COLUMNS } from '@/lib/runitback/queries'
 import { CURRENT_SEASON, RATING_ATTRIBUTES, TRAITS, windowLabel } from '@/lib/runitback/config'
 import { readSessionToken, SESSION_COOKIE_NAME } from '@/lib/runitback/playerAuth'
 import FifaCard from '@/components/runitback/FifaCard'
@@ -80,6 +80,12 @@ async function getData(id: string) {
     ratingHistory,
     attributeRatingsReceived,
     attributeWindow: latestWindow,
+    raw: {
+      players: allPlayers,
+      matches: allMatches,
+      matchPlayers: allMatchPlayers,
+      matchRatings: allMatchRatings,
+    },
   }
 }
 
@@ -108,9 +114,18 @@ export default async function PlayerProfilePage({ params }: PageProps) {
   ])
   const ratingsPublic = settingsRow?.ratings_public ?? true
   const showRatings = ratingsPublic
+  const isMod = viewerRow?.role === 'mod' || viewerRow?.role === 'admin'
 
-  const { player, stats, matches, headToHead, ratingHistory, attributeRatingsReceived, attributeWindow } = data
+  const { player, stats, matches, headToHead, ratingHistory, attributeRatingsReceived, attributeWindow, raw } = data
   const isGK = player.position === 'GK'
+
+  // A logged-in player who still owes match ratings sees other players' cards
+  // blurred until they finish voting (their own card stays visible).
+  const viewerPending = viewerId
+    ? getPendingMatchRatings(viewerId, raw.matches, raw.matchPlayers, raw.players, raw.matchRatings)
+        .reduce((sum, p) => sum + p.teammates.length, 0)
+    : 0
+  const cardLocked = !!viewerId && !isMod && viewerId !== player.id && viewerPending > 0
 
   return (
     <div className="rib-page max-w-4xl mx-auto">
@@ -120,8 +135,13 @@ export default async function PlayerProfilePage({ params }: PageProps) {
 
       {/* Card + key stats side-by-side on desktop */}
       <div className="flex flex-col md:flex-row gap-8 mb-8 items-start">
-        <div className="shrink-0 flex justify-center w-full md:w-auto">
-          <FifaCard stats={stats} variant="full" showRatings={showRatings} />
+        <div className="shrink-0 flex flex-col items-center gap-3 w-full md:w-auto">
+          <FifaCard stats={stats} variant="full" showRatings={showRatings} locked={cardLocked} />
+          {cardLocked && (
+            <Link href="/runitback/rate" className="rib-heading text-xs text-rib-acc inline-flex items-center gap-1.5" style={{ letterSpacing: '1.5px' }}>
+              <Star size={12} /> FINISH RATING TO UNLOCK
+            </Link>
+          )}
         </div>
 
         {/* Stats panel */}

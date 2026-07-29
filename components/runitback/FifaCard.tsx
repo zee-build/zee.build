@@ -62,6 +62,8 @@ interface FifaCardProps {
   href?: string
   onClick?: () => void
   showRatings?: boolean
+  /** Blur the card behind a "finish rating to unlock" overlay. */
+  locked?: boolean
 }
 
 interface StatAttr {
@@ -74,7 +76,7 @@ interface StatAttr {
 const NATIVE_W = 202
 const NATIVE_H = 316
 
-export default function FifaCard({ stats, variant = 'mini', href, onClick, showRatings = true }: FifaCardProps) {
+export default function FifaCard({ stats, variant = 'mini', href, onClick, showRatings = true, locked = false }: FifaCardProps) {
   const { player, overall } = stats
   const type = cardType(stats)
   const bgSrc = CARD_BG[type] ?? CARD_BG.bronze
@@ -363,13 +365,13 @@ export default function FifaCard({ stats, variant = 'mini', href, onClick, showR
         </div>
       </div>
 
-      {/* ── PENDING RATINGS LOCK — this player still owes ratings, shown to everyone ── */}
-      {stats.hasPendingRatings && (
+      {/* ── VOTE-TO-UNLOCK LOCK — viewer still owes ratings this season ── */}
+      {locked && (
         <div
           style={{
             position: 'absolute',
             inset: 0,
-            zIndex: 1,
+            zIndex: 3,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
@@ -377,9 +379,9 @@ export default function FifaCard({ stats, variant = 'mini', href, onClick, showR
             gap: 8,
             textAlign: 'center',
             padding: 16,
-            backdropFilter: 'blur(6px)',
-            WebkitBackdropFilter: 'blur(6px)',
-            background: 'rgba(0,0,0,0.55)',
+            backdropFilter: 'blur(7px)',
+            WebkitBackdropFilter: 'blur(7px)',
+            background: 'rgba(0,0,0,0.6)',
             pointerEvents: 'none',
           }}
         >
@@ -394,7 +396,7 @@ export default function FifaCard({ stats, variant = 'mini', href, onClick, showR
               color: '#fff',
             }}
           >
-            Hasn&apos;t rated teammates yet
+            Finish rating to unlock
           </span>
         </div>
       )}
