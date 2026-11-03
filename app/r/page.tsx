@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import styles from "./links.module.css";
-import { RESOURCES } from "@/lib/resources";
+import { RESOURCES, isLive } from "@/lib/resources";
+
+// Rebuilt hourly so a blueprint appears once its post is live
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "ZeeBuild — links",
@@ -9,7 +12,7 @@ export const metadata: Metadata = {
 
 // The Instagram bio link. Newest post first, so whatever someone just saw is at the top.
 export default function LinkInBio() {
-  const items = [...RESOURCES].sort((a, b) => b.posted.localeCompare(a.posted));
+  const items = RESOURCES.filter((r) => isLive(r)).sort((a, b) => b.posted.localeCompare(a.posted));
   const [latest, ...rest] = items;
   return (
     <main className={styles.page}>
