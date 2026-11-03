@@ -7,6 +7,7 @@ export interface Resource {
   kicker: string;
   summary: string;
   posted: string; // ISO date the post went out (or is scheduled)
+  thumb?: string; // cover image shown on the link-in-bio page
   sections: { heading: string; points: string[] }[];
 }
 
@@ -18,6 +19,7 @@ export const RESOURCES: Resource[] = [
     summary:
       "If these five jobs still need you every week, you're working in the business instead of on it. Here's the order to automate them, and how to do it without losing control.",
     posted: "2026-11-03",
+    thumb: "/posts/first-five/thumb.jpg",
     sections: [
       {
         heading: "The bottleneck test",

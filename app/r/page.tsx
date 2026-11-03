@@ -1,46 +1,57 @@
 import type { Metadata } from "next";
-import styles from "../whatif/whatif.module.css";
+import styles from "./links.module.css";
 import { RESOURCES } from "@/lib/resources";
 
 export const metadata: Metadata = {
-  title: "Blueprints — ZeeBuild",
-  description: "Every blueprint promised in a ZeeBuild post, in one place.",
+  title: "ZeeBuild — links",
+  description: "Every blueprint from @zee.build posts, the free blackout check, and how to work with Zee.",
 };
 
-// The Instagram bio link: every post's blueprint, newest first
-export default function ResourceHub() {
+// The Instagram bio link. Newest post first, so whatever someone just saw is at the top.
+export default function LinkInBio() {
   const items = [...RESOURCES].sort((a, b) => b.posted.localeCompare(a.posted));
+  const [latest, ...rest] = items;
   return (
     <main className={styles.page}>
-      <header className={styles.bar}>
-        <span><i className={styles.dot} /> <b>ZEEBUILD OS</b> · BLUEPRINTS</span>
-        <span>@zee.build</span>
+      <header className={styles.profile}>
+        <div className={styles.mark}>zb</div>
+        <h1 className={styles.name}>ZeeBuild</h1>
+        <p className={styles.handle}>@zee.build · Dubai</p>
+        <p className={styles.tag}>AI + fintech automation, explained so you can actually use it.</p>
       </header>
 
-      <section className={styles.hero}>
-        <p className={styles.kicker}>FROM THE POSTS</p>
-        <h1 className={styles.h1}>Every <span className={styles.block}>blueprint</span>, in one place.</h1>
-        <p className={styles.lede}>Saw it on Instagram? It&apos;s here. Newest first.</p>
-      </section>
-
-      <section className={styles.episodes}>
-        <a href="/whatif" className={styles.episode}>
-          <span className={styles.epNum}>SERIES · WHAT IF</span>
-          <span className={styles.epTitle}>The blackout check</span>
-          <span className={styles.epLine}>Would your business notice if the banks went dark? 60 seconds.</span>
+      {latest && (
+        <a href={`/r/${latest.slug}`} className={styles.latest}>
+          <span className={styles.badge}>FROM THE LATEST POST</span>
+          {latest.thumb && <img src={latest.thumb} alt="" className={styles.latestImg} />}
+          <span className={styles.latestTitle}>{latest.title}</span>
+          <span className={styles.latestCta}>Get the free blueprint →</span>
         </a>
-        {items.map((r) => (
-          <a key={r.slug} href={`/r/${r.slug}`} className={styles.episode}>
-            <span className={styles.epNum}>{r.kicker}</span>
-            <span className={styles.epTitle}>{r.title}</span>
-            <span className={styles.epLine}>{r.summary.slice(0, 110)}…</span>
-          </a>
-        ))}
-      </section>
+      )}
 
-      <footer className={styles.footer}>
-        <span className={styles.mark}>zb</span> ZeeBuild <em>OS</em>
-      </footer>
+      <a href="/whatif" className={styles.row}>
+        <img src="/posts/whatif/ep01-cover.jpg" alt="" className={styles.thumb} />
+        <span className={styles.rowText}>
+          <span className={styles.rowKicker}>SERIES · WHAT IF</span>
+          <span className={styles.rowTitle}>Would your business survive the blackout? Free 60-second check</span>
+        </span>
+      </a>
+
+      {rest.map((r) => (
+        <a key={r.slug} href={`/r/${r.slug}`} className={styles.row}>
+          {r.thumb ? <img src={r.thumb} alt="" className={styles.thumb} /> : <span className={styles.thumbBlank}>zb</span>}
+          <span className={styles.rowText}>
+            <span className={styles.rowKicker}>BLUEPRINT</span>
+            <span className={styles.rowTitle}>{r.title}</span>
+          </span>
+        </a>
+      ))}
+
+      <a href="mailto:hello@zeebuild.com?subject=Automate%20my%20business" className={styles.contact}>
+        Want this built for your business? Email Zee →
+      </a>
+
+      <footer className={styles.footer}>zeebuild.com</footer>
     </main>
   );
 }
