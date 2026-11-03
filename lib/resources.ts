@@ -185,6 +185,73 @@ RESOURCES.push(
       ] },
     ],
   },
+  {
+    slug: "monday-report",
+    title: "The 15-minute Monday report",
+    kicker: "BLUEPRINT · FROM THE CAROUSEL",
+    summary: "Five numbers, pulled automatically every Sunday night and sent to you at 8:00 on Monday, with anything unusual flagged.",
+    posted: "2026-11-07T12:30",
+    thumb: "/posts/monday-report/thumb.jpg",
+    sections: [
+      { heading: "Pick five numbers", points: [
+        "Sales last week, cash received, overdue invoices, new leads, and one problem metric you're working on.",
+        "If nobody would act on a number, leave it out.",
+      ] },
+      { heading: "Pull them automatically", points: [
+        "A Make.com scenario runs every Sunday night, reads each source (shop, accounting, CRM, bank export) and writes one row to a Google Sheet.",
+        "Keep every week's row: the history is what makes the comparison useful.",
+      ] },
+      { heading: "Send one message", points: [
+        "Monday 8:00: one email or WhatsApp with the five numbers and last week beside each.",
+        "Flag anything that moved more than you'd expect, so you look at exceptions, not everything.",
+        "If a source fails to load, the message says so instead of showing a wrong number.",
+      ] },
+    ],
+  },
+  {
+    slug: "mena-story-1",
+    title: "Find your friction: the Tabby lesson",
+    kicker: "BLUEPRINT · MENA FINTECH STORIES",
+    summary: "Tabby grew by removing one hard moment at checkout. Here are the five places small businesses most often lose sales to friction, and the automation that fixes each.",
+    posted: "2026-11-08T12:30",
+    thumb: "/posts/mena-tabby/thumb.jpg",
+    sections: [
+      { heading: "The story, as reported", points: [
+        "Tabby was founded in 2019 by Hosam Arab and Daniil Barkalov, offering buy now, pay later at checkout.",
+        "A $200M Series D made it the Gulf's first fintech unicorn; a $160M Series E (Feb 2025) was reported at a $3.3B valuation, and a $233M Series F (Sep 2026) at $6.5B. Sources: Wamda, FintechFutures, Arab News.",
+        "Education only, not financial or investment advice.",
+      ] },
+      { heading: "Five friction points to fix", points: [
+        "Slow quotes: send a templated quote automatically when an enquiry arrives.",
+        "Manual invoices: create and send the invoice the moment work is marked done.",
+        "Payment links sent by hand: include a pay link in every invoice and reminder.",
+        "Booking back-and-forth: a booking link with instant confirmation and reminders.",
+        "Silence after a missed payment: a polite, automatic reminder sequence, with a human for exceptions.",
+      ] },
+    ],
+  },
+  {
+    slug: "checklist-first",
+    title: "Checklist first, automation second",
+    kicker: "BLUEPRINT · FROM THE REEL",
+    summary: "Why most businesses need a written checklist before they need AI, and how to turn that checklist into an automation.",
+    posted: "2026-11-08T19:00",
+    thumb: "/posts/four-questions/thumb.jpg",
+    sections: [
+      { heading: "Write it down", points: [
+        "List every step of the task, in order, with no gaps. Include where the information comes from and where it goes.",
+        "Run the task from the checklist by hand for two weeks. Fix the list every time reality doesn't match it.",
+      ] },
+      { heading: "Then automate", points: [
+        "When the checklist stops changing, it's ready. Each line becomes a step in Make.com or n8n.",
+        "Use plain rules for everything predictable. Use AI only for the messy bits: reading free text, drafting replies, sorting.",
+        "Keep a human approval wherever money or a customer is involved.",
+      ] },
+      { heading: "Is your task ready?", points: [
+        "Score it with the 4-question worksheet: zeebuild.com/r/four-questions",
+      ] },
+    ],
+  },
 );
 
 // A blueprint is listed on the link page only once its post is live (Dubai is UTC+4, no DST)
