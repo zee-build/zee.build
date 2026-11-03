@@ -31,7 +31,7 @@ export function Footer() {
               <Link href="https://linkedin.com/in/ziyanbinanoos" className="hover:text-primary transition-colors">LinkedIn</Link>
               <Link href="https://github.com/zee-build" className="hover:text-primary transition-colors">GitHub</Link>
               <Link href="http://instagram.com/zee.build" className="hover:text-primary transition-colors">Instagram</Link>
-              <Link href="mailto:contact@zee.build" className="hover:text-primary transition-colors">Email</Link>
+              <Link href="mailto:hello@zeebuild.com" className="hover:text-primary transition-colors">Email</Link>
             </div>
           </div>
         </div>

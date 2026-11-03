@@ -102,7 +102,7 @@ export default function WhatIfPage() {
       <section id="build" className={styles.cta}>
         <h2 className={styles.ctaTitle}>Want the backup plan built for your business?</h2>
         <p>Tell me what you sell and where things get stuck. I&apos;ll reply with what I&apos;d automate first.</p>
-        <a className={styles.button} href="mailto:contact@zee.build?subject=What%20If%20%E2%80%94%20backup%20plan">Email Zee →</a>
+        <a className={styles.button} href="mailto:hello@zeebuild.com?subject=What%20If%20%E2%80%94%20backup%20plan">Email Zee →</a>
         <p className={styles.small}>Or reply to the DM that sent you here.</p>
       </section>
 
