@@ -1,4 +1,4 @@
-// ZeeBuild content engine. Runs hourly on GitHub Actions; the content calendar sheet is the source of truth.
+// ZeeBuild content engine. Runs every 2 hours in the daytime on GitHub Actions; the content calendar sheet is the source of truth.
 //
 //   planned -> idea -> [S3 drafts] -> drafted -> rendered -> review -> [you click Approve] -> approved
 //   -> [S5 queues LinkedIn and X] -> slotting -> carousel-ready / reel-ready -> [S8, S9 publish] -> posted

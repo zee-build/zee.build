@@ -2,7 +2,7 @@ name: Content engine
 
 on:
   schedule:
-    - cron: "7 * * * *"
+    - cron: "7 5-19/2 * * *" # every 2 hours, 09:07 to 23:07 Dubai time, to save Make credits
   workflow_dispatch:
     inputs:
       only:
