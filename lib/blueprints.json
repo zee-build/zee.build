@@ -358,5 +358,56 @@
         ]
       }
     ]
+  },
+  {
+    "slug": "pov-beach",
+    "title": "The Beach Day Blueprint: 3 Jobs Your Shop Can Do Alone",
+    "kicker": "BLUEPRINT · FROM THE REEL",
+    "summary": "Pick three repeat jobs, set up each one, and test it before you leave. Plain steps, no tech background needed.",
+    "thumb": "/posts/pov-beach/thumb.jpg",
+    "sections": [
+      {
+        "heading": "Step 1: Find your three repeat jobs",
+        "points": [
+          "Look back at last week's messages and tasks.",
+          "Write down anything you did three or more times.",
+          "Keep only the jobs where the answer is nearly the same every time.",
+          "Good picks: opening hours, prices, booking a time, sending an invoice.",
+          "Bad picks: refunds, complaints, custom quotes. Those stay with you."
+        ]
+      },
+      {
+        "heading": "Step 2: Job one, answer the same questions",
+        "points": [
+          "Write your five most common questions and the best answer to each.",
+          "Keep every answer short and clear.",
+          "Save them as quick replies in WhatsApp Business or Instagram, if your account has that feature.",
+          "Set an away message for after hours that says when you will reply.",
+          "Add one line to each reply: 'For anything else, we will get back to you.'"
+        ]
+      },
+      {
+        "heading": "Step 3: Job two and three, booking to invoice",
+        "points": [
+          "Make a simple booking form (Google Forms or any form tool you already use).",
+          "In Make.com, start a new scenario. A scenario is a list of steps that run in order, like dominoes.",
+          "Step one is the trigger. It is the event that starts everything, such as 'new form answer'.",
+          "Add a step that puts the booking in your calendar.",
+          "Add a step that creates and sends the invoice from your invoicing tool.",
+          "Add a step that emails the customer a confirmation."
+        ]
+      },
+      {
+        "heading": "Step 4: Test it before you leave",
+        "points": [
+          "Book a fake appointment with your own name and email.",
+          "Check that the calendar, invoice and email all show up correctly.",
+          "Turn on error alerts in Make.com so a broken step pings you.",
+          "Send anything unclear, such as odd questions or angry messages, to your own inbox.",
+          "Decide on one check-in time per day. Once is enough.",
+          "Do a short test run, such as a lunch break, before a whole day away."
+        ]
+      }
+    ]
   }
 ]
