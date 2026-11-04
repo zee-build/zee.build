@@ -1,1 +1,121 @@
-[]
+[
+  {
+    "slug": "ep04-employee",
+    "title": "The Quit-Proof Blueprint",
+    "kicker": "BLUEPRINT · FROM THE REEL",
+    "summary": "A simple plan to get your key person's knowledge out of their head and into a checklist, then automate the repeat parts. Built for small shops with no spare time.",
+    "thumb": "/posts/ep04-employee/thumb.jpg",
+    "sections": [
+      {
+        "heading": "1. Find what lives in one head",
+        "points": [
+          "List every task only one person does. Start with invoices, follow-ups, reporting and supplier orders.",
+          "Ask: if this person vanished today, what would break first?",
+          "Write down every login and tool they use. Note who actually owns each account.",
+          "Flag the odd rules, like 'this client always pays late' or 'never email this supplier on Fridays'.",
+          "Rank the list by pain. Fix the top three first, not all twenty."
+        ]
+      },
+      {
+        "heading": "2. Capture it in one week",
+        "points": [
+          "Ask them to record their screen while doing each task once, talking out loud. Most laptops and phones have a built-in screen recorder, or use a free tool like Loom.",
+          "Keep each recording to one task. Short beats thorough.",
+          "Turn each recording into a checklist: numbered steps, plain words, one action per line.",
+          "Have someone else follow the checklist cold. Wherever they get stuck, the checklist is missing a step.",
+          "Store everything in one shared folder that more than one person can open."
+        ]
+      },
+      {
+        "heading": "3. Decide what to automate",
+        "points": [
+          "Good candidates: repeatable, rule-based, same steps every time. Examples: creating an invoice from a form, sending a payment reminder, copying order details into a sheet.",
+          "Keep human: pricing exceptions, upset clients, anything needing judgment or tact.",
+          "Test each step with one question: could I explain this to a stranger using only if/then rules? If yes, automate it.",
+          "Start with one task. A small win you trust beats a big build you don't."
+        ]
+      },
+      {
+        "heading": "4. Build your first Make.com scenario",
+        "points": [
+          "Pick a trigger: a new form response, a new row in Google Sheets, or a new email.",
+          "Add the action: create the document, send the message, or update the row.",
+          "Run it with test data before touching anything real.",
+          "Turn on error notifications so a failure pings you instead of silently breaking.",
+          "Write one line in the checklist: 'This step is now done by the scenario. If it fails, do it by hand like this.'"
+        ]
+      },
+      {
+        "heading": "5. What to watch for",
+        "points": [
+          "Shared access: put logins in a password manager such as Bitwarden or 1Password, not in one person's head or a sticky note.",
+          "Do this while your employee is happy and still here, not in the last week of a notice period.",
+          "Position it as backup for the whole team, not a plan to replace anyone.",
+          "Review the checklists every few months. Processes drift.",
+          "Notice periods and contracts vary, so check yours so you know how much time you would actually have."
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "kazakhstan-cashless-mall",
+    "title": "The Cashless Shop Checklist",
+    "kicker": "BLUEPRINT · FROM THE REEL",
+    "summary": "A practical checklist to make paying at your shop faster, offer split payments safely, and log every sale without typing. Based on one mall visit, so treat it as ideas to test.",
+    "thumb": "/posts/kazakhstan-cashless-mall/thumb.jpg",
+    "sections": [
+      {
+        "heading": "What I saw, and what I can't claim",
+        "points": [
+          "Zara was packed. LC Waikiki, H&M and Max were nearly empty. That is one visit, not data.",
+          "Payments were cashless: QR codes, phones and a palm scan.",
+          "The app name I kept hearing was Kaspi. Look up how it describes itself.",
+          "My guess is that fast, easy paying makes big prices feel smaller. It is a guess, not a finding.",
+          "Skip country rankings. 'Developed' means different things on different lists."
+        ]
+      },
+      {
+        "heading": "Step 1: Make paying take two seconds",
+        "points": [
+          "Time your own checkout from 'ready to pay' to 'receipt'. Write the number down.",
+          "Ask five regular customers how they prefer to pay.",
+          "Add the methods they already use: card tap, phone wallet, local QR payments.",
+          "Use a provider that works in your country, such as Stripe or Square where available.",
+          "Remove any step that is not needed, like retyping amounts or asking for paper details.",
+          "Watch the fees per method before you switch anything on."
+        ]
+      },
+      {
+        "heading": "Step 2: Look at split payments carefully",
+        "points": [
+          "Check if your payment provider offers instalments or buy now pay later for your country.",
+          "Read who pays the fee, you or the customer, and what happens on refunds.",
+          "Check who carries the risk if the customer stops paying.",
+          "Only offer it on bigger items where it makes sense.",
+          "Be clear about the total price. Do not push anyone into debt.",
+          "This is education, not financial advice. Ask an accountant if unsure."
+        ]
+      },
+      {
+        "heading": "Step 3: Automate the sales log with Make.com",
+        "points": [
+          "Trigger: a new successful payment from your provider (a Stripe module, or a webhook).",
+          "Action 1: add a row to Google Sheets with date, item, amount, fee and method.",
+          "Action 2: send a Slack or email message for orders above an amount you choose.",
+          "Action 3: a daily scenario that sums yesterday's sales and sends you one message.",
+          "Test with a small real payment first.",
+          "Watch for duplicate rows, refunds and failed payments. Add error handling so you get alerted."
+        ]
+      },
+      {
+        "heading": "Step 4: Run a two week test",
+        "points": [
+          "Track checkout time, share of cash versus digital, and total fees.",
+          "Change one thing at a time so you know what worked.",
+          "Ask staff where customers get stuck.",
+          "Keep what saves time. Drop what only adds fees."
+        ]
+      }
+    ]
+  }
+]
