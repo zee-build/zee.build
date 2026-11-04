@@ -117,5 +117,65 @@
         ]
       }
     ]
+  },
+  {
+    "slug": "invoice-chaser",
+    "title": "The Invoice Chaser Blueprint",
+    "kicker": "BLUEPRINT · FROM THE CAROUSEL",
+    "summary": "The three message templates, the timing, and the Make.com steps to send them automatically without chasing anyone who has already paid.",
+    "thumb": "/posts/invoice-chaser/thumb.jpg",
+    "sections": [
+      {
+        "heading": "The 3-message sequence",
+        "points": [
+          "Message 1, 1 day after the due date: the nudge. Friendly, short, assumes the invoice got buried.",
+          "Message 2, 7 days after: the specific ask. Request a payment date and invite any problem with the invoice.",
+          "Message 3, 14 days after: the firm close. State what you need, by when, and what happens next under your terms.",
+          "Change the tone at each step, not the facts. Same invoice number, amount and link every time.",
+          "Adjust the days to fit your payment terms. Treat 1, 7 and 14 as a starting point."
+        ]
+      },
+      {
+        "heading": "Message templates to copy",
+        "points": [
+          "Message 1: Hi [Name], quick check on invoice [#] for [amount], due [date]. Here is the link in case it got buried: [link]. Shout if you need anything from me.",
+          "Message 2: Hi [Name], invoice [#] is now a week overdue. Can you confirm the payment date by [day]? If something looks wrong on the invoice, tell me and I will fix it today.",
+          "Message 3: Hi [Name], invoice [#] for [amount] is 14 days overdue. I need payment or a confirmed date by [day]. Call me if that is easier.",
+          "Add a consequence line to message 3 only if your contract supports it, for example pausing work on the project.",
+          "Keep every message under 60 words and include the link every time."
+        ]
+      },
+      {
+        "heading": "The Make.com build",
+        "points": [
+          "Keep your invoices in one place, such as a Google Sheet with columns: client, email, invoice number, amount, due date, status, last message sent.",
+          "Trigger: a scheduled scenario that runs once a day, at a time that suits your clients.",
+          "Work out days overdue: today minus due date. Skip rows marked paid.",
+          "Add a Router with three routes and filters for 1, 7 and 14 days overdue. Each route sends its own template.",
+          "Send with the Gmail module, or your email tool, filling in name, invoice number, amount and link.",
+          "Write back to the sheet: which message was sent and when. This stops duplicates if the scenario runs twice."
+        ]
+      },
+      {
+        "heading": "Safety checks before it sends",
+        "points": [
+          "Re-read the invoice status right before each send, not just at the start of the run. Someone may have paid in the meantime.",
+          "Add a pause column. Set it to yes for clients in a dispute or on a special arrangement, and filter those out.",
+          "Send message 3 to yourself first as a draft or approval email until you trust the setup.",
+          "Test with your own email address and fake invoices before pointing it at real clients.",
+          "Add an error notification so a failed run alerts you instead of failing quietly."
+        ]
+      },
+      {
+        "heading": "What to watch for",
+        "points": [
+          "Wrong due dates in the sheet send the wrong message, so check the date format.",
+          "Late fees and interest rules vary by country and contract. Check yours before mentioning them.",
+          "Do not chase a client who has told you payment is on the way. Pause them manually.",
+          "Review the replies. The automation sends, but a person should answer.",
+          "This is education, not legal or financial advice."
+        ]
+      }
+    ]
   }
 ]
