@@ -177,5 +177,186 @@
         ]
       }
     ]
+  },
+  {
+    "slug": "money-agent-human-approval",
+    "title": "The Approval Node Blueprint",
+    "kicker": "BLUEPRINT · FROM THE CAROUSEL",
+    "summary": "A two-scenario Make.com design for a money agent that drafts payments but cannot send them until a human approves. Includes the guardrails, the approval message and a test checklist.",
+    "thumb": "/posts/money-agent-human-approval/thumb.jpg",
+    "sections": [
+      {
+        "heading": "The design in one picture",
+        "points": [
+          "Scenario A (the drafter): trigger, agent, save draft, notify a human. It has no payment connection at all.",
+          "Scenario B (the payer): starts from a webhook, checks the draft, pays, logs. It is the only place payment credentials live.",
+          "The agent can be wrong, confused or tricked and still cannot pay, because it has nothing to pay with.",
+          "Keep the two scenarios separate. One scenario with an approval step in the middle is easier to bypass by mistake."
+        ]
+      },
+      {
+        "heading": "Build Scenario A: draft and ask",
+        "points": [
+          "Trigger: whatever starts a payment in your business, such as an email with an invoice, a form, or a sheet row.",
+          "Add your AI module and ask for a fixed output: payee, amount, currency, reason, due date. Reject anything missing a field.",
+          "Add a Data store record with a unique ID, those fields, status = pending, and a created time.",
+          "Generate a random secret token and save it on the record. Do not use the record ID alone as the key.",
+          "Send the human a message by email or chat with the payee, amount, reason and two links: Approve and Reject.",
+          "Each link points to your Scenario B webhook with the record ID and the token."
+        ]
+      },
+      {
+        "heading": "Build Scenario B: approve, re-check, pay",
+        "points": [
+          "Start with a custom webhook. Look up the record by ID.",
+          "Filter 1: status must still be pending. Filter 2: the token must match. Filter 3: the approval must not have expired.",
+          "Use a Router: Reject sets status = rejected and stops. Approve continues.",
+          "Re-check the amount and payee against the saved record, not against anything in the link.",
+          "Call your payment provider (an HTTP module or its Make app) using its test keys first.",
+          "Set status = paid, store the provider's reference, and notify the approver that it went through."
+        ]
+      },
+      {
+        "heading": "Guardrails that make it safe to sell",
+        "points": [
+          "Hard cap per payment. Above it, require two different approvers.",
+          "Allowlist of known payees. A new payee always goes to manual review.",
+          "Expiry on approvals, such as 24 hours, so old links go dead.",
+          "Make the link open a confirm page first. Some email security tools open links automatically, which could approve by accident.",
+          "Log every proposal, decision, time and who approved. You want a trail if anyone asks.",
+          "Alert yourself when a scenario fails. A silent failure is worse than a loud one."
+        ]
+      },
+      {
+        "heading": "Test before real money",
+        "points": [
+          "Run everything in your provider's test mode first.",
+          "Try to break it: click Approve twice, use an expired link, change the token, and send an amount over the cap.",
+          "Confirm that the second click does nothing and the others are blocked.",
+          "Start live with small amounts and a short allowlist, then widen it slowly.",
+          "This is education, not financial advice. Check your provider's terms and any rules that apply to your business."
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "agent-spend-caps-fail-closed",
+    "title": "The Fail-Closed Payout Blueprint",
+    "kicker": "BLUEPRINT · FROM THE CAROUSEL",
+    "summary": "A step-by-step pattern for letting an automation or AI agent trigger payouts in Make without handing it an open wallet. Based on the spend-cap and approval idea reported around Sunrate's Agentic Card. Education only, not financial advice.",
+    "thumb": "/posts/agent-spend-caps-fail-closed/thumb.jpg",
+    "sections": [
+      {
+        "heading": "1. Write the rules before the scenario",
+        "points": [
+          "List every payout type your business actually makes: supplier invoices, refunds, subscriptions, contractor fees.",
+          "For each, set a per-payment cap, a daily cap and a list of approved vendors. Use your own numbers.",
+          "Decide who approves what. One named person per band, plus a backup.",
+          "Store the rules in one place, like a Make Data store or a sheet, so you change limits without editing the scenario.",
+          "Keep a short 'never automate' list, such as new vendors or changed bank details."
+        ]
+      },
+      {
+        "heading": "2. Build the gate in Make",
+        "points": [
+          "Start every payout request with a webhook or a trigger that carries amount, vendor, currency and reason.",
+          "Look up the vendor and the caps from your rules store.",
+          "Add a Router with filters: auto-approve, needs human, blocked.",
+          "Make the last route a fallback that does nothing but log and alert. No match means no payout.",
+          "Check that missing or empty fields (amount blank, vendor not found) land in the blocked route, not the pay route."
+        ]
+      },
+      {
+        "heading": "3. Add the human step",
+        "points": [
+          "For mid-size amounts, send a Slack message or email with the amount, vendor, reason and two links: approve and reject.",
+          "Point each link at a second scenario's webhook so the decision comes back as data.",
+          "Set a timeout. No answer in your window means expired, not approved.",
+          "Make approvals single-use so a link cannot be clicked twice to pay twice.",
+          "Re-check the cap when the approval comes back, not only when the request went out."
+        ]
+      },
+      {
+        "heading": "4. Make failure safe",
+        "points": [
+          "Add error handlers on the payment module so a failure stops the run instead of retrying blindly.",
+          "Use an idempotency or reference key per request so a retry cannot pay the same invoice twice, if your payment provider supports it.",
+          "Alert a human on every blocked payout over a set amount.",
+          "Track the running daily total in your Data store and block when it hits the cap.",
+          "Enforce limits at the card or bank level too, so your workflow is not the only lock."
+        ]
+      },
+      {
+        "heading": "5. Log it and test it",
+        "points": [
+          "Log every request: time, amount, vendor, rule hit, approver, result.",
+          "Test with fake payouts first, or your provider's sandbox if it has one.",
+          "Try to break it: blank amount, huge amount, unknown vendor, duplicate request, expired approval.",
+          "Review the log weekly for the first month, then monthly.",
+          "Confirm what any real agent card or payment product actually enforces from its own documentation."
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "kyc-doc-triage-make-teardown",
+    "title": "The KYC Doc-Triage Flow, Module by Module",
+    "kicker": "BLUEPRINT · FROM THE CAROUSEL",
+    "summary": "The full Make build for a document triage agent: what each module does, the flag rules to start with, how the human handoff works, and where it breaks. Education only, not compliance advice.",
+    "thumb": "/posts/kyc-doc-triage-make-teardown/thumb.jpg",
+    "sections": [
+      {
+        "heading": "The flow, step by step",
+        "points": [
+          "Trigger: Watch Files in a Folder (Google Drive or similar), or Watch Emails for attachments. One new file starts one run.",
+          "Log first: write a row (Airtable, Google Sheets or a Make data store) with file name, time received and a run ID before anything else happens.",
+          "Extract: send the file to an AI module and ask for fixed fields only: full name, date of birth, document number, address, expiry date. Ask for a confidence score per field.",
+          "Force structure: require JSON back. If the output is not valid JSON, send the file to the human route.",
+          "Look up the application: fetch the customer's submitted details from your CRM or sheet using the customer ID.",
+          "Compare, then Router: send the run down one of three paths: clean, flagged or error."
+        ]
+      },
+      {
+        "heading": "Flag rules to start with",
+        "points": [
+          "Use plain filters for the judging. The AI extracts, the rules decide. Rules are easy to explain to an auditor, a model's mood is not.",
+          "Name: lowercase, strip accents and punctuation, then compare. Treat near matches (spelling variants) as flagged, not rejected.",
+          "Date of birth: must match exactly. Any difference is a flag.",
+          "Expiry date: earlier than today means flag. Also flag anything expiring very soon if your policy says so.",
+          "Proof of address: flag if the date is older than your policy allows (three months is a common starting point, use your own).",
+          "Confidence: any field below your threshold, or any missing field, is a flag. Start strict and loosen with data."
+        ]
+      },
+      {
+        "heading": "Route to a human",
+        "points": [
+          "Clean path: add to a fast review queue. A person still signs off. Fast does not mean automatic.",
+          "Flagged path: post to Slack or Teams with the customer ID, the failed rules in plain words and a link to the file.",
+          "Make the decision a button or a form, not a chat reply. Approve, reject or request a new document.",
+          "Write the decision back to the log: who, when and why.",
+          "Error path: any module failure, bad JSON or unreadable scan goes to the human with the reason. Use Make's error handler so nothing disappears silently.",
+          "Never give the agent an approve action. It sorts and explains. People decide."
+        ]
+      },
+      {
+        "heading": "Where it breaks",
+        "points": [
+          "Blurry or cropped scans: expect low confidence. That is the system working, so route it, don't retry forever.",
+          "Names: different spellings, order and transliteration cause most false flags. Review the first batch by hand and tune the name rule.",
+          "Customer data: before sending IDs to any AI provider, read its data terms and your own policy. Check how Make stores execution data in your scenario settings.",
+          "No log, no audit: if you can't show what was read and who decided, the build is not ready.",
+          "Test with fake or sample documents first. Get a compliance officer to review the rules before real customers touch it."
+        ]
+      },
+      {
+        "heading": "Why this one first",
+        "points": [
+          "CIO Dive reported on 3 Nov that Accenture's research has 57% of banking executives expecting agents embedded in risk, compliance and audit within three years. It is a survey of expectations, not a guarantee.",
+          "Triage is reversible. A wrong flag costs a delay. A wrong payment costs money.",
+          "That makes it the easier thing for a bank to approve internally. This part is my opinion, not a forecast.",
+          "The same pattern (read, rule-check, route to a person, log) works for invoices, supplier onboarding and contract intake."
+        ]
+      }
+    ]
   }
 ]
