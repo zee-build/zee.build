@@ -85,11 +85,30 @@ function withBlueprintLink(caption, slug) {
   return parts.join("\n");
 }
 
+// Long model output sometimes drops a closing bracket, so add back whatever is still open at the end
+function parseLoose(text) {
+  try { return JSON.parse(text); } catch (first) {
+    const open = [];
+    let inString = false;
+    for (let i = 0; i < text.length; i++) {
+      const c = text[i];
+      if (inString) { if (c === "\\") i++; else if (c === '"') inString = false; continue; }
+      if (c === '"') inString = true;
+      else if (c === "{" || c === "[") open.push(c === "{" ? "}" : "]");
+      else if (c === "}" || c === "]") open.pop();
+    }
+    if (inString || !open.length) throw first;
+    return JSON.parse(text + open.reverse().join(""));
+  }
+}
+
 function parseDraft(row) {
   const raw = String(row.draft).replace(/^```(?:json)?/m, "").replace(/```\s*$/m, "").trim();
   const start = raw.indexOf("{"), end = raw.lastIndexOf("}");
   let d;
-  try { d = JSON.parse(raw.slice(start, end + 1)); } catch (e) { throw new Error(`Draft isn't valid JSON: ${e.message}`); }
+  try { d = parseLoose(raw.slice(start, end + 1)); } catch (e) { throw Object.assign(new Error(`Draft isn't valid JSON: ${e.message}`), { redraft: true }); }
+  // A missing bracket can leave these nested one level too deep
+  for (const key of ["deck", "reel"]) if (!d[key] && d.blueprint?.[key]) { d[key] = d.blueprint[key]; delete d.blueprint[key]; }
   const format = /reel/i.test(row.visual) ? "reel" : /carousel/i.test(row.visual) ? "carousel" : d.format === "reel" ? "reel" : "carousel";
   if (!d.title || !d.ig_caption || !d.blueprint?.sections?.length) throw new Error("Draft is missing its title, caption or blueprint");
   const fromRow = row.resource ? slugOf(row.resource) : "";
@@ -300,6 +319,12 @@ async function renderDrafted(rows) {
       done.push({ r, d, media, notes });
     } catch (e) {
       console.error(r.id, e);
+      // A draft that can't be read gets one automatic redraft before anyone is told
+      if (e.redraft && r.feedback !== "redrafting") {
+        setCell(r, "status", "idea");
+        setCell(r, "feedback", "redrafting");
+        continue;
+      }
       setCell(r, "status", "draft-failed");
       setCell(r, "feedback", String(e.message).slice(0, 400));
       await email(`ZB · Draft failed: ${r.id}`, `<p>The engine couldn't build this draft and has set it aside.</p><p><b>Idea:</b> ${esc(r.idea)}</p><p><b>Reason:</b> ${esc(e.message)}</p><p>To try again, set its status back to <code>idea</code> on the Calendar tab.</p>`);
