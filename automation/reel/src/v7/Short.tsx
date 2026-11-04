@@ -105,7 +105,10 @@ const SceneView: React.FC<{ sc: Scene; from: number; to: number; idx: number; ti
           <Pop at={from + 10} style={{ position: "relative", marginTop: 34 }} from={40}>
             <div style={{ display: "inline-flex", flexDirection: "column", gap: 6, background: RED.bone, color: RED.ink, padding: "18px 26px", transform: "rotate(-1.5deg)", boxShadow: "0 16px 30px rgba(0,0,0,.5)" }}>
               <span style={{ fontFamily: F.mono, fontSize: 20, letterSpacing: ".18em", color: RED.muted }}>FREE · LINK IN BIO</span>
-              <span style={{ fontFamily: F.mono, fontWeight: 700, fontSize: 38, color: RED.red }}>{sc.link}</span>
+              {/* Long blueprint links break after the /r/ and shrink to stay on the card */}
+              {sc.link.replace(/\/r\//, "/r/\n").split("\n").map((part) => (
+                <span key={part} style={{ fontFamily: F.mono, fontWeight: 700, fontSize: Math.min(38, 720 / part.length), color: RED.red, whiteSpace: "nowrap" }}>{part}</span>
+              ))}
             </div>
           </Pop>
         )}

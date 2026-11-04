@@ -275,7 +275,7 @@ async function upsertEvent(row, title, status) {
   const endT = `${String(h + (m + 30 >= 60 ? 1 : 0)).padStart(2, "0")}:${String((m + 30) % 60).padStart(2, "0")}`;
   const isReel = row.visual === "reel";
   const body = {
-    summary: `${status} ${isReel ? "Reel" : "Carousel"}: ${title}`,
+    summary: status === "🟢" ? `🟢 IG ${isReel ? "reel" : "carousel"} (auto): ${title}` : `🗓 IG ${isReel ? "reel" : "carousel"}: ${title}`,
     description: [`Publishes automatically from the content calendar (row ${row.id}).`, row.resource && `Blueprint: ${row.resource}`, isReel && "After it posts, turn on Instagram's AI info label: the API can't set it."].filter(Boolean).join("\n"),
     start: { dateTime: `${day}T${t}:00`, timeZone: "Asia/Dubai" },
     end: { dateTime: `${day}T${endT}:00`, timeZone: "Asia/Dubai" },
