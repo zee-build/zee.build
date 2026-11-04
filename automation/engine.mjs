@@ -16,7 +16,8 @@ const AUTO = join(ROOT, "automation");
 const SITE = "https://www.zeebuild.com";
 const { MAKE_ENGINE_URL, ENGINE_KEY, APPROVE_URL } = process.env;
 const [mode = "plan", ...flags] = process.argv.slice(2);
-const ONLY = flags.find((f) => f.startsWith("--only="))?.slice(7);
+// Sample runs touch only the named rows: no promotion, slotting or tidying
+const ONLY = flags.find((f) => f.startsWith("--only="))?.slice(7).split(",");
 
 const COL = Object.fromEntries("id created pillar idea source li ig x slides visual status slot platforms token feedback post_url impressions comments saves dms image video carousel resource draft event".split(" ").map((k, i) => [k, i]));
 const letter = (i) => String.fromCharCode(65 + i);
@@ -277,7 +278,7 @@ async function renderDrafted(rows) {
   const left = { ...MAX_RENDERS };
   const style = await currentStyle();
   const done = [];
-  for (const r of rows.filter((x) => x.status === "drafted" && (!ONLY || x.id === ONLY))) {
+  for (const r of rows.filter((x) => x.status === "drafted" && (!ONLY || ONLY.includes(x.id)))) {
     try {
       const d = parseDraft(r);
       if (left[d.format] <= 0) continue;
@@ -400,21 +401,23 @@ function cleanPostedReels(rows) {
 // ---- Entry -------------------------------------------------------------------------------------
 const rows = await readRows();
 if (mode === "plan") {
-  const drafted = rows.filter((r) => r.status === "drafted" && (!ONLY || r.id === ONLY));
+  const drafted = rows.filter((r) => r.status === "drafted" && (!ONLY || ONLY.includes(r.id)));
   const reel = drafted.some((r) => /reel/i.test(r.visual) || /"format"\s*:\s*"reel"/.test(r.draft));
   const carousel = drafted.some((r) => !(/reel/i.test(r.visual) || /"format"\s*:\s*"reel"/.test(r.draft)));
   const lines = `carousel=${carousel}\nreel=${reel}\n`;
   if (process.env.GITHUB_OUTPUT) appendFileSync(process.env.GITHUB_OUTPUT, lines);
   console.log(lines);
 } else {
-  promotePlanned(rows);
+  if (!ONLY) promotePlanned(rows);
   await flush();
   await renderDrafted(rows);
   await sendReviews(rows);
-  await assignSlots(rows);
-  cleanRejected(rows);
-  cleanPostedReels(rows);
-  commit("Tidy published and rejected media");
-  await flush();
+  if (!ONLY) {
+    await assignSlots(rows);
+    cleanRejected(rows);
+    cleanPostedReels(rows);
+    commit("Tidy published and rejected media");
+    await flush();
+  }
   console.log("Done");
 }
