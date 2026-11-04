@@ -215,9 +215,18 @@ function commit(message) {
   run("git", ["add", "public/posts", "public/reels", "lib/blueprints.json", "automation/carousel/logos"]);
   if (!out("git", ["diff", "--cached", "--name-only"]).trim()) return false;
   run("git", ["-c", "user.name=ZeeBuild Engine", "-c", "user.email=hello@zeebuild.com", "commit", "-m", message]);
-  run("git", ["pull", "--rebase", "origin", "HEAD"]);
-  run("git", ["push", "origin", "HEAD"]);
-  return true;
+  // GitHub has brief outages, and one shouldn't throw away a finished render
+  for (let attempt = 1; ; attempt++) {
+    try {
+      run("git", ["pull", "--rebase", "origin", "HEAD"]);
+      run("git", ["push", "origin", "HEAD"]);
+      return true;
+    } catch (e) {
+      if (attempt >= 6) throw e;
+      console.error(`Push attempt ${attempt} failed, retrying in ${attempt} minute(s)`);
+      execFileSync("sleep", [String(attempt * 60)]);
+    }
+  }
 }
 
 // ---- Approval email ----------------------------------------------------------------------------
