@@ -1,0 +1,1 @@
+{"name":"zb-vox-ep01","private":true,"type":"module","scripts":{"render":"remotion render src/index.ts VoxEp01 out/raw.mp4 --codec h264 --crf 16"},"dependencies":{"@react-three/fiber":"^9.8.2","@remotion/cli":"^4.0.540","@remotion/google-fonts":"^4.0.540","@remotion/three":"^4.0.540","react":"^19.3.1","react-dom":"^19.3.1","remotion":"^4.0.540","three":"^0.187.0"}}

@@ -1,0 +1,81 @@
+name: Content engine
+
+on:
+  schedule:
+    - cron: "7 * * * *"
+  workflow_dispatch:
+    inputs:
+      only:
+        description: "Limit drafting to one row id (for samples)"
+        required: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: content-engine
+  cancel-in-progress: false
+
+env:
+  MAKE_ENGINE_URL: ${{ secrets.MAKE_ENGINE_URL }}
+  ENGINE_KEY: ${{ secrets.ENGINE_KEY }}
+  APPROVE_URL: ${{ secrets.APPROVE_URL }}
+  ONLY_FLAG: ${{ inputs.only && format('--only={0}', inputs.only) || '' }}
+
+jobs:
+  run:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: See what this run needs
+        id: plan
+        run: node automation/engine.mjs plan $ONLY_FLAG
+
+      - name: Install the carousel renderer
+        if: steps.plan.outputs.carousel == 'true' || steps.plan.outputs.reel == 'true'
+        working-directory: automation/carousel
+        run: |
+          npm install --no-audit --no-fund
+          npx playwright install --with-deps chromium
+
+      - name: Install the reel tools
+        if: steps.plan.outputs.reel == 'true'
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+          cd automation/reel && npm ci --no-audit --no-fund
+
+      - uses: astral-sh/setup-uv@v6
+        if: steps.plan.outputs.reel == 'true'
+
+      - name: Restore the voice model
+        if: steps.plan.outputs.reel == 'true'
+        uses: actions/cache@v4
+        with:
+          path: ~/kokoro
+          key: kokoro-v1.0
+
+      - name: Download the voice model
+        if: steps.plan.outputs.reel == 'true'
+        run: |
+          mkdir -p ~/kokoro && cd ~/kokoro
+          base=https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0
+          [ -f kokoro-v1.0.onnx ] || curl -fsSL -o kokoro-v1.0.onnx $base/kokoro-v1.0.onnx
+          [ -f voices-v1.0.bin ] || curl -fsSL -o voices-v1.0.bin $base/voices-v1.0.bin
+          echo "KOKORO_DIR=$HOME/kokoro" >> "$GITHUB_ENV"
+
+      - name: Run the engine
+        run: node automation/engine.mjs run $ONLY_FLAG
+
+      - name: Tell Zee if it broke
+        if: failure()
+        run: |
+          curl -fsS -X POST "$MAKE_ENGINE_URL" -H 'Content-Type: application/json' \
+            -d "{\"k\":\"$ENGINE_KEY\",\"op\":\"email\",\"subject\":\"ZB · Content engine failed\",\"html\":\"<p>This run failed: <a href='https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}'>open the log</a>. Scheduled posts still publish; new drafts wait until it's fixed.</p>\"}"

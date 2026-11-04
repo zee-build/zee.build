@@ -1,0 +1,121 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+/* ZeeBuild "Signal Red" slide system: 1080x1350, bone paper and near-black ink themes, one signal red.
+   Matches the What If reels. Red text only on bone; on ink, highlights sit on a red block. */
+:root{
+  --paper:#EFE7DA; --paper-line:rgba(21,16,16,.10); --ink:#0E0A0A; --ink-line:rgba(239,231,218,.06);
+  --muted-p:#6b6258; --muted-i:#8C8580; --accent:#E0302A; --accent-i:#E0302A; --card-p:#E2D6C2; --card-i:#1b1515;
+  --display:"DM Serif Display",Georgia,serif; --body:"Inter",system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#888;font-family:var(--body)}
+.slide{width:1080px;height:1350px;position:relative;overflow:hidden;display:flex;flex-direction:column;padding:72px 80px 64px;gap:0}
+.paper{background:var(--paper);color:var(--ink);--muted:var(--muted-p);--acc:var(--accent);--card:var(--card-p);--line:var(--paper-line);--rule:rgba(21,16,16,.2)}
+.ink{background:radial-gradient(900px 700px at 50% 60%,var(--glow,rgba(224,48,42,.13)),transparent 70%),var(--ink);color:var(--paper);--muted:var(--muted-i);--acc:var(--accent-i);--card:var(--card-i);--line:var(--ink-line);--rule:rgba(239,231,218,.16)}
+/* halftone dots instead of a grid, like the reels' paper prints */
+.slide::before{content:"";position:absolute;inset:0;background-image:radial-gradient(var(--line) 1.6px,transparent 1.7px);background-size:22px 22px;pointer-events:none}
+.ink h1 .a,.ink h2 .a{background:var(--accent);color:var(--paper);padding:0 .12em;display:inline-block;transform:rotate(-1.5deg)}
+.link{align-self:flex-start;display:flex;flex-direction:column;gap:8px;background:var(--paper);color:var(--ink);padding:24px 32px;transform:rotate(-1.5deg);box-shadow:0 16px 30px rgba(0,0,0,.45)}
+.link .k{font-family:var(--mono);font-size:22px;letter-spacing:.18em;color:var(--muted-p)}
+.link .u{font-family:var(--mono);font-weight:700;font-size:40px;color:var(--accent)}
+.save{font-family:var(--mono);font-size:24px;letter-spacing:.14em;color:var(--muted)}
+/* 3D illustration: sits behind the copy, bottom-right by default */
+/* real company logos: on a bone chip so monochrome marks read on either theme */
+.tlogo{width:58px;height:58px;padding:9px;border-radius:10px;background:#fff;object-fit:contain;vertical-align:middle;margin-right:16px;box-shadow:0 4px 10px rgba(0,0,0,.12)}
+.badge{display:flex;align-items:center;gap:18px;font-family:var(--mono);font-size:22px;letter-spacing:.16em;color:var(--muted)}
+.badge img{width:96px;height:96px;border-radius:22px;object-fit:contain;background:#fff;box-shadow:0 10px 24px rgba(0,0,0,.35)}
+.slide>.illo{position:absolute;width:var(--iw,560px);right:var(--ir,20px);top:var(--it,110px);filter:drop-shadow(0 30px 40px rgba(0,0,0,.35));pointer-events:none;z-index:0}
+/* with an illustration up top, the copy sits at the bottom */
+.has-illo .main{justify-content:flex-end;gap:34px}
+.slide .main,.slide .top,.slide .foot{z-index:1}
+
+.slide>*{position:relative}
+.top,.foot{display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);font-size:22px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.top b{color:var(--acc);font-weight:500}
+.foot{margin-top:auto;padding-top:28px;border-top:1.5px solid var(--rule);letter-spacing:.06em;text-transform:none;font-size:24px}
+.main{flex:1;display:flex;flex-direction:column;justify-content:center;gap:44px;padding-block:40px}
+.eyebrow{font-family:var(--mono);font-size:26px;letter-spacing:.2em;text-transform:uppercase;color:var(--acc)}
+h1{font-family:var(--display);font-weight:400;font-size:128px;line-height:.98;letter-spacing:-.01em}
+h2{font-family:var(--display);font-weight:400;font-size:86px;line-height:1.02;letter-spacing:-.01em}
+h1 .a,h2 .a{color:var(--acc)}
+p.body{font-size:38px;line-height:1.38;color:var(--muted);max-width:860px}
+p.body strong{color:inherit;font-weight:600;color:var(--fg)}
+.paper p.body strong{color:var(--ink)} .ink p.body strong{color:var(--paper)}
+/* receipt card on cover */
+.receipt{align-self:flex-start;background:var(--card);border:1.5px solid var(--rule);border-radius:4px;padding:30px 36px;display:grid;grid-template-columns:auto auto auto;gap:6px 34px;align-items:end;font-family:var(--mono)}
+.receipt .k{font-size:20px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.receipt .v{font-family:var(--display);font-weight:700;font-size:84px;letter-spacing:-.02em;line-height:1}
+.receipt .v.after{color:var(--acc)}
+.receipt .arrow{font-size:52px;color:var(--muted);line-height:1;align-self:center;grid-row:span 2}
+/* step */
+.stepno{font-family:var(--mono);font-size:30px;color:var(--acc);letter-spacing:.1em;display:flex;align-items:center;gap:22px}
+.stepno::after{content:"";height:1.5px;width:120px;background:var(--acc)}
+.chain{display:flex;flex-wrap:wrap;align-items:center;gap:14px}
+.chain{margin-top:24px}
+.step h2{font-size:104px}
+.step p.body{font-size:42px}
+.node{font-family:var(--mono);font-size:30px;padding:22px 30px;border:1.5px solid var(--rule);border-radius:999px;background:var(--card);white-space:nowrap}
+.node.on{border-color:var(--acc);color:var(--acc)}
+.chain .sep{width:34px;height:1.5px;background:var(--rule)}
+/* tiers */
+.tiers{display:flex;flex-direction:column;border-top:1.5px solid var(--rule)}
+.tier{display:grid;grid-template-columns:220px 1fr;gap:30px;padding:30px 0;border-bottom:1.5px solid var(--rule);align-items:baseline}
+.tier .r{font-family:var(--mono);font-size:30px;color:var(--acc)}
+.tier .l{font-family:var(--display);font-weight:700;font-size:46px;letter-spacing:-.01em}
+.tier .d{grid-column:2;font-size:30px;color:var(--muted);margin-top:-14px}
+/* stat */
+.big{font-family:var(--display);font-weight:800;font-size:300px;line-height:.85;letter-spacing:-.05em;color:var(--acc)}
+.big small{font-size:110px;letter-spacing:-.02em}
+/* list */
+.list{display:flex;flex-direction:column;gap:0;border-top:1.5px solid var(--rule)}
+.li{display:grid;grid-template-columns:90px 1fr;padding:30px 0;border-bottom:1.5px solid var(--rule);align-items:baseline}
+.li .n{font-family:var(--mono);font-size:26px;color:var(--acc)}
+.li .t{font-size:38px;line-height:1.3}
+.li .t b{font-weight:600}
+/* cta */
+.kw{display:inline-flex;align-items:center;gap:24px;font-family:var(--mono);font-size:30px;letter-spacing:.08em;text-transform:uppercase;padding:26px 34px;border:1.5px solid var(--acc);color:var(--acc);border-radius:4px;align-self:flex-start}
+.kw b{font-family:var(--display);font-size:52px;letter-spacing:.02em;color:inherit}
+.mark{width:84px;height:84px;border-radius:18px;background:var(--acc);display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:44px;color:var(--ink);letter-spacing:-.04em}
+.ink .mark{color:var(--ink)}
+</style>
+</head>
+<body>
+<div id="deck"></div>
+<script>
+const esc=s=>String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;");
+// **text** -> strong, [[text]] -> accent
+const fmt=s=>esc(s).replace(/\*\*(.+?)\*\*/g,"<strong>$1</strong>").replace(/\[\[(.+?)\]\]/g,'<span class="a">$1</span>');
+function render(d){
+  const n=d.slides.length, pad=i=>String(i).padStart(2,"0");
+  return d.slides.map((s,i)=>{
+    const theme=s.theme||(s.type==="cover"||s.type==="cta"||s.type==="stat"?"ink":"paper");
+    // A feed preview shows separate posts, so each tile is labelled as its own cover
+    const top=d.feed?`<div class="top"><span><b>Zeebuild</b> · ${esc(s.eyebrow?.split("·")[1]||"")}</span><span>01 / 08</span></div>`:`<div class="top"><span><b>${esc(d.series||"Zeebuild")}</b> · ${esc(d.topic||"")}</span><span>${pad(i+1)} / ${pad(n)}</span></div>`;
+    const foot=`<div class="foot"><span>${esc(d.handle)}</span><span>${d.feed||i<n-1?"swipe →":esc(d.site||"")}</span></div>`;
+    let m="";
+    const badge=s.logo?`<div class="badge"><img src="logos/${esc(s.logo.src)}">${esc(s.logo.caption||"")}</div>`:"";
+    if(s.type==="cover") m=`<div class="eyebrow">${esc(s.eyebrow)}</div><h1>${s.title.map(fmt).join("<br>")}</h1>${s.receipt?`<div class="receipt"><span class="k">${esc(s.receipt.beforeLabel)}</span><span class="arrow" style="grid-column:2;grid-row:1/3">→</span><span class="k" style="grid-column:3;grid-row:1">${esc(s.receipt.afterLabel)}</span><span class="v">${esc(s.receipt.before)}</span><span class="v after" style="grid-column:3">${esc(s.receipt.after)}</span></div>`:""}${s.body?`<p class="body">${fmt(s.body)}</p>`:""}`;
+    if(s.type==="step") m=`<div class="stepno">STEP ${pad(s.n)}</div><h2>${fmt(s.title)}</h2><p class="body">${fmt(s.body)}</p>${s.chain?`<div class="chain">${s.chain.map((c,j)=>`${j?'<span class="sep"></span>':""}<span class="node ${j===s.chain.length-1?"on":""}">${esc(c)}</span>`).join("")}</div>`:""}`;
+    if(s.type==="tiers") m=`<div class="eyebrow">${esc(s.eyebrow)}</div><h2>${fmt(s.title)}</h2><div class="tiers">${s.rows.map(r=>`<div class="tier"><span class="r">${esc(r.range)}</span><span class="l">${r.logo?`<img class="tlogo" src="logos/${esc(r.logo)}">`:""}${r.logo2?`<img class="tlogo" src="logos/${esc(r.logo2)}">`:""}${esc(r.label)}</span><span class="d">${esc(r.detail)}</span></div>`).join("")}</div>`;
+    if(s.type==="stat") m=`<div class="eyebrow">${esc(s.eyebrow)}</div><div class="big">${esc(s.value)}<small>${esc(s.unit||"")}</small></div><h2>${fmt(s.title)}</h2>${s.body?`<p class="body">${fmt(s.body)}</p>`:""}`;
+    if(s.type==="list") m=`<div class="eyebrow">${esc(s.eyebrow)}</div><h2>${fmt(s.title)}</h2><div class="list">${s.items.map((t,j)=>`<div class="li"><span class="n">${pad(j+1)}</span><span class="t">${fmt(t)}</span></div>`).join("")}</div>`;
+    // A CTA promises something real: a live page (link) and/or a keyword with a working DM automation
+    if(s.type==="cta") m=`<div class="mark">zb</div><h2>${fmt(s.title)}</h2><p class="body">${fmt(s.body)}</p>${s.link?`<div class="link"><span class="k">${esc(s.linkLabel||"FULL BLUEPRINT · LINK IN BIO")}</span><span class="u">${esc(s.link)}</span></div>`:""}${s.keyword?`<div class="kw">Comment <b>${esc(s.keyword)}</b></div>`:""}<div class="save">SAVE THIS FOR LATER ↗</div>`;
+    const il=s.illo?`<img class="illo" src="illo/${esc(s.illo.src)}.png" style="--iw:${s.illo.w||560}px;--ir:${s.illo.r??20}px;--it:${s.illo.t??110}px">`:"";
+    return `<section class="slide ${theme} ${s.type} ${il?"has-illo":""}" style="${s.illo?.mw?`--mw:${s.illo.mw}px`:""}">${il}${top}<div class="main">${badge}${m}</div>${foot}</section>`;
+  }).join("");
+}
+window.renderDeck=d=>{
+  // Weekly style: palette values override the :root colours
+  for(const [k,v] of Object.entries(d.palette||{})) document.documentElement.style.setProperty(`--${k}`,v);
+  document.getElementById("deck").innerHTML=render(d);
+  // Long receipt values (e.g. "One Make.com scenario") drop to a smaller size instead of wrapping
+  document.querySelectorAll(".receipt .v").forEach(v=>{const n=v.textContent.length;if(n>8)v.style.fontSize=(n>16?40:56)+"px"});
+};
+</script>
+</body>
+</html>

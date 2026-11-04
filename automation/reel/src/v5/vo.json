@@ -1,0 +1,1093 @@
+{
+ "lines": [
+  {
+   "id": "o1",
+   "start": 0.15,
+   "end": 2.736
+  },
+  {
+   "id": "o2",
+   "start": 3.336,
+   "end": 4.088
+  },
+  {
+   "id": "o3",
+   "start": 5.288,
+   "end": 6.221
+  },
+  {
+   "id": "hook",
+   "start": 6.921,
+   "end": 10.486
+  },
+  {
+   "id": "h1a",
+   "start": 11.386,
+   "end": 14.957
+  },
+  {
+   "id": "h1b",
+   "start": 15.457,
+   "end": 17.027
+  },
+  {
+   "id": "h3a",
+   "start": 17.727,
+   "end": 20.001
+  },
+  {
+   "id": "h3b",
+   "start": 20.301,
+   "end": 23.075
+  },
+  {
+   "id": "h3c",
+   "start": 23.525,
+   "end": 24.577
+  },
+  {
+   "id": "h6a",
+   "start": 25.377,
+   "end": 27.737
+  },
+  {
+   "id": "h6b",
+   "start": 28.237,
+   "end": 29.381
+  },
+  {
+   "id": "h12a",
+   "start": 30.181,
+   "end": 32.719
+  },
+  {
+   "id": "h12b",
+   "start": 33.719,
+   "end": 36.617
+  },
+  {
+   "id": "h12c",
+   "start": 37.217,
+   "end": 37.985
+  },
+  {
+   "id": "h12d",
+   "start": 38.485,
+   "end": 39.026
+  },
+  {
+   "id": "rev",
+   "start": 39.826,
+   "end": 45.034
+  },
+  {
+   "id": "safe",
+   "start": 45.634,
+   "end": 48.618
+  },
+  {
+   "id": "calm",
+   "start": 49.118,
+   "end": 51.503
+  },
+  {
+   "id": "diff",
+   "start": 52.303,
+   "end": 53.56
+  },
+  {
+   "id": "boring",
+   "start": 54.16,
+   "end": 57.32
+  },
+  {
+   "id": "h24",
+   "start": 58.12,
+   "end": 60.105
+  },
+  {
+   "id": "best",
+   "start": 60.905,
+   "end": 62.742
+  },
+  {
+   "id": "best2",
+   "start": 63.242,
+   "end": 64.28
+  },
+  {
+   "id": "how",
+   "start": 64.88,
+   "end": 67.513
+  }
+ ],
+ "words": [
+  {
+   "word": "Last",
+   "start": 0.15,
+   "end": 0.33,
+   "line": "o1"
+  },
+  {
+   "word": "time,",
+   "start": 0.33,
+   "end": 0.73,
+   "line": "o1"
+  },
+  {
+   "word": "the",
+   "start": 0.89,
+   "end": 0.93,
+   "line": "o1"
+  },
+  {
+   "word": "banks",
+   "start": 0.93,
+   "end": 1.19,
+   "line": "o1"
+  },
+  {
+   "word": "went",
+   "start": 1.19,
+   "end": 1.43,
+   "line": "o1"
+  },
+  {
+   "word": "dark",
+   "start": 1.43,
+   "end": 1.75,
+   "line": "o1"
+  },
+  {
+   "word": "for",
+   "start": 1.75,
+   "end": 1.97,
+   "line": "o1"
+  },
+  {
+   "word": "60",
+   "start": 1.97,
+   "end": 2.27,
+   "line": "o1"
+  },
+  {
+   "word": "seconds.",
+   "start": 2.27,
+   "end": 2.65,
+   "line": "o1"
+  },
+  {
+   "word": "This",
+   "start": 3.336,
+   "end": 3.516,
+   "line": "o2"
+  },
+  {
+   "word": "time...",
+   "start": 3.516,
+   "end": 3.816,
+   "line": "o2"
+  },
+  {
+   "word": "they",
+   "start": 5.288,
+   "end": 5.388,
+   "line": "o3"
+  },
+  {
+   "word": "don't",
+   "start": 5.388,
+   "end": 5.608,
+   "line": "o3"
+  },
+  {
+   "word": "come",
+   "start": 5.608,
+   "end": 5.768,
+   "line": "o3"
+  },
+  {
+   "word": "back.",
+   "start": 5.768,
+   "end": 6.008,
+   "line": "o3"
+  },
+  {
+   "word": "What",
+   "start": 6.921,
+   "end": 7.041,
+   "line": "hook"
+  },
+  {
+   "word": "happens",
+   "start": 7.041,
+   "end": 7.361,
+   "line": "hook"
+  },
+  {
+   "word": "when",
+   "start": 7.361,
+   "end": 7.621,
+   "line": "hook"
+  },
+  {
+   "word": "every",
+   "start": 7.621,
+   "end": 7.921,
+   "line": "hook"
+  },
+  {
+   "word": "bank",
+   "start": 7.921,
+   "end": 8.241,
+   "line": "hook"
+  },
+  {
+   "word": "on",
+   "start": 8.241,
+   "end": 8.421,
+   "line": "hook"
+  },
+  {
+   "word": "Earth...",
+   "start": 8.421,
+   "end": 8.761,
+   "line": "hook"
+  },
+  {
+   "word": "shuts",
+   "start": 8.761,
+   "end": 9.341,
+   "line": "hook"
+  },
+  {
+   "word": "down",
+   "start": 9.341,
+   "end": 9.721,
+   "line": "hook"
+  },
+  {
+   "word": "for",
+   "start": 9.721,
+   "end": 9.901,
+   "line": "hook"
+  },
+  {
+   "word": "a",
+   "start": 9.901,
+   "end": 9.981,
+   "line": "hook"
+  },
+  {
+   "word": "whole",
+   "start": 9.981,
+   "end": 10.161,
+   "line": "hook"
+  },
+  {
+   "word": "day?",
+   "start": 10.161,
+   "end": 10.401,
+   "line": "hook"
+  },
+  {
+   "word": "Hour",
+   "start": 11.386,
+   "end": 11.636,
+   "line": "h1a"
+  },
+  {
+   "word": "1.",
+   "start": 11.636,
+   "end": 11.886,
+   "line": "h1a"
+  },
+  {
+   "word": "Nobody",
+   "start": 12.246,
+   "end": 12.486,
+   "line": "h1a"
+  },
+  {
+   "word": "panics.",
+   "start": 12.486,
+   "end": 13.066,
+   "line": "h1a"
+  },
+  {
+   "word": "The",
+   "start": 13.326,
+   "end": 13.406,
+   "line": "h1a"
+  },
+  {
+   "word": "card",
+   "start": 13.406,
+   "end": 13.626,
+   "line": "h1a"
+  },
+  {
+   "word": "machine",
+   "start": 13.626,
+   "end": 13.886,
+   "line": "h1a"
+  },
+  {
+   "word": "says,",
+   "start": 13.886,
+   "end": 14.226,
+   "line": "h1a"
+  },
+  {
+   "word": "try",
+   "start": 14.226,
+   "end": 14.546,
+   "line": "h1a"
+  },
+  {
+   "word": "again.",
+   "start": 14.546,
+   "end": 14.846,
+   "line": "h1a"
+  },
+  {
+   "word": "So",
+   "start": 15.457,
+   "end": 15.617,
+   "line": "h1b"
+  },
+  {
+   "word": "everyone...",
+   "start": 15.617,
+   "end": 16.017,
+   "line": "h1b"
+  },
+  {
+   "word": "tries",
+   "start": 16.017,
+   "end": 16.557,
+   "line": "h1b"
+  },
+  {
+   "word": "again.",
+   "start": 16.557,
+   "end": 16.897,
+   "line": "h1b"
+  },
+  {
+   "word": "Hour",
+   "start": 17.727,
+   "end": 17.927,
+   "line": "h3a"
+  },
+  {
+   "word": "3.",
+   "start": 17.927,
+   "end": 18.247,
+   "line": "h3a"
+  },
+  {
+   "word": "The",
+   "start": 18.627,
+   "end": 18.707,
+   "line": "h3a"
+  },
+  {
+   "word": "cash",
+   "start": 18.707,
+   "end": 18.947,
+   "line": "h3a"
+  },
+  {
+   "word": "machines",
+   "start": 18.947,
+   "end": 19.347,
+   "line": "h3a"
+  },
+  {
+   "word": "run",
+   "start": 19.347,
+   "end": 19.567,
+   "line": "h3a"
+  },
+  {
+   "word": "dry.",
+   "start": 19.567,
+   "end": 19.827,
+   "line": "h3a"
+  },
+  {
+   "word": "Zee's",
+   "start": 20.301,
+   "end": 20.641,
+   "line": "h3b"
+  },
+  {
+   "word": "entire",
+   "start": 20.641,
+   "end": 20.961,
+   "line": "h3b"
+  },
+  {
+   "word": "net",
+   "start": 20.961,
+   "end": 21.261,
+   "line": "h3b"
+  },
+  {
+   "word": "worth",
+   "start": 21.261,
+   "end": 21.501,
+   "line": "h3b"
+  },
+  {
+   "word": "is",
+   "start": 21.501,
+   "end": 21.781,
+   "line": "h3b"
+  },
+  {
+   "word": "now",
+   "start": 21.781,
+   "end": 22.001,
+   "line": "h3b"
+  },
+  {
+   "word": "\u00a311...",
+   "start": 22.001,
+   "end": 22.441,
+   "line": "h3b"
+  },
+  {
+   "word": "and",
+   "start": 23.525,
+   "end": 23.645,
+   "line": "h3c"
+  },
+  {
+   "word": "half",
+   "start": 23.645,
+   "end": 23.825,
+   "line": "h3c"
+  },
+  {
+   "word": "a",
+   "start": 23.825,
+   "end": 23.965,
+   "line": "h3c"
+  },
+  {
+   "word": "meal",
+   "start": 23.965,
+   "end": 24.145,
+   "line": "h3c"
+  },
+  {
+   "word": "deal.",
+   "start": 24.145,
+   "end": 24.405,
+   "line": "h3c"
+  },
+  {
+   "word": "Hour",
+   "start": 25.377,
+   "end": 25.657,
+   "line": "h6a"
+  },
+  {
+   "word": "6.",
+   "start": 25.657,
+   "end": 25.937,
+   "line": "h6a"
+  },
+  {
+   "word": "Shops",
+   "start": 25.937,
+   "end": 26.477,
+   "line": "h6a"
+  },
+  {
+   "word": "stop",
+   "start": 26.477,
+   "end": 26.817,
+   "line": "h6a"
+  },
+  {
+   "word": "taking",
+   "start": 26.817,
+   "end": 27.097,
+   "line": "h6a"
+  },
+  {
+   "word": "cards.",
+   "start": 27.097,
+   "end": 27.457,
+   "line": "h6a"
+  },
+  {
+   "word": "Then",
+   "start": 28.237,
+   "end": 28.377,
+   "line": "h6b"
+  },
+  {
+   "word": "they",
+   "start": 28.377,
+   "end": 28.497,
+   "line": "h6b"
+  },
+  {
+   "word": "stop",
+   "start": 28.497,
+   "end": 28.777,
+   "line": "h6b"
+  },
+  {
+   "word": "opening.",
+   "start": 28.777,
+   "end": 29.177,
+   "line": "h6b"
+  },
+  {
+   "word": "Hour",
+   "start": 30.181,
+   "end": 30.381,
+   "line": "h12a"
+  },
+  {
+   "word": "12.",
+   "start": 30.381,
+   "end": 30.681,
+   "line": "h12a"
+  },
+  {
+   "word": "And",
+   "start": 31.161,
+   "end": 31.241,
+   "line": "h12a"
+  },
+  {
+   "word": "this",
+   "start": 31.241,
+   "end": 31.421,
+   "line": "h12a"
+  },
+  {
+   "word": "is",
+   "start": 31.421,
+   "end": 31.561,
+   "line": "h12a"
+  },
+  {
+   "word": "where",
+   "start": 31.561,
+   "end": 31.741,
+   "line": "h12a"
+  },
+  {
+   "word": "it",
+   "start": 31.741,
+   "end": 31.841,
+   "line": "h12a"
+  },
+  {
+   "word": "gets",
+   "start": 31.841,
+   "end": 32.021,
+   "line": "h12a"
+  },
+  {
+   "word": "strange.",
+   "start": 32.021,
+   "end": 32.401,
+   "line": "h12a"
+  },
+  {
+   "word": "Most",
+   "start": 33.719,
+   "end": 33.859,
+   "line": "h12b"
+  },
+  {
+   "word": "businesses",
+   "start": 33.859,
+   "end": 34.319,
+   "line": "h12b"
+  },
+  {
+   "word": "are",
+   "start": 34.319,
+   "end": 34.619,
+   "line": "h12b"
+  },
+  {
+   "word": "frozen.",
+   "start": 34.619,
+   "end": 35.019,
+   "line": "h12b"
+  },
+  {
+   "word": "Waiting.",
+   "start": 35.379,
+   "end": 35.799,
+   "line": "h12b"
+  },
+  {
+   "word": "Refreshing.",
+   "start": 36.079,
+   "end": 36.279,
+   "line": "h12b"
+  },
+  {
+   "word": "But",
+   "start": 37.217,
+   "end": 37.337,
+   "line": "h12c"
+  },
+  {
+   "word": "a",
+   "start": 37.337,
+   "end": 37.457,
+   "line": "h12c"
+  },
+  {
+   "word": "few...",
+   "start": 37.457,
+   "end": 37.677,
+   "line": "h12c"
+  },
+  {
+   "word": "aren't.",
+   "start": 38.485,
+   "end": 38.925,
+   "line": "h12d"
+  },
+  {
+   "word": "Their",
+   "start": 39.826,
+   "end": 39.946,
+   "line": "rev"
+  },
+  {
+   "word": "orders",
+   "start": 39.946,
+   "end": 40.266,
+   "line": "rev"
+  },
+  {
+   "word": "are",
+   "start": 40.266,
+   "end": 40.486,
+   "line": "rev"
+  },
+  {
+   "word": "still",
+   "start": 40.486,
+   "end": 40.686,
+   "line": "rev"
+  },
+  {
+   "word": "coming",
+   "start": 40.686,
+   "end": 41.006,
+   "line": "rev"
+  },
+  {
+   "word": "in.",
+   "start": 41.006,
+   "end": 41.326,
+   "line": "rev"
+  },
+  {
+   "word": "Logged.",
+   "start": 41.666,
+   "end": 42.066,
+   "line": "rev"
+  },
+  {
+   "word": "Queued.",
+   "start": 42.326,
+   "end": 42.886,
+   "line": "rev"
+  },
+  {
+   "word": "Ready",
+   "start": 43.066,
+   "end": 43.206,
+   "line": "rev"
+  },
+  {
+   "word": "to",
+   "start": 43.206,
+   "end": 43.366,
+   "line": "rev"
+  },
+  {
+   "word": "charge",
+   "start": 43.366,
+   "end": 43.646,
+   "line": "rev"
+  },
+  {
+   "word": "the",
+   "start": 43.646,
+   "end": 43.886,
+   "line": "rev"
+  },
+  {
+   "word": "second",
+   "start": 43.886,
+   "end": 44.146,
+   "line": "rev"
+  },
+  {
+   "word": "the",
+   "start": 44.146,
+   "end": 44.306,
+   "line": "rev"
+  },
+  {
+   "word": "banks",
+   "start": 44.306,
+   "end": 44.526,
+   "line": "rev"
+  },
+  {
+   "word": "wake",
+   "start": 44.526,
+   "end": 44.766,
+   "line": "rev"
+  },
+  {
+   "word": "up.",
+   "start": 44.766,
+   "end": 45.006,
+   "line": "rev"
+  },
+  {
+   "word": "Their",
+   "start": 45.634,
+   "end": 45.734,
+   "line": "safe"
+  },
+  {
+   "word": "customers",
+   "start": 45.734,
+   "end": 46.154,
+   "line": "safe"
+  },
+  {
+   "word": "get",
+   "start": 46.154,
+   "end": 46.494,
+   "line": "safe"
+  },
+  {
+   "word": "one",
+   "start": 46.494,
+   "end": 46.734,
+   "line": "safe"
+  },
+  {
+   "word": "message:",
+   "start": 46.734,
+   "end": 47.094,
+   "line": "safe"
+  },
+  {
+   "word": "your",
+   "start": 47.574,
+   "end": 47.654,
+   "line": "safe"
+  },
+  {
+   "word": "order",
+   "start": 47.654,
+   "end": 47.954,
+   "line": "safe"
+  },
+  {
+   "word": "is",
+   "start": 47.954,
+   "end": 48.154,
+   "line": "safe"
+  },
+  {
+   "word": "safe.",
+   "start": 48.154,
+   "end": 48.394,
+   "line": "safe"
+  },
+  {
+   "word": "Nobody",
+   "start": 49.118,
+   "end": 49.458,
+   "line": "calm"
+  },
+  {
+   "word": "refreshes.",
+   "start": 49.458,
+   "end": 50.198,
+   "line": "calm"
+  },
+  {
+   "word": "Nobody",
+   "start": 50.458,
+   "end": 50.778,
+   "line": "calm"
+  },
+  {
+   "word": "panics.",
+   "start": 50.778,
+   "end": 51.358,
+   "line": "calm"
+  },
+  {
+   "word": "The",
+   "start": 52.303,
+   "end": 52.403,
+   "line": "diff"
+  },
+  {
+   "word": "difference",
+   "start": 52.403,
+   "end": 52.683,
+   "line": "diff"
+  },
+  {
+   "word": "isn't",
+   "start": 52.683,
+   "end": 53.223,
+   "line": "diff"
+  },
+  {
+   "word": "money.",
+   "start": 53.223,
+   "end": 53.363,
+   "line": "diff"
+  },
+  {
+   "word": "It's",
+   "start": 54.16,
+   "end": 54.34,
+   "line": "boring"
+  },
+  {
+   "word": "that",
+   "start": 54.34,
+   "end": 54.5,
+   "line": "boring"
+  },
+  {
+   "word": "someone",
+   "start": 54.5,
+   "end": 54.82,
+   "line": "boring"
+  },
+  {
+   "word": "built",
+   "start": 54.82,
+   "end": 55.14,
+   "line": "boring"
+  },
+  {
+   "word": "the",
+   "start": 55.14,
+   "end": 55.32,
+   "line": "boring"
+  },
+  {
+   "word": "boring",
+   "start": 55.32,
+   "end": 55.62,
+   "line": "boring"
+  },
+  {
+   "word": "stuff...",
+   "start": 55.62,
+   "end": 55.98,
+   "line": "boring"
+  },
+  {
+   "word": "before",
+   "start": 55.98,
+   "end": 56.62,
+   "line": "boring"
+  },
+  {
+   "word": "they",
+   "start": 56.62,
+   "end": 56.84,
+   "line": "boring"
+  },
+  {
+   "word": "needed",
+   "start": 56.84,
+   "end": 57.14,
+   "line": "boring"
+  },
+  {
+   "word": "it.",
+   "start": 57.14,
+   "end": 57.3,
+   "line": "boring"
+  },
+  {
+   "word": "Hour",
+   "start": 58.12,
+   "end": 58.32,
+   "line": "h24"
+  },
+  {
+   "word": "24.",
+   "start": 58.32,
+   "end": 58.8,
+   "line": "h24"
+  },
+  {
+   "word": "The",
+   "start": 59.18,
+   "end": 59.28,
+   "line": "h24"
+  },
+  {
+   "word": "banks",
+   "start": 59.28,
+   "end": 59.54,
+   "line": "h24"
+  },
+  {
+   "word": "come",
+   "start": 59.54,
+   "end": 59.82,
+   "line": "h24"
+  },
+  {
+   "word": "back.",
+   "start": 59.82,
+   "end": 60.08,
+   "line": "h24"
+  },
+  {
+   "word": "And",
+   "start": 60.905,
+   "end": 61.025,
+   "line": "best"
+  },
+  {
+   "word": "one",
+   "start": 61.025,
+   "end": 61.145,
+   "line": "best"
+  },
+  {
+   "word": "of",
+   "start": 61.145,
+   "end": 61.265,
+   "line": "best"
+  },
+  {
+   "word": "these",
+   "start": 61.265,
+   "end": 61.445,
+   "line": "best"
+  },
+  {
+   "word": "businesses",
+   "start": 61.445,
+   "end": 61.965,
+   "line": "best"
+  },
+  {
+   "word": "just",
+   "start": 61.965,
+   "end": 62.345,
+   "line": "best"
+  },
+  {
+   "word": "had...",
+   "start": 62.345,
+   "end": 62.645,
+   "line": "best"
+  },
+  {
+   "word": "its",
+   "start": 63.242,
+   "end": 63.422,
+   "line": "best2"
+  },
+  {
+   "word": "best",
+   "start": 63.422,
+   "end": 63.622,
+   "line": "best2"
+  },
+  {
+   "word": "day",
+   "start": 63.622,
+   "end": 63.902,
+   "line": "best2"
+  },
+  {
+   "word": "ever.",
+   "start": 63.902,
+   "end": 64.122,
+   "line": "best2"
+  },
+  {
+   "word": "How?",
+   "start": 64.88,
+   "end": 65.08,
+   "line": "how"
+  },
+  {
+   "word": "That's",
+   "start": 65.28,
+   "end": 65.42,
+   "line": "how"
+  },
+  {
+   "word": "part",
+   "start": 65.42,
+   "end": 65.62,
+   "line": "how"
+  },
+  {
+   "word": "3.",
+   "start": 65.62,
+   "end": 65.96,
+   "line": "how"
+  },
+  {
+   "word": "Follow,",
+   "start": 66.26,
+   "end": 66.62,
+   "line": "how"
+  },
+  {
+   "word": "you'll",
+   "start": 66.62,
+   "end": 66.82,
+   "line": "how"
+  },
+  {
+   "word": "want",
+   "start": 66.82,
+   "end": 67.04,
+   "line": "how"
+  },
+  {
+   "word": "this",
+   "start": 67.04,
+   "end": 67.26,
+   "line": "how"
+  },
+  {
+   "word": "one.",
+   "start": 67.26,
+   "end": 67.48,
+   "line": "how"
+  }
+ ],
+ "total": 68.213
+}

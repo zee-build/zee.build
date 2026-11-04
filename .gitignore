@@ -141,3 +141,8 @@ vite.config.ts.timestamp-*
 # Data files (server-persisted notes/feedback)
 # Keep data/*.json tracked for initial empty state
 # Actual data will be overwritten at runtime
+automation/.tmp/
+automation/reel/out/
+automation/reel/public/vo-*.wav
+automation/**/node_modules/
+automation/carousel/.t/

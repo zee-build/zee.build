@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 // The Instagram bio link. Newest post first, so whatever someone just saw is at the top.
 export default function LinkInBio() {
-  const items = RESOURCES.filter((r) => isLive(r)).sort((a, b) => b.posted.localeCompare(a.posted));
+  const items = RESOURCES.filter((r) => isLive(r)).sort((a, b) => (b.posted ?? "").localeCompare(a.posted ?? ""));
   const [latest, ...rest] = items;
   return (
     <main className={styles.page}>

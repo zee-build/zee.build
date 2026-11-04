@@ -1,3 +1,5 @@
+import generated from "./blueprints.json";
+
 // Blueprints promised in ZeeBuild posts. Every Instagram CTA points at zeebuild.com/r/<slug>,
 // so a post may only go out once its entry exists here.
 
@@ -6,7 +8,7 @@ export interface Resource {
   title: string;
   kicker: string;
   summary: string;
-  posted: string; // Dubai local time the post goes out, "YYYY-MM-DDTHH:mm"
+  posted?: string; // Dubai local time the post goes out, "YYYY-MM-DDTHH:mm". Unset means not scheduled yet.
   thumb?: string; // cover image shown on the link-in-bio page
   sections: { heading: string; points: string[] }[];
 }
@@ -255,6 +257,9 @@ RESOURCES.push(
 );
 
 // A blueprint is listed on the link page only once its post is live (Dubai is UTC+4, no DST)
-export const isLive = (r: Resource, now = new Date()) => new Date(`${r.posted.length === 10 ? r.posted + "T00:00" : r.posted}:00+04:00`) <= now;
+// Written by the content engine (automation/engine.mjs); it only ever adds to this list
+RESOURCES.push(...(generated as Resource[]));
+
+export const isLive = (r: Resource, now = new Date()) => !!r.posted && new Date(`${r.posted.length === 10 ? r.posted + "T00:00" : r.posted}:00+04:00`) <= now;
 
 export const getResource = (slug: string) => RESOURCES.find((r) => r.slug === slug);

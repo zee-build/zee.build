@@ -1,0 +1,899 @@
+{
+ "lines": [
+  {
+   "id": "hook1",
+   "start": 0.15,
+   "end": 2.081
+  },
+  {
+   "id": "hook2",
+   "start": 2.343,
+   "end": 3.659
+  },
+  {
+   "id": "time",
+   "start": 4.184,
+   "end": 5.693
+  },
+  {
+   "id": "taps",
+   "start": 5.918,
+   "end": 7.717
+  },
+  {
+   "id": "thinks",
+   "start": 7.942,
+   "end": 9.709
+  },
+  {
+   "id": "loading",
+   "start": 10.084,
+   "end": 12.315
+  },
+  {
+   "id": "s10",
+   "start": 12.915,
+   "end": 16.355
+  },
+  {
+   "id": "gym",
+   "start": 16.73,
+   "end": 19.7
+  },
+  {
+   "id": "s30",
+   "start": 20.3,
+   "end": 23.293
+  },
+  {
+   "id": "chat",
+   "start": 23.668,
+   "end": 25.065
+  },
+  {
+   "id": "paid",
+   "start": 25.253,
+   "end": 26.218
+  },
+  {
+   "id": "s45",
+   "start": 26.818,
+   "end": 30.886
+  },
+  {
+   "id": "debtor",
+   "start": 31.261,
+   "end": 33.411
+  },
+  {
+   "id": "s60",
+   "start": 34.086,
+   "end": 36.562
+  },
+  {
+   "id": "strange",
+   "start": 36.937,
+   "end": 38.45
+  },
+  {
+   "id": "notice",
+   "start": 38.9,
+   "end": 40.931
+  },
+  {
+   "id": "orders",
+   "start": 41.456,
+   "end": 44.553
+  },
+  {
+   "id": "asleep",
+   "start": 44.928,
+   "end": 46.678
+  },
+  {
+   "id": "who",
+   "start": 47.278,
+   "end": 49.625
+  },
+  {
+   "id": "part2",
+   "start": 49.85,
+   "end": 53.047
+  }
+ ],
+ "words": [
+  {
+   "word": "Every",
+   "start": 0.15,
+   "end": 0.37,
+   "line": "hook1"
+  },
+  {
+   "word": "bank",
+   "start": 0.37,
+   "end": 0.69,
+   "line": "hook1"
+  },
+  {
+   "word": "on",
+   "start": 0.69,
+   "end": 0.87,
+   "line": "hook1"
+  },
+  {
+   "word": "Earth",
+   "start": 0.87,
+   "end": 1.13,
+   "line": "hook1"
+  },
+  {
+   "word": "just",
+   "start": 1.13,
+   "end": 1.41,
+   "line": "hook1"
+  },
+  {
+   "word": "went",
+   "start": 1.41,
+   "end": 1.65,
+   "line": "hook1"
+  },
+  {
+   "word": "dark.",
+   "start": 1.65,
+   "end": 1.97,
+   "line": "hook1"
+  },
+  {
+   "word": "You",
+   "start": 2.343,
+   "end": 2.463,
+   "line": "hook2"
+  },
+  {
+   "word": "have",
+   "start": 2.463,
+   "end": 2.663,
+   "line": "hook2"
+  },
+  {
+   "word": "60",
+   "start": 2.663,
+   "end": 3.023,
+   "line": "hook2"
+  },
+  {
+   "word": "seconds.",
+   "start": 3.023,
+   "end": 3.423,
+   "line": "hook2"
+  },
+  {
+   "word": "8",
+   "start": 4.184,
+   "end": 4.344,
+   "line": "time"
+  },
+  {
+   "word": ".59",
+   "start": 4.344,
+   "end": 4.844,
+   "line": "time"
+  },
+  {
+   "word": "a",
+   "start": 4.844,
+   "end": 5.264,
+   "line": "time"
+  },
+  {
+   "word": ".m.",
+   "start": 5.264,
+   "end": 5.604,
+   "line": "time"
+  },
+  {
+   "word": "Zee",
+   "start": 5.918,
+   "end": 6.078,
+   "line": "taps"
+  },
+  {
+   "word": "taps",
+   "start": 6.078,
+   "end": 6.318,
+   "line": "taps"
+  },
+  {
+   "word": "a",
+   "start": 6.318,
+   "end": 6.518,
+   "line": "taps"
+  },
+  {
+   "word": "card",
+   "start": 6.518,
+   "end": 6.758,
+   "line": "taps"
+  },
+  {
+   "word": "for",
+   "start": 6.758,
+   "end": 6.978,
+   "line": "taps"
+  },
+  {
+   "word": "a",
+   "start": 6.978,
+   "end": 7.078,
+   "line": "taps"
+  },
+  {
+   "word": "flat",
+   "start": 7.078,
+   "end": 7.358,
+   "line": "taps"
+  },
+  {
+   "word": "white.",
+   "start": 7.358,
+   "end": 7.598,
+   "line": "taps"
+  },
+  {
+   "word": "The",
+   "start": 7.942,
+   "end": 8.042,
+   "line": "thinks"
+  },
+  {
+   "word": "terminal",
+   "start": 8.042,
+   "end": 8.382,
+   "line": "thinks"
+  },
+  {
+   "word": "thinks...",
+   "start": 8.382,
+   "end": 8.782,
+   "line": "thinks"
+  },
+  {
+   "word": "and",
+   "start": 8.782,
+   "end": 9.202,
+   "line": "thinks"
+  },
+  {
+   "word": "thinks...",
+   "start": 9.202,
+   "end": 9.442,
+   "line": "thinks"
+  },
+  {
+   "word": "and",
+   "start": 10.084,
+   "end": 10.184,
+   "line": "loading"
+  },
+  {
+   "word": "starts",
+   "start": 10.184,
+   "end": 10.444,
+   "line": "loading"
+  },
+  {
+   "word": "loading",
+   "start": 10.444,
+   "end": 10.904,
+   "line": "loading"
+  },
+  {
+   "word": "like",
+   "start": 10.904,
+   "end": 11.164,
+   "line": "loading"
+  },
+  {
+   "word": "it's",
+   "start": 11.164,
+   "end": 11.364,
+   "line": "loading"
+  },
+  {
+   "word": "2009.",
+   "start": 11.364,
+   "end": 11.704,
+   "line": "loading"
+  },
+  {
+   "word": "Second",
+   "start": 12.915,
+   "end": 13.175,
+   "line": "s10"
+  },
+  {
+   "word": "10.",
+   "start": 13.175,
+   "end": 13.555,
+   "line": "s10"
+  },
+  {
+   "word": "Card",
+   "start": 13.955,
+   "end": 14.255,
+   "line": "s10"
+  },
+  {
+   "word": "payments",
+   "start": 14.255,
+   "end": 14.675,
+   "line": "s10"
+  },
+  {
+   "word": "everywhere",
+   "start": 14.675,
+   "end": 15.095,
+   "line": "s10"
+  },
+  {
+   "word": "freeze",
+   "start": 15.095,
+   "end": 15.615,
+   "line": "s10"
+  },
+  {
+   "word": "in",
+   "start": 15.615,
+   "end": 15.875,
+   "line": "s10"
+  },
+  {
+   "word": "mid-air.",
+   "start": 15.875,
+   "end": 16.255,
+   "line": "s10"
+  },
+  {
+   "word": "Somewhere,",
+   "start": 16.73,
+   "end": 17.11,
+   "line": "gym"
+  },
+  {
+   "word": "someone",
+   "start": 17.37,
+   "end": 17.55,
+   "line": "gym"
+  },
+  {
+   "word": "tries",
+   "start": 17.55,
+   "end": 17.87,
+   "line": "gym"
+  },
+  {
+   "word": "paying",
+   "start": 17.87,
+   "end": 18.27,
+   "line": "gym"
+  },
+  {
+   "word": "with",
+   "start": 18.27,
+   "end": 18.51,
+   "line": "gym"
+  },
+  {
+   "word": "a",
+   "start": 18.51,
+   "end": 18.61,
+   "line": "gym"
+  },
+  {
+   "word": "gym",
+   "start": 18.61,
+   "end": 18.91,
+   "line": "gym"
+  },
+  {
+   "word": "membership",
+   "start": 18.91,
+   "end": 19.27,
+   "line": "gym"
+  },
+  {
+   "word": "card.",
+   "start": 19.27,
+   "end": 19.61,
+   "line": "gym"
+  },
+  {
+   "word": "Second",
+   "start": 20.3,
+   "end": 20.56,
+   "line": "s30"
+  },
+  {
+   "word": "30.",
+   "start": 20.56,
+   "end": 21.02,
+   "line": "s30"
+  },
+  {
+   "word": "Payroll",
+   "start": 21.44,
+   "end": 21.76,
+   "line": "s30"
+  },
+  {
+   "word": "stops",
+   "start": 21.76,
+   "end": 22.2,
+   "line": "s30"
+  },
+  {
+   "word": "halfway",
+   "start": 22.2,
+   "end": 22.58,
+   "line": "s30"
+  },
+  {
+   "word": "out",
+   "start": 22.58,
+   "end": 22.86,
+   "line": "s30"
+  },
+  {
+   "word": "the",
+   "start": 22.86,
+   "end": 22.96,
+   "line": "s30"
+  },
+  {
+   "word": "door.",
+   "start": 22.96,
+   "end": 23.18,
+   "line": "s30"
+  },
+  {
+   "word": "Every",
+   "start": 23.668,
+   "end": 23.888,
+   "line": "chat"
+  },
+  {
+   "word": "group",
+   "start": 23.888,
+   "end": 24.148,
+   "line": "chat"
+  },
+  {
+   "word": "chat",
+   "start": 24.148,
+   "end": 24.428,
+   "line": "chat"
+  },
+  {
+   "word": "on",
+   "start": 24.428,
+   "end": 24.608,
+   "line": "chat"
+  },
+  {
+   "word": "Earth:",
+   "start": 24.608,
+   "end": 24.868,
+   "line": "chat"
+  },
+  {
+   "word": "did",
+   "start": 25.253,
+   "end": 25.373,
+   "line": "paid"
+  },
+  {
+   "word": "you",
+   "start": 25.373,
+   "end": 25.493,
+   "line": "paid"
+  },
+  {
+   "word": "get",
+   "start": 25.493,
+   "end": 25.653,
+   "line": "paid"
+  },
+  {
+   "word": "paid?",
+   "start": 25.653,
+   "end": 25.973,
+   "line": "paid"
+  },
+  {
+   "word": "Second",
+   "start": 26.818,
+   "end": 27.178,
+   "line": "s45"
+  },
+  {
+   "word": "45.",
+   "start": 27.178,
+   "end": 27.658,
+   "line": "s45"
+  },
+  {
+   "word": "Shops",
+   "start": 28.238,
+   "end": 28.598,
+   "line": "s45"
+  },
+  {
+   "word": "start",
+   "start": 28.598,
+   "end": 28.918,
+   "line": "s45"
+  },
+  {
+   "word": "writing",
+   "start": 28.918,
+   "end": 29.318,
+   "line": "s45"
+  },
+  {
+   "word": "IOUs",
+   "start": 29.318,
+   "end": 29.998,
+   "line": "s45"
+  },
+  {
+   "word": "on",
+   "start": 29.998,
+   "end": 30.158,
+   "line": "s45"
+  },
+  {
+   "word": "napkins.",
+   "start": 30.158,
+   "end": 30.658,
+   "line": "s45"
+  },
+  {
+   "word": "Zee",
+   "start": 31.261,
+   "end": 31.421,
+   "line": "debtor"
+  },
+  {
+   "word": "is",
+   "start": 31.421,
+   "end": 31.621,
+   "line": "debtor"
+  },
+  {
+   "word": "now,",
+   "start": 31.621,
+   "end": 31.821,
+   "line": "debtor"
+  },
+  {
+   "word": "legally,",
+   "start": 31.821,
+   "end": 32.241,
+   "line": "debtor"
+  },
+  {
+   "word": "a",
+   "start": 32.241,
+   "end": 32.661,
+   "line": "debtor"
+  },
+  {
+   "word": "coffee",
+   "start": 32.661,
+   "end": 32.981,
+   "line": "debtor"
+  },
+  {
+   "word": "debtor.",
+   "start": 32.981,
+   "end": 33.381,
+   "line": "debtor"
+  },
+  {
+   "word": "Then,",
+   "start": 34.086,
+   "end": 34.306,
+   "line": "s60"
+  },
+  {
+   "word": "second",
+   "start": 34.306,
+   "end": 34.626,
+   "line": "s60"
+  },
+  {
+   "word": "60.",
+   "start": 34.626,
+   "end": 35.026,
+   "line": "s60"
+  },
+  {
+   "word": "The",
+   "start": 35.446,
+   "end": 35.546,
+   "line": "s60"
+  },
+  {
+   "word": "lights",
+   "start": 35.546,
+   "end": 35.826,
+   "line": "s60"
+  },
+  {
+   "word": "come",
+   "start": 35.826,
+   "end": 36.126,
+   "line": "s60"
+  },
+  {
+   "word": "back.",
+   "start": 36.126,
+   "end": 36.366,
+   "line": "s60"
+  },
+  {
+   "word": "And",
+   "start": 36.937,
+   "end": 37.077,
+   "line": "strange"
+  },
+  {
+   "word": "here's",
+   "start": 37.077,
+   "end": 37.357,
+   "line": "strange"
+  },
+  {
+   "word": "the",
+   "start": 37.357,
+   "end": 37.457,
+   "line": "strange"
+  },
+  {
+   "word": "strange",
+   "start": 37.457,
+   "end": 37.877,
+   "line": "strange"
+  },
+  {
+   "word": "part...",
+   "start": 37.877,
+   "end": 38.197,
+   "line": "strange"
+  },
+  {
+   "word": "some",
+   "start": 38.9,
+   "end": 39.1,
+   "line": "notice"
+  },
+  {
+   "word": "businesses",
+   "start": 39.1,
+   "end": 39.58,
+   "line": "notice"
+  },
+  {
+   "word": "didn't",
+   "start": 39.58,
+   "end": 40.14,
+   "line": "notice"
+  },
+  {
+   "word": "even",
+   "start": 40.14,
+   "end": 40.26,
+   "line": "notice"
+  },
+  {
+   "word": "notice.",
+   "start": 40.26,
+   "end": 40.66,
+   "line": "notice"
+  },
+  {
+   "word": "Their",
+   "start": 41.456,
+   "end": 41.576,
+   "line": "orders"
+  },
+  {
+   "word": "orders",
+   "start": 41.576,
+   "end": 41.896,
+   "line": "orders"
+  },
+  {
+   "word": "kept",
+   "start": 41.896,
+   "end": 42.196,
+   "line": "orders"
+  },
+  {
+   "word": "queuing.",
+   "start": 42.196,
+   "end": 42.756,
+   "line": "orders"
+  },
+  {
+   "word": "Invoices",
+   "start": 43.136,
+   "end": 43.636,
+   "line": "orders"
+  },
+  {
+   "word": "kept",
+   "start": 43.636,
+   "end": 43.856,
+   "line": "orders"
+  },
+  {
+   "word": "going",
+   "start": 43.856,
+   "end": 44.196,
+   "line": "orders"
+  },
+  {
+   "word": "out.",
+   "start": 44.196,
+   "end": 44.516,
+   "line": "orders"
+  },
+  {
+   "word": "The",
+   "start": 44.928,
+   "end": 45.028,
+   "line": "asleep"
+  },
+  {
+   "word": "owner",
+   "start": 45.028,
+   "end": 45.308,
+   "line": "asleep"
+  },
+  {
+   "word": "was",
+   "start": 45.308,
+   "end": 45.628,
+   "line": "asleep"
+  },
+  {
+   "word": "literally",
+   "start": 45.628,
+   "end": 45.948,
+   "line": "asleep"
+  },
+  {
+   "word": "asleep.",
+   "start": 45.948,
+   "end": 46.308,
+   "line": "asleep"
+  },
+  {
+   "word": "Who",
+   "start": 47.278,
+   "end": 47.378,
+   "line": "who"
+  },
+  {
+   "word": "they",
+   "start": 47.378,
+   "end": 47.558,
+   "line": "who"
+  },
+  {
+   "word": "are,",
+   "start": 47.558,
+   "end": 47.878,
+   "line": "who"
+  },
+  {
+   "word": "and",
+   "start": 47.878,
+   "end": 48.138,
+   "line": "who"
+  },
+  {
+   "word": "the",
+   "start": 48.138,
+   "end": 48.258,
+   "line": "who"
+  },
+  {
+   "word": "one",
+   "start": 48.258,
+   "end": 48.478,
+   "line": "who"
+  },
+  {
+   "word": "thing",
+   "start": 48.478,
+   "end": 48.718,
+   "line": "who"
+  },
+  {
+   "word": "they",
+   "start": 48.718,
+   "end": 48.918,
+   "line": "who"
+  },
+  {
+   "word": "all",
+   "start": 48.918,
+   "end": 49.098,
+   "line": "who"
+  },
+  {
+   "word": "built?",
+   "start": 49.098,
+   "end": 49.378,
+   "line": "who"
+  },
+  {
+   "word": "That's",
+   "start": 49.85,
+   "end": 50.09,
+   "line": "part2"
+  },
+  {
+   "word": "part",
+   "start": 50.09,
+   "end": 50.29,
+   "line": "part2"
+  },
+  {
+   "word": "2.",
+   "start": 50.29,
+   "end": 50.67,
+   "line": "part2"
+  },
+  {
+   "word": "Follow,",
+   "start": 51.03,
+   "end": 51.41,
+   "line": "part2"
+  },
+  {
+   "word": "before",
+   "start": 51.41,
+   "end": 51.77,
+   "line": "part2"
+  },
+  {
+   "word": "your",
+   "start": 51.77,
+   "end": 51.97,
+   "line": "part2"
+  },
+  {
+   "word": "bank",
+   "start": 51.97,
+   "end": 52.21,
+   "line": "part2"
+  },
+  {
+   "word": "goes",
+   "start": 52.21,
+   "end": 52.49,
+   "line": "part2"
+  },
+  {
+   "word": "dark.",
+   "start": 52.49,
+   "end": 52.83,
+   "line": "part2"
+  }
+ ],
+ "total": 53.572
+}

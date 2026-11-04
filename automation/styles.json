@@ -1,0 +1,17 @@
+{
+  "signal-red": {
+    "label": "Signal Red",
+    "carousel": {},
+    "reel": {}
+  },
+  "ember-graphite": {
+    "label": "Ember Graphite",
+    "carousel": { "paper": "#EDE6D6", "ink": "#141414", "accent": "#C2410C", "accent-i": "#FF8A33", "muted-p": "#6b6258", "muted-i": "#9A958E", "card-p": "#E3D9C3", "card-i": "#222222", "glow": "rgba(255,138,51,.13)" },
+    "reel": { "bg": "#141414", "bone": "#EDE6D6", "bone2": "#E3D9C3", "ink": "#1A1714", "red": "#E8590C", "redDeep": "#9A3A07", "muted": "#8E8A84", "text": "#F2F0EC" }
+  },
+  "midnight-mint": {
+    "label": "Midnight Mint",
+    "carousel": { "paper": "#E8EFEA", "ink": "#08141A", "accent": "#0B7A61", "accent-i": "#2EE6B6", "muted-p": "#54655F", "muted-i": "#86A09A", "card-p": "#D7E3DC", "card-i": "#10242B", "glow": "rgba(46,230,182,.11)" },
+    "reel": { "bg": "#08141A", "bone": "#E8EFEA", "bone2": "#D7E3DC", "ink": "#0C1A1F", "red": "#0FA883", "redDeep": "#0B7A61", "muted": "#86A09A", "text": "#EEF5F1" }
+  }
+}
