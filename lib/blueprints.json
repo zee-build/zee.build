@@ -409,5 +409,63 @@
         ]
       }
     ]
+  },
+  {
+    "slug": "ai-money-step-approval-gate",
+    "title": "The Money Step Approval Gate Blueprint",
+    "kicker": "BLUEPRINT · FROM THE CAROUSEL",
+    "summary": "A simple way to keep a human in charge of every step where your automation moves money. Includes a Make.com setup, limits to set, and what to test.",
+    "thumb": "/posts/ai-money-step-approval-gate/thumb.jpg",
+    "sections": [
+      {
+        "heading": "1. Find your money steps",
+        "points": [
+          "Open every automation you run and list each step that pays, refunds, charges, or changes a price.",
+          "Mark each one: what is the worst thing that could go wrong?",
+          "Mark each one: can it be undone in one click, or is it gone for good?",
+          "Hard to undo or big harm means it gets a gate. Easy to undo and small harm can run alone.",
+          "Also check steps that send money indirectly, like approving a bill in an accounting tool."
+        ]
+      },
+      {
+        "heading": "2. Build the gate in Make.com",
+        "points": [
+          "Scenario A: the AI step prepares the payment details and saves them in a Google Sheet or Make data store as 'pending'.",
+          "Scenario A then sends you a message by email or Slack showing who, how much, and why.",
+          "The message holds two links: Approve and Reject. Each link calls a webhook (a web doorbell that wakes up another scenario).",
+          "Scenario B starts from the Approve webhook, checks the item is still 'pending', then makes the payment.",
+          "Scenario B marks the item 'paid' so a second click can never pay it twice."
+        ]
+      },
+      {
+        "heading": "3. Set the rules",
+        "points": [
+          "Pick a dollar limit. Under it, a human still approves. Over it, a second person approves.",
+          "Name one person who approves, and one backup for when they are away.",
+          "Add a timeout. If nobody clicks in 48 hours, the item expires. It never auto-approves.",
+          "Show the AI's reason in the message so the approver is not guessing.",
+          "Keep a log: who approved, when, and what the amount was."
+        ]
+      },
+      {
+        "heading": "4. Test before you trust it",
+        "points": [
+          "Run it with a fake payment in test mode first.",
+          "Click Approve twice on purpose. The second click should do nothing.",
+          "Click Reject. Confirm no money moves.",
+          "Change the amount after approval. The system should refuse or ask again.",
+          "Try a missing or odd supplier name and see what the AI does."
+        ]
+      },
+      {
+        "heading": "5. What to watch for",
+        "points": [
+          "Approval fatigue: if you click yes without reading, the gate is useless. Keep the message short and clear.",
+          "Do not give the AI direct access to payment keys. Only Scenario B holds them.",
+          "Review the log once a month and look for odd amounts or new payees.",
+          "This is education about process design, not financial advice. Check your own bank and accounting rules."
+        ]
+      }
+    ]
   }
 ]
