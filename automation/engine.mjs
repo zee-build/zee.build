@@ -21,7 +21,7 @@ const ONLY = flags.find((f) => f.startsWith("--only="))?.slice(7).split(",");
 
 const COL = Object.fromEntries("id created pillar idea source li ig x slides visual status slot platforms token feedback post_url impressions comments saves dms image video carousel resource draft event".split(" ").map((k, i) => [k, i]));
 const letter = (i) => String.fromCharCode(65 + i);
-const SLOT_TIME = { carousel: "12:30", reel: "19:00" };
+const SLOT_TIME = { carousel: "21:00", reel: "19:00" }; // Dubai time, and never during Zee's working hours
 const PROMOTE_DAYS = 4; // a planned post starts drafting this long before its slot
 const MAX_RENDERS = { carousel: 3, reel: 2 };
 const ILLOS = ["bell-log", "blueprint", "cage-inbox", "card-flow", "clipboard", "gear-button", "invoice-coins", "podium"];
