@@ -467,5 +467,63 @@
         ]
       }
     ]
+  },
+  {
+    "slug": "checkout-agent-needs-stop-button",
+    "title": "The Safe Checkout Agent Checklist",
+    "kicker": "BLUEPRINT · FROM THE CAROUSEL",
+    "summary": "A plain checklist for building an AI buying agent in Make.com that stops when unsure and waits for a human before it spends. Education only, not financial advice.",
+    "thumb": "/posts/checkout-agent-needs-stop-button/thumb.jpg",
+    "sections": [
+      {
+        "heading": "Why this matters",
+        "points": [
+          "Visa's new benchmark ran 22 AI models from 12 labs through shopping tasks.",
+          "Visa reports 42.8% of runs failed. Best model scored 82.2%, worst 28.9%.",
+          "In 54% of failures, the agent still bought, per Visa.",
+          "Lesson: assume your agent will be wrong sometimes. Build so a wrong guess costs nothing."
+        ]
+      },
+      {
+        "heading": "Step 1: Build the hard no-buy exit",
+        "points": [
+          "Write your stop rules in plain words first: wrong item, price over your cap, out-of-stock swap, missing size, anything unclear.",
+          "In Make.com, add a Router after the agent step. One route is 'safe to ask for approval'. The other is 'stop'.",
+          "Put filters on the safe route. Price must be under your cap. The item must match the order exactly.",
+          "Make 'stop' the default. If no filter passes, nothing moves forward.",
+          "On the stop route, send yourself a message with the reason. Never let it quietly retry a purchase."
+        ]
+      },
+      {
+        "heading": "Step 2: Add the human approval step",
+        "points": [
+          "The agent only proposes an order. It does not pay.",
+          "Send a person an email or Slack message with the item, price, and an Approve link.",
+          "The link calls a custom webhook, which is a doorbell that starts a second Make.com scenario when someone presses it.",
+          "Only that second scenario makes the purchase.",
+          "Save each pending order in a Make.com data store with an ID and an expiry time. Old requests should die, not sit there.",
+          "Sending a message with no reply for a day? Cancel the order."
+        ]
+      },
+      {
+        "heading": "Step 3: Cap the damage",
+        "points": [
+          "Use a card or account with a low spending limit for the agent, if your provider offers one.",
+          "Keep the agent's access narrow: one store, one task, no saved bank details.",
+          "Log every decision: what it saw, what it proposed, who approved.",
+          "Check the log weekly. Look for near misses, not just disasters."
+        ]
+      },
+      {
+        "heading": "Step 4: Test with fake money first",
+        "points": [
+          "Run 20 test orders with a sandbox or a cart you never pay for.",
+          "Include bad orders on purpose: wrong size, wrong price, sold-out item.",
+          "Count how many reach the approval step. Wrong ones should stop earlier.",
+          "Go live only when the stop route catches every bad test.",
+          "Re-test whenever you change the prompt or the AI model."
+        ]
+      }
+    ]
   }
 ]
