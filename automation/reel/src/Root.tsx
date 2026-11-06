@@ -8,7 +8,7 @@ import { Ep02, EP02_FRAMES } from "./v5/Ep02";
 import { Style03Queue, Style03Cta } from "./v6/Style03";
 import { Ep03, EP03_FRAMES } from "./v6/Ep03";
 import { Illo } from "./illo/Illos";
-import { CoverEp01 } from "./v7/Cover";
+import { CoverEp01, ReelCover } from "./v7/Cover";
 import { Short, shortMetadata, type ShortProps } from "./v7/Short";
 
 export const Root: React.FC = () => (
@@ -26,6 +26,7 @@ export const Root: React.FC = () => (
     <Composition id="Illo" component={Illo} durationInFrames={1} fps={30} width={900} height={900} defaultProps={{ kind: "cage-inbox" as const }} />
     <Composition id="Short" component={Short} calculateMetadata={shortMetadata} durationInFrames={900} fps={30} width={1080} height={1920}
       defaultProps={{ slug: "x", banner: "", kicker: "", scenes: [], lines: [], words: [], total: 1 } as ShortProps} />
+    <Composition id="ReelCover" component={ReelCover} durationInFrames={1} fps={30} width={1080} height={1920} defaultProps={{ headline: "", label: "" }} />
     <Composition id="CoverEp01" component={CoverEp01} durationInFrames={1} fps={30} width={1080} height={1920} />
   </>
 );

@@ -189,8 +189,20 @@ async function renderReel(d, style, notes) {
   writeFileSync(props, JSON.stringify({ ...p, palette: style.reel }));
 
   mkdirSync(join(reelDir, "out"), { recursive: true });
+  const render = join(reelDir, "out", `${d.slug}-render.mp4`);
+  run("npx", ["remotion", "render", "src/index.ts", "Short", render, "--codec", "h264", "--crf", "18", "--gl=swangle", "--concurrency=2", "--timeout=120000", `--props=${props}`, "--overwrite"], reelDir);
+
+  // Every reel gets a saved thumbnail. The Instagram step can only use a frame of the video as the
+  // cover, so the thumbnail also becomes the first 0.1 s, and S8's cover frame 0 picks it up.
+  const postDir = join(ROOT, "public/posts", d.slug);
+  mkdirSync(postDir, { recursive: true });
+  const cover = join(postDir, "cover.jpg"), coverProps = join(tmp, `${d.slug}.cover.json`);
+  writeFileSync(coverProps, JSON.stringify({ headline: d.reel.banner, label: d.reel.ep || d.reel.kicker || d.reel.series || "ZEEBUILD", illo: d.reel.scenes.find((s) => s.illo && s.illo !== "blueprint")?.illo, palette: style.reel }));
+  run("npx", ["remotion", "still", "src/index.ts", "ReelCover", cover, "--image-format=jpeg", "--gl=swangle", `--props=${coverProps}`, "--overwrite"], reelDir);
   const raw = join(reelDir, "out", `${d.slug}-raw.mp4`);
-  run("npx", ["remotion", "render", "src/index.ts", "Short", raw, "--codec", "h264", "--crf", "18", "--gl=swangle", "--concurrency=2", "--timeout=120000", `--props=${props}`, "--overwrite"], reelDir);
+  run("ffmpeg", ["-v", "error", "-y", "-loop", "1", "-framerate", "30", "-t", "0.1", "-i", cover, "-f", "lavfi", "-t", "0.1", "-i", "anullsrc=r=48000:cl=stereo", "-i", render,
+    "-filter_complex", "[0:v]scale=1080:1920,setsar=1,format=yuv420p,fps=30[c];[2:v]setsar=1,format=yuv420p,fps=30[v];[2:a]aformat=sample_rates=48000:channel_layouts=stereo[a];[c][1:a][v][a]concat=n=2:v=1:a=1[ov][oa]",
+    "-map", "[ov]", "-map", "[oa]", "-c:v", "libx264", "-crf", "18", "-preset", "medium", "-c:a", "aac", "-b:a", "192k", raw]);
 
   // Two-pass loudness to -14 LUFS, encoded the way Instagram expects
   const measured = execFileSync("ffmpeg", ["-hide_banner", "-i", raw, "-af", "loudnorm=I=-14:TP=-1.5:LRA=11:print_format=json", "-f", "null", "-"], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).toString();
@@ -201,12 +213,10 @@ async function renderReel(d, style, notes) {
     "-af", `loudnorm=I=-14:TP=-1.5:LRA=11:measured_I=${m.input_i}:measured_TP=${m.input_tp}:measured_LRA=${m.input_lra}:measured_thresh=${m.input_thresh}:offset=${m.target_offset}:linear=true`,
     "-c:a", "aac", "-ar", "48000", "-b:a", "128k", "-movflags", "+faststart", join(ROOT, "public/reels", file)]);
 
-  const postDir = join(ROOT, "public/posts", d.slug);
-  mkdirSync(postDir, { recursive: true });
   run("ffmpeg", ["-v", "error", "-y", "-ss", "1.2", "-i", raw, "-frames:v", "1", "-q:v", "4", join(postDir, "thumb.jpg")]);
   const every = Math.max(1, Math.floor(p.total / 6));
   run("ffmpeg", ["-v", "error", "-y", "-i", raw, "-vf", `fps=1/${every},scale=270:-1,tile=6x1`, "-frames:v", "1", "-q:v", "5", join(postDir, "contact.jpg")]);
-  return { video: `${SITE}/reels/${file}`, probe: `${SITE}/reels/${file}`, preview: `${SITE}/posts/${d.slug}/contact.jpg` };
+  return { video: `${SITE}/reels/${file}`, probe: `${SITE}/reels/${file}`, preview: `${SITE}/posts/${d.slug}/contact.jpg`, cover: `${SITE}/posts/${d.slug}/cover.jpg` };
 }
 
 function readLoudness(stdoutText, raw) {
@@ -260,6 +270,7 @@ function approvalEmail(row, meta) {
 <h2 style="margin:0 0 14px">${esc(meta.title)}</h2>
 <p>${btn("approve", "Approve", "#E0302A")} &nbsp; ${btn("reject", "Reject", "#151010")}</p>
 ${notes}
+${meta.cover ? `<p style="margin:0 0 4px;font-weight:600">Thumbnail</p><img src="${meta.cover}" alt="Reel thumbnail" style="width:220px;border-radius:6px;display:block;margin-bottom:14px">` : ""}
 <a href="${meta.video || meta.preview}"><img src="${meta.preview}" alt="Preview" style="width:100%;border-radius:6px;display:block"></a>
 ${meta.video ? `<p><a href="${meta.video}"><b>Watch the reel</b></a></p>` : ""}
 ${block("Instagram", row.ig)}${block("LinkedIn", row.platforms.includes("li") ? row.li : "")}${block("X", row.platforms.includes("x") ? row.x : "")}
@@ -341,7 +352,7 @@ async function renderDrafted(rows) {
     setCell(r, "resource", `${SITE}/r/${d.slug}`);
     if (media.video) setCell(r, "video", media.video);
     if (media.carousel) setCell(r, "carousel", media.carousel);
-    setCell(r, "feedback", JSON.stringify({ title: d.title, notes, probe: media.probe, preview: media.preview, video: media.video }));
+    setCell(r, "feedback", JSON.stringify({ title: d.title, notes, probe: media.probe, preview: media.preview, video: media.video, cover: media.cover }));
     setCell(r, "draft", "");
     setCell(r, "status", "rendered");
   }
