@@ -525,5 +525,108 @@
         ]
       }
     ]
+  },
+  {
+    "slug": "under-20",
+    "title": "The Under-$20 Automation Blueprint",
+    "kicker": "BLUEPRINT · FROM THE CAROUSEL",
+    "summary": "Five small automations a shop owner can build, with the exact steps for each, a build order, and the mistakes to avoid. Education only, not financial advice.",
+    "thumb": "/posts/under-20/thumb.jpg",
+    "sections": [
+      {
+        "heading": "Before you start: three plain words",
+        "points": [
+          "Scenario: one little recipe in Make.com. It does one job.",
+          "Trigger: the doorbell. It is the thing that starts the recipe, like a new row in a sheet.",
+          "Action: what the recipe does next, like sending an email.",
+          "Keep your data in one Google Sheet to begin with. It is free and easy to read.",
+          "Build one recipe at a time. Test it with your own email address first."
+        ]
+      },
+      {
+        "heading": "The five automations, step by step",
+        "points": [
+          "1. Reply to new leads: send your enquiry form answers to a sheet. In Make.com, use Google Sheets 'Watch New Rows', then Gmail 'Send an Email'. Say you got it and when you will reply.",
+          "2. Chase unpaid invoices: keep a sheet with columns for customer, email, due date and paid (yes or no). Run a daily schedule, filter for past due and not paid, then send a polite reminder.",
+          "3. Ask for reviews: when you mark a job 'done' in your sheet, wait two days, then email a short thank you with your review link.",
+          "4. Monday summary: set a schedule for Monday at 8am. Read last week's rows from your sales sheet, add them up, and email the total to yourself.",
+          "5. File receipts: use Gmail 'Watch Emails' on a label like 'Receipts'. Then use Google Drive 'Upload a File' and add a sheet row with the date and sender."
+        ]
+      },
+      {
+        "heading": "What it should cost",
+        "points": [
+          "Aim for the whole set under $20 a month. Check Make.com's pricing page for today's numbers.",
+          "Start on the free plan if it covers your volume. Upgrade only when you hit the limit.",
+          "Gmail, Google Sheets, Google Forms and Google Drive are free for most small shops.",
+          "Text messages usually cost extra. Start with email.",
+          "Tally your monthly bills for these tools once a quarter, so no small charge sneaks up on you."
+        ]
+      },
+      {
+        "heading": "Build order and what to watch for",
+        "points": [
+          "Build the one you dread most first. A win on day one keeps you going.",
+          "Always test with your own email before any real customer gets a message.",
+          "Add a 'paid' or 'sent' column so nobody gets the same reminder twice.",
+          "Only email people who just bought from you, and add a way to opt out. Check your local rules.",
+          "Turn on Make.com's error emails so you hear when something breaks.",
+          "Re-check each automation once a month. Five minutes is enough."
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "cashfree-webmcp-checkout-bots",
+    "title": "The Safe Checkout Bot Blueprint",
+    "kicker": "BLUEPRINT · FROM THE CAROUSEL",
+    "summary": "A plain checklist for letting a bot help with payments without letting it spend money alone. Built for Make.com users. Education only, not financial advice.",
+    "thumb": "/posts/cashfree-webmcp-checkout-bots/thumb.jpg",
+    "sections": [
+      {
+        "heading": "What changed, in plain words",
+        "points": [
+          "Screen-scraping means a bot reads a web page like a person squinting at it",
+          "When the page changes, the bot can click the wrong thing",
+          "WebMCP is a way for a site to hand an AI a short menu of actions",
+          "Cashfree says it went live with this on its hosted checkout on Nov 6",
+          "Cashfree estimates over 40% fewer tokens to finish a payment. That is their estimate, so test your own flow",
+          "The shopper still approves every charge"
+        ]
+      },
+      {
+        "heading": "Build a narrow tool list",
+        "points": [
+          "Write down every job the bot needs. Keep only the ones that must exist",
+          "A good starter list: find the order, make a pay link, check if it was paid",
+          "Leave out refunds, price edits and saved cards",
+          "Where you can, use the provider's official payment link or API instead of clicking pages",
+          "Give each tool one job and a plain name, like 'make_pay_link'",
+          "If you are unsure whether a tool is needed, cut it"
+        ]
+      },
+      {
+        "heading": "Add the human-pay gate in Make.com",
+        "points": [
+          "Step 1: the bot finds the order and builds the cart",
+          "Step 2: your scenario makes a pay link and sends it to the shopper",
+          "Step 3: the scenario stops and waits. It does not charge anything",
+          "Step 4: the shopper opens the link and approves the charge",
+          "Step 5: only when the status says paid does the next step run, like a receipt or a stock update",
+          "Never add a path where the bot can skip step 4"
+        ]
+      },
+      {
+        "heading": "Test before you trust it",
+        "points": [
+          "Run the flow with a test order and watch each step",
+          "Try a wrong order number and see that the bot stops",
+          "Try leaving the payment unpaid and check that nothing else fires",
+          "Add an alert to your phone if a payment fails or hangs",
+          "Keep a simple log: order, time, status",
+          "Check your payment provider's own rules before you go live"
+        ]
+      }
+    ]
   }
 ]
